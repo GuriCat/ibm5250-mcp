@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IBM 5250 MCP User Guide</title>
+<link rel="stylesheet" href="manual.css">
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 表紙                                                          -->
+<!-- ============================================================ -->
+<section class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">USER&nbsp;GUIDE</div>
+  <div class="cover-inner">
+    <div class="cover-product">IBM&nbsp;i&nbsp;5250 Terminal Emulator for Development&nbsp;Support<br>(with MCP Server support)</div>
+    <h1 class="cover-title">IBM&nbsp;5250&nbsp;MCP</h1>
+    <div class="cover-divider"></div>
+    <div class="cover-sub">User Guide</div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;Project</div>
+    <div class="cover-meta">
+      First&nbsp;Edition<br>
+      May&nbsp;2026
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 安全表示                                                      -->
+<!-- ============================================================ -->
+<section class="safety">
+  <h1>Important Safety Information</h1>
+  <p>Before using this product, be sure to read this "Important Safety Information" carefully and use the product correctly.</p>
+
+  <table class="safety-table">
+    <tr>
+      <th>Caution</th>
+      <td>Incorrect handling may affect business data or resources on the IBM&nbsp;i.</td>
+    </tr>
+    <tr>
+      <th>Prohibited</th>
+      <td>Operations that must never be performed.</td>
+    </tr>
+    <tr>
+      <th>Note</th>
+      <td>Useful tips and reference information.</td>
+    </tr>
+  </table>
+
+  <div class="box caution" style="margin-top:5mm">
+    <div class="box-title">Confirm Your Operations</div>
+    This software communicates with IBM&nbsp;i (formerly AS/400, iSeries). Before running any operation that may unintentionally change data on the server (for example, delete commands or system value updates), always confirm its content.
+  </div>
+
+  <div class="box forbid">
+    <div class="box-title">About Passwords</div>
+    Do not leave the device or share the screen while a password is entered on screen. Handle passwords in accordance with your organization's operational rules.
+  </div>
+
+  <div class="box note">
+    <div class="box-title">About the Screen Examples in This Guide</div>
+    The screens shown in this guide were captured in a test environment. The display may differ from your own environment.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 目次                                                          -->
+<!-- ============================================================ -->
+<section class="toc">
+  <h1>Contents</h1>
+  <ul>
+    <li class="l1">1.&nbsp;Introduction</li>
+    <li class="l2">1.1&nbsp;Product Overview</li>
+    <li class="l2">1.2&nbsp;Structure of This Guide</li>
+
+    <li class="l1">2.&nbsp;Names of Parts</li>
+    <li class="l2">2.1&nbsp;The Whole Screen</li>
+    <li class="l2">2.2&nbsp;Toolbar Description</li>
+    <li class="l2">2.3&nbsp;Operator Information Area (OIA)</li>
+    <li class="l2">2.4&nbsp;Exclusive and Shared Input</li>
+
+    <li class="l1">3.&nbsp;Before You Begin</li>
+    <li class="l2">3.1&nbsp;Starting a Connection</li>
+    <li class="l2">3.2&nbsp;Signing On</li>
+
+    <li class="l1">4.&nbsp;Basic Operations</li>
+    <li class="l2">4.1&nbsp;Entering Text</li>
+    <li class="l2">4.2&nbsp;Function Keys</li>
+    <li class="l2">4.3&nbsp;Copy and Paste</li>
+    <li class="l2">4.4&nbsp;Mouse Operations</li>
+
+    <li class="l1">5.&nbsp;Useful Features</li>
+    <li class="l2">5.1&nbsp;AUTOTYP (Automatic Input)</li>
+    <li class="l2">5.2&nbsp;Automatic Execution After Connecting</li>
+    <li class="l2">5.3&nbsp;Recording Operations</li>
+    <li class="l2">5.4&nbsp;Display Switching</li>
+    <li class="l2">5.5&nbsp;Voice Input</li>
+    <li class="l2">5.6&nbsp;Online Help</li>
+
+    <li class="l1">6.&nbsp;Troubleshooting</li>
+    <li class="l2">6.1&nbsp;Cannot Connect</li>
+    <li class="l2">6.2&nbsp;The Screen Does Not Respond</li>
+    <li class="l2">6.3&nbsp;Other</li>
+
+    <li class="l1">7.&nbsp;Glossary</li>
+    <li class="l1">8.&nbsp;Keyboard Reference</li>
+  </ul>
+</section>
+
+<!-- 本文 (= 第1章〜最終章)。generate-manual.mjs が display 制御で本文だけを別 pass に切り出し、
+     フッターに第1章起点の論理ノンブルを付ける。 -->
+<div class="manual-body">
+<!-- ============================================================ -->
+<!-- 第 1 章 はじめに                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;1</div>
+  <div class="cc-title">Introduction</div>
+  <div class="cc-sub">Introduces the product overview and how to read this guide.</div>
+</section>
+
+<h1 class="chapter"><span class="num">1</span>Introduction</h1>
+
+<h2 class="section">1.1&nbsp;Product Overview</h2>
+
+<p class="lead">IBM&nbsp;5250&nbsp;MCP is development-support software for operating, in a web browser, 5250 terminal screens that run on IBM&nbsp;i (formerly AS/400, iSeries). It also works as a Model Context Protocol (MCP) server, supporting automated operation by generative AI agents (such as Claude).</p>
+
+<ol class="compact-list">
+  <li><strong>Operate in a web browser</strong> &nbsp;&nbsp;No dedicated client needs to be installed. You can operate 5250 screens from your own web browser.</li>
+  <li><strong>Japanese display support</strong> &nbsp;&nbsp;Correctly displays screens that mix DBCS (double-byte characters) and SBCS (single-byte characters).</li>
+  <li><strong>Automatic input feature</strong> &nbsp;&nbsp;You can save a frequently performed sequence of operations as an "AUTOTYP script" and reproduce it with a single click.</li>
+  <li><strong>MCP server support</strong> &nbsp;&nbsp;Generative AI agents can invoke and automatically operate 5250 screens. This is useful for test automation and for embedding into operational batch processing.</li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">Supported IBM&nbsp;i Versions</div>
+  This product implements the TN5250E protocol (compliant with RFC 4777 / RFC 1205). You can use it without any special configuration on a typical IBM&nbsp;i 7.x system.
+</div>
+
+<h2 class="section">1.2&nbsp;Structure of This Guide</h2>
+
+<table>
+  <tr><th style="width:30mm">Chapter</th><th>Main Content</th></tr>
+  <tr><td>Chapter&nbsp;1</td><td>Introduces the product overview and the structure of this guide.</td></tr>
+  <tr><td>Chapter&nbsp;2</td><td>Explains the names and roles of the parts of the screen.</td></tr>
+  <tr><td>Chapter&nbsp;3</td><td>Explains the procedure for starting a connection and signing on.</td></tr>
+  <tr><td>Chapter&nbsp;4</td><td>Explains basic operations such as entering text, function keys, and copy and paste.</td></tr>
+  <tr><td>Chapter&nbsp;5</td><td>Explains useful features such as AUTOTYP, operation recording, and display switching.</td></tr>
+  <tr><td>Chapter&nbsp;6</td><td>Guides you through what to check when something is not working correctly.</td></tr>
+  <tr><td>Chapter&nbsp;7</td><td>Explains the technical terms used in this guide.</td></tr>
+  <tr><td>Chapter&nbsp;8</td><td>A list of keyboard shortcuts.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">For Administrators</div>
+  For administrator-oriented content such as creating connection configurations, developing AUTOTYP scripts, and handling print spools, please refer to the separate "IBM&nbsp;5250&nbsp;MCP Administrator Guide".
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 2 章 各部の名称                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;2</div>
+  <div class="cc-title">Names of Parts</div>
+  <div class="cc-sub">Explains the names and roles of the parts of the screen.</div>
+</section>
+
+<h1 class="chapter"><span class="num">2</span>Names of Parts</h1>
+
+<h2 class="section">2.1&nbsp;The Whole Screen</h2>
+
+<p>The screen of this product consists of the following three areas. Check the numbers ①–③ and their corresponding positions on the screen.</p>
+
+<div class="callout-wrap">
+  <div class="callout-img">
+    <img src="screenshots-en/01-signon.png" alt="The whole screen">
+    <span class="callout" style="top:-4mm; left:50%; transform:translateX(-50%);">1</span>
+    <span class="callout" style="top:45%; left:-4mm;">2</span>
+    <span class="callout" style="top:83%; right:-4mm;">3</span>
+  </div>
+</div>
+
+<ol class="callout-legend">
+  <li><span class="name">Toolbar</span>There are two toolbar rows, upper and lower. The first row contains connection management, configuration editing, and saving settings; the second row contains the display font and size settings. Buttons for the input target (KBD ON/OFF) and display switching are also included in this area. Function keys and AUTOTYP operation buttons are also placed around the screen.</li>
+  <li><span class="name">5250 Screen</span>Displays the screen sent from IBM&nbsp;i. The "input fields" for entering text are also shown here.</li>
+  <li><span class="name">Operator Information Area (OIA)</span>Displays the keyboard input state, cursor position, communication state, and so on. For details, see section 2.3.</li>
+</ol>
+
+<h2 class="section">2.2&nbsp;Toolbar Description</h2>
+
+<figure class="wide">
+  <img src="screenshots-en/07-toolbar.png" alt="Toolbar">
+  <figcaption>Figure 2.2-1 &nbsp;Upper Toolbar</figcaption>
+</figure>
+
+<p>Each button is described below (the left column shows the actual button appearance).</p>
+
+<table class="compact">
+  <tr><th style="width:40mm">Button</th><th>Description</th></tr>
+  <tr><td colspan="2"><strong>First Row — Connection / Configuration</strong></td></tr>
+  <tr><td><img src="screenshots-en/btn/connectToggle.png" alt="Disconnect / Connect" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Disconnect / Connect</strong>. Disconnects the current session. While disconnected, the button changes to Connect. When connecting, the connection begins in the current window; no new window is opened.</td></tr>
+  <tr><td><img src="screenshots-en/btn/newWindowBtn.png" alt="New" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>New</strong>. Opens a new, unconnected window. Use this when you want to use multiple 5250 sessions at the same time.</td></tr>
+  <tr><td><img src="screenshots-en/btn/duplicateBtn.png" alt="Duplicate" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Duplicate</strong>. Opens a new window using the same connection configuration as the current session (the connection is also made immediately). When not connected, this behaves the same as "New" and opens an unconnected window.</td></tr>
+  <tr><td><img src="screenshots-en/btn/openSettings.png" alt="Manage" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Manage</strong>. Displays a dialog for adding, editing, and deleting connection destination configurations. The default display font and size can also be specified for each configuration.</td></tr>
+  <tr><td><img src="screenshots-en/btn/fontSaveBtn.png" alt="Save" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Save</strong>. Saves the current display font, size, bold, italic, and other settings to the connected configuration. The next time you connect with the same configuration, those settings are restored.</td></tr>
+  <tr><td><img src="screenshots-en/btn/kbdToggle.png" alt="Keyboard input target" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Keyboard input target</strong>. Switches the keyboard input target between the 5250 screen (on) and toolbar operations (off). You can also switch with <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span>.</td></tr>
+  <tr><td><img src="screenshots-en/btn/langToggle.png" alt="Language" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Language</strong>. Switches the display language of the viewer UI (Japanese / English). Switching it also changes the default font and default host code page used when creating a new connection configuration (Japanese: MS Gothic / cp1399, English: Consolas / cp037). Already-saved configurations are not affected.</td></tr>
+  <tr><td><img src="screenshots-en/btn/openWheelSettings.png" alt="Wheel settings" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Wheel settings</strong>. Opens a settings dialog for screen scrolling with the mouse wheel.</td></tr>
+  <tr><td><img src="screenshots-en/btn/toggleInputHighlight.png" alt="Input highlight" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Input highlight</strong>. Toggles the yellow highlighting of input fields (on / off).</td></tr>
+  <tr><td><img src="screenshots-en/btn/csToggle.png" alt="Column separator" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Column separator</strong>. Switches the column separator display between "lines" and "dots".</td></tr>
+  <tr><td><img src="screenshots-en/btn/sbcsToggle.png" alt="SBCS code page" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>A / ｱ</strong>. Switches the SBCS code page (DBCS sessions only). A&nbsp;=&nbsp;lowercase Latin (cp1027), ｱ&nbsp;=&nbsp;Katakana (cp290)</td></tr>
+  <tr><td><img src="screenshots-en/btn/shiftToggle.png" alt="Shift character display" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>{ } / · ·</strong>. Shows or hides shift characters (SO/SI) (DBCS sessions only).</td></tr>
+  <tr><td colspan="2"><strong>Second Row — Display Font</strong></td></tr>
+  <tr><td><strong>Font selection</strong></td><td>Selects the display font for the 5250 screen. At the top of the list are monospace fonts (recommended), and below them all the fonts installed on the OS are listed. In Japanese (DBCS) sessions, a Japanese font that can correctly display kanji is selected by default.</td></tr>
+  <tr><td><strong>−</strong> / <strong>Size</strong> / <strong>+</strong></td><td>Changes the font size. In automatic mode, the size currently in use is shown (cannot be changed); in fixed mode, you can enter a value directly. <strong>−</strong> / <strong>+</strong> increase or decrease by 1 px at a time.</td></tr>
+  <tr><td><img src="screenshots-en/btn/fontSizeFixedToggle.png" alt="Auto / Fixed" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Auto / Fixed</strong>. Switches the size adjustment method. <strong>Auto</strong> automatically adjusts the size to fit the 5250 screen within the window. <strong>Fixed</strong> locks the size to the specified value and adjusts the window size so that the 5250 screen fits exactly.</td></tr>
+  <tr><td><img src="screenshots-en/btn/fontBoldToggle.png" alt="Bold" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Bold (B)</strong>. Toggles bold display on / off.</td></tr>
+  <tr><td><img src="screenshots-en/btn/fontItalicToggle.png" alt="Italic" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Italic (I)</strong>. Toggles italic display on / off.</td></tr>
+  <tr><td><img src="screenshots-en/btn/windowModeToggle.png" alt="Window mode toggle" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Window mode toggle</strong>. Switches the viewer window between an "app window" (a dedicated window without an address bar) and a normal browser window. The button shows the icon of the mode it will switch to (🌐&nbsp;=&nbsp;to a normal window / 🖥&nbsp;=&nbsp;to an app window). Clicking it closes the current window, reopens it in the other mode, and also changes the default for the next startup.</td></tr>
+  <tr><td><img src="screenshots-en/btn/micToggle.png" alt="Microphone (voice input)" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Microphone</strong>. Click to start voice input; it stops automatically when you finish speaking (click again while recording to stop midway). For details, see section 5.5.</td></tr>
+  <tr><td><img src="screenshots-en/btn/exclusiveToggle.png" alt="Exclusive / Shared" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Exclusive / Shared</strong>. Switches the input mode. <strong>Exclusive</strong> (the default at startup) means that even if the same connection is opened in another browser or PC, only the one person holding exclusive control can enter input. With <strong>Shared</strong>, everyone can enter input, and multiple people can operate at the same time. While someone holds exclusive control, other browsers cannot switch to exclusive (the button appears disabled). For details, see section 2.4.</td></tr>
+  <tr><td><img src="screenshots-en/btn/toolbarToggle.png" alt="Hide all toolbars" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Hide all toolbars</strong>. Hides all toolbars (the two upper toolbar rows, the notification area, and the function key toolbar) and displays only the 5250 screen (the OIA remains). This is a <strong>hide-only</strong> button. To show them again, click the gray area outside the 5250 screen (because the button itself also disappears while hidden). When hidden, the keyboard input target switches to the 5250 screen (Keyboard on), and the 5250 screen font size is readjusted to fit the freed-up area. You can specify the initial state per connection configuration ("Toolbar initially hidden" in the Manage dialog), and it is applied when connecting.</td></tr>
+  <tr><td><img src="screenshots-en/btn/helpBtn.png" alt="Help" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Help (ℹ)</strong>. Opens the help in a normal browser window. It shows the product version and build date, the End-User License Agreement (EULA), third-party notices, this User Guide, and the Admin Guide. For details, see section 5.6.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">About the Default Values of the Display Switching Buttons</div>
+  For the four display switches "Input highlight", "Column separator", "A / ｱ", and "{ } / · ·", the default values are saved as a single set for the entire viewer (= not per connection configuration). Once set, they are retained even after reloading the browser.
+</div>
+
+<h2 class="section">2.3&nbsp;Operator Information Area (OIA)</h2>
+
+<p>The status line at the bottom edge of the 5250 screen (the Operator Information Area, abbreviated as <strong>OIA</strong>) displays the current keyboard state and communication state.</p>
+
+<figure class="small">
+  <img src="screenshots-en/09-oia.png" alt="OIA close-up">
+  <figcaption>Figure 2.3-1 &nbsp;Close-up of the Operator Information Area (OIA)</figcaption>
+</figure>
+
+<table class="compact">
+  <tr><th style="width:36mm">Display</th><th>Meaning</th></tr>
+  <tr><td><strong>MA*</strong> (column 1)</td><td>Indicates that you are connected to IBM&nbsp;i.</td></tr>
+  <tr><td><strong>X&nbsp;II</strong> (column 9)</td><td>The keyboard is temporarily locked. This product is processing the previous operation (such as printing). You can release it with the <span class="key">RESET</span>&nbsp;key.</td></tr>
+  <tr><td><strong>X&nbsp;SYSTEM</strong> (column 9)</td><td>Waiting for a response from the server. Please wait a moment.</td></tr>
+  <tr><td><strong>COMM659</strong> (column 19)</td><td>Communication has been disconnected. Please reconnect. It disappears automatically when communication is restored.</td></tr>
+  <tr><td><strong>Alphanumeric</strong> / <strong>Kana</strong> (column 26)</td><td>Indicates the current input mode (DBCS sessions only).</td></tr>
+  <tr><td><strong>A</strong> (column 43)</td><td>Indicates that Caps Lock is on.</td></tr>
+  <tr><td><strong>^</strong> (column 52)</td><td>Indicates insert mode. It appears whenever insert mode is on.</td></tr>
+  <tr><td><strong>18/007</strong> (column 75)</td><td>Indicates the current cursor position (row 18 / column 7). It is shown as a combination of a 2-digit row and a 3-digit column.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Cursor Display in Insert Mode</div>
+  In insert mode, the cursor changes from a "tall block (overwrite mode)" to a "lower-half block (insert mode)". Pressing the <span class="key">Insert</span> key toggles it (on / off), and the <span class="key">RESET</span> key also returns it to overwrite mode (this is not a toggle; it only releases insert mode).<br>
+  In insert mode, "<strong>^</strong>" also appears at OIA column 52.
+</div>
+
+<h2 class="section">2.4&nbsp;Exclusive and Shared Input</h2>
+
+<p>You can open the same connection in multiple browsers or PCs at the same time. In this case, the "input mode" controls who can enter input. Switch with the 👤 / 👥 button on the toolbar (in either mode, everyone who has it open can view the screen).</p>
+
+<table class="compact">
+  <tr><th style="width:34mm">Mode</th><th>Description</th></tr>
+  <tr><td><strong>👤 Exclusive</strong><br>(default at startup)</td><td>Only the one person holding exclusive control can enter input. Even if the same connection is opened in another browser or PC, others cannot enter text, send keys, or move the cursor.</td></tr>
+  <tr><td><strong>👥 Shared</strong></td><td>Everyone who has the connection open can enter input. Use this when you want multiple people to operate at the same time. Input is processed in the order it arrives.</td></tr>
+</table>
+
+<div class="box note">
+  <p>While someone holds exclusive control, the 👤 button in other browsers appears disabled and cannot be switched to exclusive. When the person who held exclusive control switches to 👥 Shared or closes the connection, another browser becomes able to take exclusive control.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 3 章 ご使用の前に                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;3</div>
+  <div class="cc-title">Before You Begin</div>
+  <div class="cc-sub">Explains the procedure for starting a connection and signing on.</div>
+</section>
+
+<h1 class="chapter"><span class="num">3</span>Before You Begin</h1>
+
+<h2 class="section">3.1&nbsp;Starting a Connection</h2>
+
+<p>The procedure for starting a connection is as follows.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Open the product screen in your browser</div>
+    <p>Open the address provided in advance by your administrator (for example, <code>http://localhost:5250/</code>) in a web browser. If you started the product directly, an unconnected screen opens automatically.</p>
+    <div class="box note">
+      <div class="box-title">When using an AI agent (MCP)</div>
+      If you asked an AI agent such as Claude to connect, this step is not needed. When the connection completes, a window showing that session opens automatically (one connection = one window).
+    </div>
+  </li>
+  <li>
+    <div class="step-title">Select a connection configuration</div>
+    <p>From the "-- Select configuration --" drop-down at the top of the toolbar, select the connection destination you want to use. Selecting it starts the connection immediately.</p>
+    <div class="box note">
+      <div class="box-title">If the Connection Configuration Is Not in the List</div>
+      If the connection destination you want is not in the list, contact your administrator. Alternatively, you can add a new one from the "⚙&nbsp;Manage configurations" button (for details, see the "Administrator Guide").
+    </div>
+  </li>
+  <li>
+    <div class="step-title">The sign-on screen appears</div>
+    <p>When the connection succeeds, the IBM&nbsp;i sign-on screen appears.</p>
+    <figure>
+      <img src="screenshots-en/01-signon.png" alt="Sign-on screen">
+      <figcaption>Figure 3.1-1 &nbsp;Sign-on Screen</figcaption>
+    </figure>
+  </li>
+</ol>
+
+<h2 class="section">3.2&nbsp;Signing On</h2>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Enter your user name</div>
+    <p>Enter your user name (the value provided by your administrator) in the "User" field.</p>
+  </li>
+  <li>
+    <div class="step-title">Move to the password field</div>
+    <p>Press the <span class="key">Tab</span>&nbsp;key to move the cursor to the "Password" field.</p>
+  </li>
+  <li>
+    <div class="step-title">Enter your password and press the Enter key</div>
+    <p>After entering your password, press the <span class="key">Enter</span>&nbsp;key. When sign-on succeeds, the IBM&nbsp;i menu screen (or command entry screen) appears.</p>
+    <figure>
+      <img src="screenshots-en/03-main-menu.png" alt="Screen after sign-on">
+      <figcaption>Figure 3.2-1 &nbsp;Command Entry Screen After Sign-on</figcaption>
+    </figure>
+  </li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">When Sign-on Fails</div>
+  Confirm that the user name and password are correct. The account may also be disabled on the IBM&nbsp;i side. If you still cannot sign on after several attempts, contact your administrator.
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 4 章 基本操作                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;4</div>
+  <div class="cc-title">Basic Operations</div>
+  <div class="cc-sub">Explains entering text, function keys, copy and paste, and more.</div>
+</section>
+
+<h1 class="chapter"><span class="num">4</span>Basic Operations</h1>
+
+<h2 class="section">4.1&nbsp;Entering Text</h2>
+
+<p>You can enter text from the keyboard at the position where the cursor is blinking (= an input field).</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Select an input field</div>
+    <p>Click the position where you want to enter text with the mouse, or use the <span class="key">Tab</span>&nbsp;key to move to the next field. To move in the reverse direction, press <span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">Tab</span>.</p>
+  </li>
+  <li>
+    <div class="step-title">Enter text</div>
+    <p>Enter text from the keyboard. Japanese input (IME) can also be used.</p>
+  </li>
+  <li>
+    <div class="step-title">Press a confirm key</div>
+    <p>Pressing the <span class="key">Enter</span>&nbsp;key, or the appropriate <span class="key">F1</span>–<span class="key">F24</span> key, sends the entered content to IBM&nbsp;i.</p>
+  </li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">Keys Useful for Editing</div>
+  <ul class="compact-list" style="margin:0">
+    <li><strong>BackSpace</strong>: Moves the cursor one character to the left (the character is not deleted).</li>
+    <li><strong>Delete</strong>: Deletes the character at the cursor position and shifts the text to the right leftward.</li>
+    <li><strong>Insert</strong>: Switches between insert mode (= inserting characters in between) and overwrite mode. In insert mode, "<strong>^</strong>" appears at OIA column 52.</li>
+    <li><strong>End</strong>: Erases from the cursor position to the end of the line (Erase EOF).</li>
+  </ul>
+</div>
+
+<div class="box note">
+  <div class="box-title">About Japanese (DBCS) Input Fields</div>
+  <p style="margin:0 0 1.5mm 0">In a field for entering double-byte characters (kanji and kana), the mode automatically switches to "Kana" when the cursor enters (shown in the OIA). The characters that can be entered are determined by the type of field, and if you enter a character that does not match the type, a message appears at the bottom of the screen and the input is rejected.</p>
+  <ul class="compact-list" style="margin:0">
+    <li><strong>Double-byte-only field</strong>: If you enter alphanumeric characters, "DBCS is required as input." appears.</li>
+    <li><strong>Either-or field</strong>: If the first character entered is alphanumeric, that field becomes alphanumeric-only; if it is a double-byte character, it becomes double-byte-only (mixing is not allowed).</li>
+  </ul>
+</div>
+
+<h2 class="section">4.2&nbsp;Function Keys (F1–F24)</h2>
+
+<p>In 5250 applications, the F1–F24 function keys are used frequently. The common assignments are as follows.</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">Key</th><th>Function (common example)</th></tr>
+  <tr><td><span class="key">F1</span></td><td>Displays help.</td></tr>
+  <tr><td><span class="key">F3</span></td><td>Ends the current process.</td></tr>
+  <tr><td><span class="key">F4</span></td><td>Displays a list of choices (prompt).</td></tr>
+  <tr><td><span class="key">F5</span></td><td>Refreshes the screen to the latest state.</td></tr>
+  <tr><td><span class="key">F12</span></td><td>Cancels the process and returns to the previous screen.</td></tr>
+</table>
+
+<figure>
+  <img src="screenshots-en/04-wrkactjob.png" alt="WRKACTJOB screen">
+  <figcaption>Figure 4.2-1 &nbsp;Example of function key descriptions shown at the bottom of the screen</figcaption>
+</figure>
+
+<div class="box note">
+  <div class="box-title">How to Enter F13–F24</div>
+  <span class="key">F13</span>–<span class="key">F24</span> can also be entered with <span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">F1</span>–<span class="key">F12</span>. They can also be operated as on-screen buttons from the <strong>▼ More</strong> button at the bottom.
+</div>
+
+<h2 class="section">4.3&nbsp;Copy and Paste</h2>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Select a range</div>
+    <p>Dragging the mouse highlights the range you want to copy in yellow (just drag&mdash;you do not need to hold <span class="key">Ctrl</span> or <span class="key">Shift</span>).</p>
+    <p>You can also select with the keyboard. Hold <span class="key">Shift</span> and move the cursor with the arrow keys (<span class="key">↑</span>&nbsp;<span class="key">↓</span>&nbsp;<span class="key">←</span>&nbsp;<span class="key">→</span>) to highlight the range you pass over.</p>
+  </li>
+  <li>
+    <div class="step-title">Copy</div>
+    <p>Pressing <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">C</span> copies the selected range to the clipboard.</p>
+  </li>
+  <li>
+    <div class="step-title">Paste</div>
+    <p>Place the cursor in an input field and press <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">V</span>. Multi-line text with line breaks is also pasted automatically according to the arrangement of the fields.</p>
+  </li>
+  <li>
+    <div class="step-title">Undo the paste (optional)</div>
+    <p>Pressing <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">Z</span> immediately after pasting restores the state before the paste. You can undo only immediately after pasting; you cannot undo after pressing another key.</p>
+  </li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">When the Paste Does Not Fit in the Field</div>
+  If the text being pasted exceeds the number of columns in the field, it is flowed into the input lines below, aligned to the column at the cursor position (block paste).
+</div>
+
+<div class="box caution">
+  <div class="box-title">Paste Caution</div>
+  When pasting a password from the clipboard into a password field, always clear the clipboard after pasting.
+</div>
+
+<h2 class="section">4.4&nbsp;Mouse Operations</h2>
+
+<p>When you click on the 5250 screen with the mouse, the cursor moves to that position. The following operations are also supported.</p>
+
+<table class="ref-table">
+  <tr><th>Operation</th><th>Behavior</th></tr>
+  <tr><td>Click a normal position</td><td>The cursor moves to that position (nothing is sent to the server).</td></tr>
+  <tr><td>Click a choice or push button</td><td>You can directly click on-screen choice buttons or push buttons (supporting the DDS MOUBTN keyword) to select or execute them.</td></tr>
+  <tr><td>Drag</td><td>Selects a range (for copying; see section 4.3).</td></tr>
+  <tr><td>Click the scroll bar arrows (▲ / ▼)</td><td>Scrolls one line at a time.</td></tr>
+  <tr><td>Click the scroll bar track (other than the arrows)</td><td>Scrolls one page at a time.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 5 章 便利な機能                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;5</div>
+  <div class="cc-title">Useful Features</div>
+  <div class="cc-sub">Introduces various features that streamline your daily work.</div>
+</section>
+
+<h1 class="chapter"><span class="num">5</span>Useful Features</h1>
+
+<h2 class="section">5.1&nbsp;AUTOTYP (Automatic Input)</h2>
+
+<p>AUTOTYP is a mechanism that automatically runs a frequently performed sequence of inputs all at once. For example, you can reproduce everything from "signing on to opening a menu" with a single click.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Select a script</div>
+    <p>From the "-- autotyp --" drop-down in the lower toolbar row, select the script you want to run.</p>
+  </li>
+  <li>
+    <div class="step-title">Run it</div>
+    <p>Clicking the ▶&nbsp;<strong>Run</strong> button runs the selected script on the current screen.</p>
+  </li>
+  <li>
+    <div class="step-title">Operate as needed</div>
+    <p>Choose one of the following three options during execution.
+    <ul class="compact-list" style="margin:1mm 0 0 0">
+      <li><strong>Just wait</strong>: Please wait for the script to finish.</li>
+      <li><strong>Pause</strong>: Click ⏸&nbsp;<strong>Pause</strong>. Clicking it again resumes from the same position.</li>
+      <li><strong>Stop</strong>: Click ⏹&nbsp;<strong>Stop</strong>. Execution is aborted. It cannot be resumed.</li>
+    </ul>
+    </p>
+  </li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">About Input While AUTOTYP Is Running</div>
+  While AUTOTYP is running, keyboard and mouse input to the 5250 screen is temporarily disabled. To enter input, first perform the "Pause" or "Stop" described above, and then operate.
+</div>
+
+<h2 class="section">5.2&nbsp;Automatic Execution After Connecting</h2>
+
+<p>If you set up a "post-connection automatic-execution AUTOTYP" for each connection configuration, simply connecting can automatically perform everything from signing on to displaying the menu. For how to set this up, see the "Administrator Guide".</p>
+
+<h2 class="section">5.3&nbsp;Recording Operations</h2>
+
+<p>You can automatically record keyboard and mouse operations as an AUTOTYP script.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Start recording</div>
+    <p>Click the ●&nbsp;<strong>Rec</strong> button. The button turns red to indicate that recording is in progress.</p>
+  </li>
+  <li>
+    <div class="step-title">Perform the operations to record</div>
+    <p>Perform the operations you want to save as AUTOTYP, such as key input, function keys, and pasting.</p>
+  </li>
+  <li>
+    <div class="step-title">Stop recording</div>
+    <p>Clicking the ●&nbsp;<strong>Rec</strong> button again stops recording and opens the edit dialog. Review the content, modify it as needed, and then save.</p>
+  </li>
+</ol>
+
+<h2 class="section">5.4&nbsp;Display Switching</h2>
+
+<p>You can change the screen display to your preference using the toolbar icons.</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">Icon</th><th>Function</th></tr>
+  <tr><td><strong>✦</strong></td><td>Highlights input fields in yellow. You can see at a glance where input is possible (on / off).</td></tr>
+  <tr><td><strong>⦀ / ┅</strong></td><td>Switches whether column separators are shown as vertical lines or as dotted lines.</td></tr>
+  <tr><td><strong>A / ｱ</strong></td><td>Switches the SBCS display characters toward lowercase Latin or toward Katakana (DBCS sessions only).</td></tr>
+  <tr><td><strong>{&nbsp;} / ·&nbsp;·</strong></td><td>Shows or hides shift characters (SO/SI) (DBCS sessions only).</td></tr>
+</table>
+
+<p>The above four display switches are saved as a single set of default values for the entire viewer (= not per connection configuration). The settings are retained even after reloading the browser.</p>
+
+<h2 class="section">5.5&nbsp;Voice Input</h2>
+
+<p>Using the microphone button on the toolbar, you can convert what you say into the microphone into text and send it as input to Claude. You can convey screen operations and instructions by voice, without using the keyboard.</p>
+
+<p>The speech recognition language follows the viewer's display language: it recognizes Japanese (ja-JP) when the display language is Japanese, and English (en-US) when it is English (switched with the language button).</p>
+
+<div class="box note">
+  <div class="box-title">Before Using Voice Input</div>
+  Voice input is available only when you use this viewer together with the <strong>Claude extension</strong> in <strong>Visual Studio Code</strong>. In addition, you need to <strong>add a hook</strong> to pass the voice to Claude. For the setup procedure, see the separate "Administrator Guide".
+</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Start voice input</div>
+    <p>Click the microphone button. The button changes state and the microphone becomes active (the first time, the browser asks for permission to use the microphone).</p>
+  </li>
+  <li>
+    <div class="step-title">Speak</div>
+    <p>Speak what you want to enter. What you say is converted into text.</p>
+  </li>
+  <li>
+    <div class="step-title">Sent to Claude</div>
+    <p>The converted text is sent as input to Claude. Voice input ends automatically when you finish speaking (to stop it midway, click the microphone button again).</p>
+  </li>
+</ol>
+
+<h2 class="section">5.6&nbsp;Online Help</h2>
+
+<p>Click the <strong>Help (ℹ)</strong> button on the second toolbar row to open the help in a normal browser window. The first page shows the following information.</p>
+
+<table class="compact">
+  <tr><th style="width:40mm">Item</th><th>Description</th></tr>
+  <tr><td><strong>Version</strong></td><td>The product version and build date. Please include them when contacting support.</td></tr>
+  <tr><td><strong>License</strong></td><td>Shows the End-User License Agreement (EULA) and the third-party notices for open-source software included in the product.</td></tr>
+  <tr><td><strong>Help</strong></td><td>Shows the User Guide (this document) and the Admin Guide.</td></tr>
+</table>
+
+<p>When you open a guide, the screen is divided into two panes.</p>
+
+<table class="compact">
+  <tr><th style="width:34mm">Pane</th><th>Description</th></tr>
+  <tr><td><strong>Left — contents and search</strong></td><td>Contains the document selector, the table of contents, and a search box. Clicking an entry in the table of contents scrolls the right pane to that heading. Typing two or more characters in the search box lists the matching places in the text; clicking one jumps to it and highlights the matched words.</td></tr>
+  <tr><td><strong>Right — document</strong></td><td>The body of the selected document, including images.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Help display language</div>
+  The help opens in the viewer's display language (the language toggle button): the Japanese guides when set to JA, and the English guides when set to US.
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 6 章 困ったときは                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;6</div>
+  <div class="cc-title">Troubleshooting</div>
+  <div class="cc-sub">Guides you through frequently asked questions and how to check them.</div>
+</section>
+
+<h1 class="chapter"><span class="num">6</span>Troubleshooting</h1>
+
+<h2 class="section">6.1&nbsp;Cannot Connect</h2>
+
+<table>
+  <tr><th style="width:55mm">Symptom</th><th>Please Check</th></tr>
+  <tr>
+    <td>The screen does not appear even after selecting a connection</td>
+    <td>
+      <ul class="compact-list" style="margin:0">
+        <li>Check with your administrator whether IBM&nbsp;i is running.</li>
+        <li>Check the state of the network (LAN cable, Wi-Fi, VPN).</li>
+        <li>Reload the browser (<span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">R</span>) and then try again.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>COMM659</strong> appears in the OIA</td>
+    <td>Communication has been disconnected. Click "🔌&nbsp;Connect" on the toolbar to reconnect. The display disappears automatically when communication is restored.</td>
+  </tr>
+</table>
+
+<figure class="small">
+  <img src="screenshots-en/08-disconnected-comm659.png" alt="COMM659 display when disconnected">
+  <figcaption>Figure 6.1-1 &nbsp;COMM659 display when disconnected</figcaption>
+</figure>
+
+<h2 class="section">6.2&nbsp;The Screen Does Not Respond</h2>
+
+<table>
+  <tr><th style="width:55mm">Symptom</th><th>Please Check</th></tr>
+  <tr>
+    <td>No response when pressing keys / <strong>X&nbsp;II</strong> appears in the OIA</td>
+    <td>This product is processing the previous operation (such as printing). Pressing the <span class="key">RESET</span>&nbsp;key releases it.</td>
+  </tr>
+  <tr>
+    <td><strong>X&nbsp;SYSTEM</strong> stays displayed in the OIA</td>
+    <td>The server is being awaited for a response. Normally just wait a moment. If no response returns for a long time, press <span class="key">SysReq</span> (System Request), type <strong>2</strong> on the displayed input line, and press <span class="key">Enter</span> to force-end the program or command running on the IBM&nbsp;i. If that still does not resolve it, consult your administrator.</td>
+  </tr>
+</table>
+
+<figure class="small">
+  <img src="screenshots-en/05-print-xii.png" alt="X II display">
+  <figcaption>Figure 6.2-1 &nbsp;Example of X II appearing right after the print key (printing in progress)</figcaption>
+</figure>
+
+<h2 class="section">6.3&nbsp;Other</h2>
+
+<table>
+  <tr><th style="width:55mm">Symptom</th><th>Please Check</th></tr>
+  <tr><td>The characters are too small to see</td><td>Use the <strong>+</strong> button in the second toolbar row to increase the font size. Setting it to "<strong>A<span style="font-size:0.72em">A</span>&nbsp;Auto</strong>" automatically adjusts the size to fit the window.</td></tr>
+  <tr><td>Keyboard input is not reflected on the 5250 screen</td><td>It is set to KBD&nbsp;OFF. Click the <strong>KBD&nbsp;OFF</strong> button or press <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span> to turn it back ON.</td></tr>
+  <tr><td>Cannot enter Japanese</td><td>Check that the IME is enabled. Check whether the OIA display is stuck on "Alphanumeric".</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 7 章 用語集                                                -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;7</div>
+  <div class="cc-title">Glossary</div>
+  <div class="cc-sub">Explains the technical terms used in this guide.</div>
+</section>
+
+<h1 class="chapter"><span class="num">7</span>Glossary</h1>
+
+<dl class="glossary">
+  <dt>IBM&nbsp;i</dt>
+  <dd>An operating system for core enterprise systems provided by IBM. It was formerly called AS/400 and iSeries.</dd>
+
+  <dt>5250</dt>
+  <dd>The name of the terminal protocol used for communication with IBM&nbsp;i. This product implements TN5250E (5250 over Telnet).</dd>
+
+  <dt>Sign-on</dt>
+  <dd>Refers to logging in to IBM&nbsp;i by entering a user name and password.</dd>
+
+  <dt>Function key</dt>
+  <dd>Keys such as <span class="key">F1</span>–<span class="key">F12</span> in the top row of the keyboard. In 5250 applications, <span class="key">F1</span>–<span class="key">F24</span> are used.</dd>
+
+  <dt>OIA (Operator Information Area)</dt>
+  <dd>An abbreviation for Operator Information Area. Refers to the status line displayed at the bottom edge of the screen, showing the keyboard state and so on.</dd>
+
+  <dt>X&nbsp;II / X&nbsp;SYSTEM</dt>
+  <dd>OIA displays indicating that the keyboard is locked. X&nbsp;II indicates that this product is performing processing, and X&nbsp;SYSTEM indicates that it is waiting for a response from the server.</dd>
+
+  <dt>COMM659</dt>
+  <dd>An OIA display indicating that communication has been disconnected. It disappears automatically when communication is restored.</dd>
+
+  <dt>Insert mode</dt>
+  <dd>A mode in which entered characters are inserted in between at the cursor position. Switch it with the <span class="key">Insert</span> key. In insert mode, "<strong>^</strong>" appears at OIA column 52.</dd>
+
+  <dt>AUTOTYP</dt>
+  <dd>This product's own mechanism for automatically running a previously recorded sequence of input operations.</dd>
+
+  <dt>MCP (Model Context Protocol)</dt>
+  <dd>A communication protocol for invoking external tools from generative AI agents such as Claude. This product works as an MCP server, allowing AI agents to automatically operate 5250 screens.</dd>
+
+  <dt>Connection configuration</dt>
+  <dd>A setting that bundles together the host name, port number, code page, and so on of a connection destination. You can switch between and use multiple connection destinations.</dd>
+
+  <dt>DBCS / SBCS</dt>
+  <dd>DBCS refers to double-byte characters (kanji, hiragana, katakana, etc.), and SBCS refers to single-byte characters (alphanumerics, half-width katakana, etc.).</dd>
+</dl>
+
+<!-- ============================================================ -->
+<!-- 第 8 章 キーボード一覧                                        -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;8</div>
+  <div class="cc-title">Keyboard Reference</div>
+  <div class="cc-sub">A list of the keyboard shortcuts available in this product.</div>
+</section>
+
+<h1 class="chapter"><span class="num">8</span>Keyboard Reference</h1>
+
+<h2 class="section">8.1&nbsp;Basic Operation Keys</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">Key</th><th>Function</th></tr>
+  <tr><td><span class="key">Enter</span></td><td>Sends the entered content.</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Moves to the next input field.</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">Tab</span></td><td>Moves to the previous input field.</td></tr>
+  <tr><td><span class="key">Home</span></td><td>Moves to the first input field.</td></tr>
+  <tr><td><span class="key">←</span> <span class="key">→</span> <span class="key">↑</span> <span class="key">↓</span></td><td>Moves the cursor up, down, left, and right.</td></tr>
+  <tr><td><span class="key">BackSpace</span></td><td>Moves the cursor one character to the left (does not delete the character).</td></tr>
+  <tr><td><span class="key">Delete</span></td><td>Deletes the character at the cursor position and shifts the text to the right leftward.</td></tr>
+  <tr><td><span class="key">Insert</span></td><td>Switches between insert mode and overwrite mode (on / off).</td></tr>
+  <tr><td><span class="key">End</span></td><td>Erases from the cursor position to the end of the line (Erase EOF).</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Used for closing dialogs, sending the ATTN key, and so on.</td></tr>
+</table>
+
+<h2 class="section">8.2&nbsp;Function Keys</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">Key</th><th>Function</th></tr>
+  <tr><td><span class="key">F1</span>–<span class="key">F12</span></td><td>Sent as F1–F12 as is.</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">F1</span>–<span class="key">F12</span></td><td>Sent as F13–F24.</td></tr>
+</table>
+
+<h2 class="section">8.3&nbsp;Clipboard Operations</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">Key</th><th>Function</th></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">C</span></td><td>Copies the selected range to the clipboard.</td></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">V</span></td><td>Pastes the contents of the clipboard.</td></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">Z</span></td><td>Pressing this immediately after pasting undoes the paste.</td></tr>
+  <tr><td>Mouse drag</td><td>Selects a range (no modifier key needed).</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;arrow keys</td><td>Moves the cursor to select a range (a selection method that does not use the mouse).</td></tr>
+</table>
+
+<h2 class="section">8.4&nbsp;Special Operations</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">Key</th><th>Function</th></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span></td><td>Switches the keyboard input target (KBD&nbsp;ON / OFF).</td></tr>
+  <tr><td>Left <span class="key">Ctrl</span>&nbsp;(alone)</td><td>Sends the RESET key.</td></tr>
+  <tr><td>Right <span class="key">Ctrl</span>&nbsp;(alone)</td><td>Sends Field Exit.</td></tr>
+</table>
+
+</div><!-- /.manual-body -->
+
+<!-- ============================================================ -->
+<!-- 裏表紙                                                        -->
+<!-- ============================================================ -->
+<section class="back-cover">
+  <div class="bc-inner">
+    <div class="bc-title">IBM&nbsp;5250&nbsp;MCP User Guide</div>
+    <div class="bc-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;Project</div>
+    <div class="bc-meta">
+      First&nbsp;Edition &nbsp;Published May&nbsp;2026<br>
+      For inquiries, contact your in-house systems staff
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
