@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>IBM 5250 MCP 管理ガイド</title>
+<link rel="stylesheet" href="manual.css">
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 表紙                                                          -->
+<!-- ============================================================ -->
+<section class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">ADMIN&nbsp;GUIDE</div>
+  <div class="cover-inner">
+    <div class="cover-product">開発支援用&nbsp;IBM&nbsp;i&nbsp;5250 端末エミュレーター<br>(MCP サーバー対応)</div>
+    <h1 class="cover-title">IBM&nbsp;5250&nbsp;MCP</h1>
+    <div class="cover-divider"></div>
+    <div class="cover-sub">管理ガイド</div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;プロジェクト</div>
+    <div class="cover-meta">
+      第&nbsp;1&nbsp;版<br>
+      2026&nbsp;年&nbsp;5&nbsp;月
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 安全表示 (= 管理者向け)                                       -->
+<!-- ============================================================ -->
+<section class="safety">
+  <h1>管理上のご注意</h1>
+
+  <table class="safety-table">
+    <tr>
+      <th>注意</th>
+      <td>本ガイドの内容は、本製品の構成・運用を変更する操作を含みます。誤った設定により利用者の業務が中断する可能性があるため、設定変更前にバックアップ (= config.json のコピー保管) を行ってください。</td>
+    </tr>
+    <tr>
+      <th>禁止</th>
+      <td>パスワードや認証情報を平文で社外と共有することは絶対に避けてください。本製品のパスワード環境変数 (pwd_env_var) 機能を活用してください。</td>
+    </tr>
+    <tr>
+      <th>お知らせ</th>
+      <td>本ガイドはユーザー・ガイドの内容を前提とします。あわせてご参照ください。</td>
+    </tr>
+  </table>
+
+  <div class="box note" style="margin-top:5mm">
+    <div class="box-title">本ガイドの対象読者</div>
+    本ガイドは、IBM&nbsp;5250&nbsp;MCP の接続構成、AUTOTYP スクリプト、ログ管理、印刷スプールの取り扱いなどを担当する管理者の方を対象としています。
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 目次                                                          -->
+<!-- ============================================================ -->
+<section class="toc">
+  <h1>目次</h1>
+  <ul>
+    <li class="l1">1.&nbsp;はじめに</li>
+    <li class="l2">1.1&nbsp;本ガイドの構成</li>
+    <li class="l2">1.2&nbsp;システム構成</li>
+    <li class="l2">1.3&nbsp;インストールと初期設定</li>
+    <li class="l2">1.4&nbsp;サーバーの起動と停止</li>
+    <li class="l2">1.5&nbsp;構成ファイル (config.json)</li>
+    <li class="l2">1.6&nbsp;音声入力の設定</li>
+
+    <li class="l1">2.&nbsp;接続構成の作成と編集</li>
+    <li class="l2">2.1&nbsp;設定項目の説明</li>
+    <li class="l2">2.2&nbsp;ワークステーション ID のルール</li>
+    <li class="l2">2.3&nbsp;^PWD パスワードの取得経路</li>
+
+    <li class="l1">3.&nbsp;既定値の設定</li>
+    <li class="l2">3.1&nbsp;ツールバー初期値</li>
+    <li class="l2">3.2&nbsp;接続後の自動実行</li>
+
+    <li class="l1">4.&nbsp;AUTOTYP スクリプト</li>
+    <li class="l2">4.1&nbsp;スクリプト文法</li>
+    <li class="l2">4.2&nbsp;操作記録機能</li>
+    <li class="l2">4.3&nbsp;HAScript からの変換</li>
+
+    <li class="l1">5.&nbsp;MCP ツール</li>
+    <li class="l1">6.&nbsp;ログと運用</li>
+    <li class="l1">7.&nbsp;付録</li>
+  </ul>
+</section>
+
+<!-- 本文 (= 第1章〜最終章)。generate-manual.mjs が display 制御で本文だけを別 pass に切り出し、
+     フッターに第1章起点の論理ノンブルを付ける。 -->
+<div class="manual-body">
+<!-- ============================================================ -->
+<!-- 第 1 章 はじめに                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;1&nbsp;章</div>
+  <div class="cc-title">はじめに</div>
+  <div class="cc-sub">本ガイドの構成、システム構成、インストール手順、サーバーの起動・終了方法、構成ファイルの概要を説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">1</span>はじめに</h1>
+
+<h2 class="section">1.1&nbsp;本ガイドの構成</h2>
+
+<table>
+  <tr><th style="width:30mm">章</th><th>主な内容</th></tr>
+  <tr><td>第&nbsp;2&nbsp;章</td><td>接続構成の追加・編集・削除と、各設定項目の意味を説明します。</td></tr>
+  <tr><td>第&nbsp;3&nbsp;章</td><td>ツールバー初期値や接続後の自動実行など、既定値の設定方法を説明します。</td></tr>
+  <tr><td>第&nbsp;4&nbsp;章</td><td>AUTOTYP スクリプトの書き方と記録機能の使い方を説明します。</td></tr>
+  <tr><td>第&nbsp;5&nbsp;章</td><td>生成 AI エージェント (Claude 等) から呼出可能な MCP ツールの一覧と、各ツールの引数・戻り値・例です。</td></tr>
+  <tr><td>第&nbsp;6&nbsp;章</td><td>ログの確認方法とトラブルシューティングを説明します。</td></tr>
+  <tr><td>第&nbsp;7&nbsp;章</td><td>付録 (ポート割当、config.json の仕様、用語集) です。</td></tr>
+</table>
+
+<h2 class="section">1.2&nbsp;システム構成</h2>
+
+<p>本製品は、生成 AI エージェント (Claude) ・ VSCode ・ Web ブラウザー ・ IBM&nbsp;i の 4 者をつなぐ MCP サーバー (= 単一実行ファイル <code>ibm5250-mcp-windows-x64.exe</code>) を中心に動作します。実行に Node.js のインストールは不要です (ランタイムを同梱)。各構成要素の関係は次のとおりです。</p>
+
+<figure class="large">
+  <img src="screenshots/system-architecture.png" alt="システム構成図" style="width:108mm; max-width:100%;">
+  <figcaption>図 1.2-1 &nbsp;システム構成 (Claude / VSCode / ブラウザー / IBM&nbsp;i の関係)</figcaption>
+</figure>
+
+<ul class="compact-list">
+  <li><strong>Claude (生成 AI)</strong> — 操作を判断し、MCP ツールを呼出します。ブラウザーの画面を直接操作するのではなく、ツール経由で MCP サーバーに指示します。</li>
+  <li><strong>VSCode (Claude Code 拡張 = MCP クライアント)</strong> — 会話を保持し、MCP 設定の定義に従って MCP サーバー (exe) を <strong>stdio で自動起動</strong>し、JSON-RPC で通信します。</li>
+  <li><strong>Web ブラウザー</strong> — MCP サーバーが提供するビューアー HTTP サーバーに接続し、5250 画面をリアルタイム表示 (SSE) ・人手で操作します。Claude の操作とブラウザーの操作は同じ画面に反映されます。</li>
+  <li><strong>MCP サーバー (<code>ibm5250-mcp-windows-x64.exe</code>)</strong> — 上記すべての中心。IBM&nbsp;i へ TN5250E で接続し、画面バッファを保持して MCP ツールとビューアーの双方へ提供します。</li>
+</ul>
+
+<p><strong>主なファイルの配置</strong> (= exe を置いたディレクトリー直下、例 <code>C:\ibm5250-mcp\</code>):</p>
+
+<figure>
+<pre class="diagram"><code>ibm5250-mcp/
+├─ ibm5250-mcp-windows-x64.exe   ← MCP サーバー本体 (単一実行ファイル)
+├─ config.json                   ← 接続構成・ビューアー初期値 (1.5 節)
+├─ docs/manuals/                 ← 本マニュアル (PDF)
+└─ log/                          ← セッションログ (接続時 log=true 指定時に出力)</code></pre>
+<figcaption>図 1.2-2 &nbsp;主なファイルの配置</figcaption>
+</figure>
+
+<div class="box note">
+  <div class="box-title">起動・終了の概要</div>
+  通常運用では VSCode (Claude Code) が MCP サーバー (exe) を自動起動・終了します。具体的な起動・停止の操作は 1.4 節を参照してください。サーバーは exe を置いたフォルダーを基準に <code>config.json</code>・ログを読み書きします。
+</div>
+
+<h2 class="section">1.3&nbsp;インストールと初期設定</h2>
+
+<p>本製品の導入は、実行ファイルの配置 → MCP クライアントへの登録 → 接続構成の作成 の手順で行います。ソースの取得やビルドは不要です。</p>
+
+<h3 class="subsection">1.3.1&nbsp;前提条件</h3>
+
+<table class="compact">
+  <tr><th style="width:48mm">項目</th><th>必要バージョン / 備考</th></tr>
+  <tr><td>OS</td><td>Windows (x64)。10 / 11 で動作確認済</td></tr>
+  <tr><td>MCP クライアント</td><td>Claude Code (VSCode 拡張) 等、stdio で MCP サーバーを起動できるもの</td></tr>
+  <tr><td>IBM&nbsp;i</td><td>TN5250E (Telnet) ポート (= 既定 23) で接続可能なこと</td></tr>
+  <tr><td>Web ブラウザー</td><td>画面ビューアー閲覧用 (任意)</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Node.js のインストールは不要</div>
+  本製品は実行ランタイムを同梱した単一実行ファイルとして配布されます。Node.js・npm のインストールやソースのビルドは不要です。
+</div>
+
+<h3 class="subsection">1.3.2&nbsp;実行ファイルの配置</h3>
+
+<p>配布元の Releases から <code>ibm5250-mcp-windows-x64.exe</code> を入手し、任意のフォルダー (例: <code>C:\ibm5250-mcp\</code>) に配置します。同じフォルダーに <code>config.json</code> (1.5 節) を置いてください。サーバーは exe を置いたフォルダーを基準に構成・ログを読み書きするため、MCP クライアント側で作業ディレクトリーを指定する必要はありません。</p>
+
+<h3 class="subsection">1.3.3&nbsp;MCP クライアントへの登録</h3>
+
+<p>本製品を MCP サーバーとして利用するためには、Claude Code 等の MCP クライアントの構成ファイルに本製品を登録します。</p>
+
+<p>Claude Code の場合、プロジェクト・ディレクトリーの <code>.mcp.json</code>、またはユーザー共通の MCP 設定ファイルに以下の項目を追加します。</p>
+
+<pre><code>{
+  "mcpServers": {
+    "ibm5250": {
+      "command": "C:\\ibm5250-mcp\\ibm5250-mcp-windows-x64.exe",
+      "env": {}
+    }
+  }
+}</code></pre>
+
+<table class="compact">
+  <tr><th style="width:32mm">キー</th><th>説明</th></tr>
+  <tr><td><code>command</code></td><td>配置した <code>ibm5250-mcp-windows-x64.exe</code> への絶対パスを指定します。</td></tr>
+  <tr><td><code>env</code></td><td>必要に応じて環境変数 (= パスワード環境変数等) を指定します。</td></tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">設定反映のために</div>
+  <code>.mcp.json</code> の編集後は MCP クライアント (= Claude Code 等) を再起動して設定を反映してください。
+</div>
+
+<h3 class="subsection">1.3.4&nbsp;初期構成の作成</h3>
+
+<p>初回利用時は <code>config.json</code> が存在しないか、空の状態です。以下のいずれかの方法で接続構成を作成してください。</p>
+
+<ol class="compact-list">
+  <li><strong>ビューアー画面の「⚙&nbsp;構成の管理」ダイアログから新規追加</strong> &nbsp;&nbsp;Web ブラウザーで <code>http://localhost:5250/</code> を開き、「⚙&nbsp;構成の管理」 → 「+ 新規追加」で項目を入力します (詳しくは第 2 章)。</li>
+  <li><strong>MCP ツール <code>save_connection_preset</code> から登録</strong> &nbsp;&nbsp;AI エージェントから本ツールを呼出して接続構成を一括登録できます (詳しくは第 5 章)。</li>
+  <li><strong><code>config.json</code> を直接編集</strong> &nbsp;&nbsp;1.5 節の書式に従って手動で記述します (JSON 構文に注意)。</li>
+</ol>
+
+<h2 class="section">1.4&nbsp;サーバーの起動と停止</h2>
+
+<p>本製品は MCP クライアントから起動されるのが基本動作です。クライアント側で「IBM&nbsp;i 接続ツール」が呼出されると、MCP サーバー・プロセスが自動的に立ち上がります (図 1.2-1 の stdio 経路)。</p>
+
+<p><strong>起動の流れ</strong></p>
+<ol class="compact-list">
+  <li>VSCode で Claude Code を開きます (= <code>.mcp.json</code> に本製品が登録済みであること、1.3.3 節)。</li>
+  <li>Claude が最初の MCP ツール (= <code>connect_5250</code> 等) を呼出すと、拡張が <code>ibm5250-mcp-windows-x64.exe</code> を stdio で自動起動します。</li>
+  <li>同時にビューアー HTTP サーバー (= 既定ポート 5250) が開始されます。ブラウザーで <code>http://localhost:5250/</code> を開くと 5250 画面が表示されます。</li>
+</ol>
+
+<p><strong>終了の流れ</strong></p>
+<table class="compact">
+  <tr><th style="width:52mm">操作</th><th>方法と効果</th></tr>
+  <tr><td>5250 セッションのみ切断</td><td>MCP ツール <code>disconnect_5250</code> を呼出します。IBM&nbsp;i との接続は切れますが、MCP サーバー・プロセスとビューアー HTTP サーバーは生存し、再接続が可能です。</td></tr>
+  <tr><td>サーバーごと終了 (通常)</td><td>VSCode (Claude Code) を終了すると、自動起動された MCP サーバー・プロセスも一緒に終了します。</td></tr>
+  <tr><td>強制終了 / 孤児プロセス整理</td><td>応答しない場合や孤児プロセスの整理は、タスク マネージャーで <code>ibm5250-mcp-windows-x64.exe</code> を終了するか、PowerShell で <code>taskkill /IM ibm5250-mcp-windows-x64.exe /F</code> を実行します。</td></tr>
+  <tr><td>手動起動 (検証用)</td><td>PowerShell で <code>.\ibm5250-mcp-windows-x64.exe</code> を直接実行すると、MCP クライアントを介さずに単独起動できます (stdio で待機)。終了は <kbd>Ctrl</kbd>+<kbd>C</kbd>。</td></tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">IBM&nbsp;i セッションは SIGNOFF してから切断</div>
+  対話型 5250 セッションを終了する際は、IBM&nbsp;i 側で <code>SIGNOFF</code> (またはメニューのサインオフ) を行ってから <code>disconnect_5250</code> してください。TCP 切断のみだと IBM&nbsp;i 側に対話ジョブ (QPADEVxxxx) が残り、サブシステム資源を消費したり再接続時に装置名が競合する場合があります。
+</div>
+
+<div class="box note">
+  <div class="box-title">ポートの自動フォールバック</div>
+  既定ポート 5250 が使用中の場合、ビューアー HTTP サーバーは 5251、5252、... と空きポートへ自動的にフォールバックします (詳しくは第 7 章 7.1 節)。
+</div>
+
+<h2 class="section">1.5&nbsp;構成ファイル (config.json)</h2>
+
+<p>本製品の構成は、プロジェクト・ディレクトリー直下の <code>config.json</code> ファイルに記録されます (= 1.3.4 節で作成済みのもの)。接続構成、ツールバー初期値、自動実行スクリプト、ビューアー HTTP ポートなどがこのファイルに集約されています。</p>
+
+<pre><code>{
+  "presets": {
+    "(接続構成名)": {
+      "host": "(IBM i のホスト名または IP)",
+      "port": 23,
+      "code_page": "cp5026_legacy",
+      "screen_size": "27x132",
+      "strpccmd_mode": "execute",
+      "pwd_env_var": "",
+      "autorun_autotyp": "",
+      "description": "(接続構成の説明)"
+    }
+  },
+  "viewer_defaults": {
+    "input_highlight": true,
+    "cs_style": "Line",
+    "sbcs_cp": "1027",
+    "shift_visible": true
+  }
+}</code></pre>
+
+<p><code>viewer_defaults</code> は接続構成の外側 (= トップレベル) に置きます。ビューアーの 4 つの表示切替 (入力フィールド強調 / 桁区切り / SBCS コード・ページ / シフト文字表示) の初期値で、ビューアー全体で 1 セット保存されます (= 接続構成ごとではありません)。詳しくは 3.1 節をご参照ください。</p>
+
+<div class="box caution">
+  <div class="box-title">編集時の注意</div>
+  config.json は JSON 形式です。カンマや引用符の付け忘れがあるとサーバーが起動しません。原則として「⚙ 構成の管理」ダイアログから編集することをお勧めします。
+</div>
+
+<h3 class="subsection">1.5.1&nbsp;ビューアーの自動表示と複数ウィンドウ (auto_open)</h3>
+
+<div class="box note">
+  <div class="box-title">要点 (先にお読みください)</div>
+  <ul>
+    <li>接続 (connect) のたびに<strong>専用ポート・専用ウィンドウ</strong>が開きます (= ACS「同じ構成で実行」と同じ操作感)。</li>
+    <li><strong>ウィンドウを閉じると約 5 秒後にそのセッションは自動的に切断され、逆にツール側で切断するとウィンドウも閉じます</strong> (双方向)。</li>
+    <li><code>auto_open</code> で独立ウィンドウが開くのは既定ブラウザが <strong>Chrome / Edge</strong> のときです。それ以外 (Firefox 等) が既定の場合は独立ウィンドウにならず<strong>新規タブ</strong>で開きます。</li>
+  </ul>
+</div>
+
+<p><code>config.json</code> の <code>viewer</code> セクションでビューアーの動作を設定します。</p>
+
+<pre><code>{
+  "viewer": {
+    "port_default": 5250,        // 起点ビューアーポート (最初のセッションから順に使用)
+    "port_auto_assign": true,    // 使用中なら +1 して空きポートを探す
+    "auto_open": "browser-app"   // "off" | "browser" | "browser-app" (既定: browser-app)
+  }
+}</code></pre>
+
+<p><strong>複数ウィンドウ / セッション:</strong> <code>connect_5250</code> のたびに 5250 を起点とした空きポート (5251, 5252, …) を割り当て、セッションごとに独立したウィンドウを開きます。切断やウィンドウのクローズでポートは解放され、5250 側から再利用されます (長時間の運用でも枯渇しません)。ポート 5250 は接続前の接続フォーム (launcher) として使われます。セッション ID は <code>(ホスト)-(telnet ポート)-mcp(ビューアーポート)</code> (例: <code>192.168.1.191-23-mcp5251</code>) の形式で自動生成され、明示指定はできません。</p>
+
+<p><strong>自動表示 (auto_open):</strong> <code>browser</code> / <code>browser-app</code> を指定すると、接続のたびにそのセッションのウィンドウをブラウザで自動的に開きます (<code>off</code> は開かず、URL を戻り値で返すのみ)。OS の既定ブラウザを直接起動するため追加のツールは不要です。この MCP を登録する側の環境変数 <code>SCREEN_VIEWER_AUTO_OPEN</code> が <code>config.json</code> より優先されます。既定ブラウザ別の動作は次のとおりです。</p>
+
+<p><strong>起動時の動作:</strong> ウィンドウが自動的に開くのは<strong>接続のとき</strong>だけです。本製品を直接起動した場合 (実行ファイルのダブルクリックやコマンドラインからの直接起動) のみ、例外として接続前の接続フォーム (launcher) を起動時に自動的に開きます。MCP クライアント (Claude 等) から起動された場合は、起動時には何も開きません (接続フォームが必要なときは MCP ツール <code>open_viewer</code> で開けます)。</p>
+
+<table>
+  <tr><th>auto_open</th><th>既定ブラウザ</th><th>起動方法</th><th>ウィンドウの形態</th></tr>
+  <tr><td><code>off</code></td><td>—</td><td>開かない</td><td>—</td></tr>
+  <tr><td><code>browser</code></td><td>Chrome</td><td>Chrome を新規ウィンドウで起動</td><td>独立した通常ウィンドウ (タブ・アドレスバー・メニューあり)</td></tr>
+  <tr><td><code>browser</code></td><td>Edge</td><td>Edge を新規ウィンドウで起動</td><td>同上</td></tr>
+  <tr><td><code>browser</code></td><td>その他 (Firefox 等) / 未検出</td><td>既定ブラウザ (OS 標準の関連付け)</td><td>新規タブ (独立ウィンドウにならない)</td></tr>
+  <tr><td><code>browser-app</code> (既定)</td><td>Chrome</td><td>Chrome をアプリ モードで起動</td><td>独立したクロームレス ウィンドウ (タブ・アドレスバー・メニューなし)</td></tr>
+  <tr><td><code>browser-app</code></td><td>Edge</td><td>Edge をアプリ モードで起動</td><td>同上</td></tr>
+  <tr><td><code>browser-app</code></td><td>その他</td><td>Chrome→Edge の導入済みの方をアプリ モードで起動</td><td>クロームレス ウィンドウ</td></tr>
+  <tr><td><code>browser-app</code></td><td>その他 + Chrome/Edge 未導入</td><td>既定ブラウザ (OS 標準の関連付け)</td><td>新規タブ (アプリ モード不可)</td></tr>
+</table>
+
+<p><strong>切断とウィンドウの連動 (双方向):</strong> ツールで <code>disconnect_5250</code> を実行するとそのセッションのウィンドウが閉じ、ポートが解放されます。逆に利用者がブラウザ ウィンドウを閉じると、約 5 秒後にセッションが自動的に切断されます (リロードや一時的な通信断は誤検知しません)。ACS では通常ウィンドウを閉じて終了しますが、本製品ではブラウザを閉じてもローカル ポートが残ってしまうため、この双方向の連動で ACS に近い操作感にしています。</p>
+
+<h3 class="subsection">1.5.2&nbsp;オンラインヘルプ (ℹ)</h3>
+
+<p>ビューアーのツールバー 2 段目の<strong>ヘルプ (ℹ)</strong> ボタン、または <code>http://localhost:(ポート)/help</code> で、オンラインヘルプが開きます (常に既定ブラウザの<strong>通常ウィンドウ</strong>で開きます)。最初のページに本製品のバージョンとビルド日時、使用許諾契約 (EULA)、サードパーティ表記、ユーザー・ガイド、管理ガイド (本書) へのリンクを表示します。</p>
+
+<table class="compact">
+  <tr><th style="width:44mm">項目</th><th>説明</th></tr>
+  <tr><td>ガイド本文の配信元</td><td><code>docs/manuals/</code> の HTML 版ガイドと画像 (配布物に同梱)。PDF 版と同一の内容です。</td></tr>
+  <tr><td>EULA / サードパーティ表記</td><td>配布ルートの <code>EULA.md</code> / <code>THIRD-PARTY-NOTICES.md</code> を整形して表示します。</td></tr>
+  <tr><td>ビルド日時</td><td>実行中のプログラム ファイルの更新日時です。障害調査の際、どの版が動作しているかの確認にお使いください。</td></tr>
+  <tr><td>表示言語</td><td>ビューアーの表示言語 (日本語 / 英語) に連動します (<code>?lang=ja</code> / <code>?lang=en</code>)。</td></tr>
+</table>
+
+<h2 class="section">1.6&nbsp;音声入力の設定</h2>
+
+<p>ビューアーのマイク ボタンによる音声入力 (ユーザー・ガイド 5.5 節) は、本ビューアーを <strong>Visual Studio Code</strong> 上の <strong>Claude 拡張機能 (Claude Code)</strong> と組み合わせて使う場合にのみ利用できます。音声で話した内容を Claude に渡すため、Claude 側の <strong>hook (フック)</strong> を追加する必要があります。</p>
+
+<p>仕組みは次のとおりです。ビューアーのマイク ボタンで取り込んだ音声は、MCP サーバーの <code>/api/voice</code> に送られ、<code>tmp/pending-voice.txt</code> に一時保存されます。下記の hook がこのファイルを読み取り、変換された文字 (transcript) を Claude への入力として注入します。</p>
+
+<p>音声認識の言語はビューアーの表示言語 (日本語 / 英語) に連動し、日本語なら ja-JP、英語なら en-US で認識します。</p>
+
+<p>Claude の設定ファイル (<code>.claude/settings.json</code>) の <code>hooks</code> に、次の登録を追加します。</p>
+
+<pre><code>{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "node scripts/voice-hook.cjs" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "node scripts/voice-hook.cjs" }] }
+    ]
+  }
+}</code></pre>
+
+<div class="box note">
+  <div class="box-title">補足</div>
+  <code>command</code> のパスは、お使いの環境での <code>voice-hook.cjs</code> の配置に合わせて指定してください。この hook を追加しない場合、マイク ボタンで取り込んだ音声は Claude に渡されません。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 2 章 接続構成                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;2&nbsp;章</div>
+  <div class="cc-title">接続構成の作成と編集</div>
+  <div class="cc-sub">接続構成を追加・編集・削除する手順を説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">2</span>接続構成の作成と編集</h1>
+
+<h2 class="section">2.1&nbsp;設定項目の説明</h2>
+
+<p>ツールバーの「⚙&nbsp;構成の管理」をクリックすると、構成編集ダイアログが表示されます。</p>
+
+<figure class="large">
+  <img src="screenshots/02-settings-modal.png" alt="構成編集ダイアログ">
+  <figcaption>図 2.1-1 &nbsp;構成編集ダイアログ</figcaption>
+</figure>
+
+<table class="compact">
+  <tr><th style="width:55mm">項目</th><th>説明</th></tr>
+  <tr><td>構成名</td><td>接続構成の一意な名前です。</td></tr>
+  <tr><td>IBM&nbsp;i ホスト名またはIPアドレス</td><td>接続先サーバーのホスト名または IP アドレスを指定します。</td></tr>
+  <tr><td>宛先ポート</td><td>TN5250E ポート。既定は 23 (Telnet) です。</td></tr>
+  <tr><td>ホスト・コード・ページ</td><td>cp5026_legacy (= 290 ホストカタカナ、IBM 提供の日本語 5250 エミュレーターの既定で日本語環境で最も一般的、英小文字は大文字に強制変換・未定義コードは ■ 表示)、cp5026_current (= 現代版 290 拡張ホストカタカナ)、cp1399 (= JIS2004 DBCS)、cp5035 (= ホストラテン)、cp037 (= 英数のみ) などから選択します。</td></tr>
+  <tr><td>画面サイズ</td><td>24x80 または 27x132 を選択します。</td></tr>
+  <tr><td>PC コマンド (STRPCCMD) の扱い</td><td>off (= 無視。silent で ack のみ返し画面抑制、セキュリティ用途) / log (= 検出してログ出力のみ、実行しない。監査用) / execute (= 実際に実行、wait flag 尊重)。<strong>既定は execute (= ACS と同等)</strong> です。いずれの mode でも PCO への ack は送信し、IBM&nbsp;i のハングを防ぎます。execute は任意の OS コマンドが実行されるため、信頼できるプログラムに対してのみ使用してください。</td></tr>
+  <tr><td>ワークステーション ID</td><td>RFC 4777 USERVAR DEVNAME に渡す装置名 (詳細は 2.2 節)。</td></tr>
+  <tr><td>パスワード環境変数 (headless)</td><td>環境変数名を指定するとヘッドレス運用でパスワード入力を省略できます (詳細は 2.3 節)。</td></tr>
+  <tr><td>接続後の自動実行 AUTOTYP</td><td>接続直後に自動実行する AUTOTYP スクリプト名を指定します。空欄の場合は自動実行しません (例: サインオンの自動化)。</td></tr>
+  <tr><td>ツールバー初期非表示</td><td>オンにすると、接続時にツールバーを隠して 5250 画面だけを表示します (🔧 ボタンと同じ状態)。再表示はグレイの余白をクリックします。</td></tr>
+  <tr><td>表示フォント</td><td>5250 画面の表示フォント・サイズ・サイズ固定・太字・斜体を指定します。日本語 (DBCS) セッションでは日本語フォントが既定です。サイズ固定をオンにすると、5250 画面が収まるようウィンドウの大きさが調整されます。</td></tr>
+  <tr><td>記述</td><td>構成内容を表す任意の説明文です (一覧画面で表示されます)。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">言語切替と新規構成の既定値</div>
+  新規構成を作成するときの「ホスト・コード・ページ」と「表示フォント」の初期選択値は、ツールバーの言語切替 (JP / EN ボタン) によるビューアー表示言語に連動します。日本語表示のときはコード・ページ = cp1399・フォント = ＭＳゴシック、英語表示のときはコード・ページ = cp037・フォント = Consolas が既定として選択されます。すでに保存済みの構成はそれぞれの保存値が使われ、言語切替の影響を受けません。
+</div>
+
+<h2 class="section">2.2&nbsp;ワークステーション ID のルール</h2>
+
+<p>ワークステーション ID (= 装置名) は ACS の「ワークステーション ID (5250 ディスプレイ/プリンター・セッション)」の命名ルールに準拠しています。</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">記号</th><th>意味</th></tr>
+  <tr><td><code>&amp;COMPN</code></td><td>コンピューター名 (環境変数 COMPUTERNAME) に展開されます。</td></tr>
+  <tr><td><code>&amp;USERN</code></td><td>サインオンしている Windows ユーザー名に展開されます。</td></tr>
+  <tr><td><code>*</code></td><td>A〜Z の連番 (構成ごとに状態を保持) に展開されます。複数セッションの識別に便利です。</td></tr>
+  <tr><td><code>%</code></td><td>固定文字 <code>S</code> に展開されます。</td></tr>
+  <tr><td><code>=</code></td><td>衝突回避のためのランダムな英数 1 文字に展開されます。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">使用例</div>
+  <code>PC&amp;COMPN*</code> と設定すると、コンピューター名が <code>WS001</code> なら 1 回目は <code>PCWS001A</code>、2 回目は <code>PCWS001B</code>、... となります。
+</div>
+
+<div class="box caution">
+  <div class="box-title">動作確認の範囲について</div>
+  本機能は <code>&amp;COMPN</code> + <code>*</code> 連番の組み合わせ等、代表的な構成での動作確認は行っていますが、すべての記号の組み合わせや特殊文字での網羅的なテストは未実施です。複雑な装置名規則をご利用の際は、運用前に小規模なテストでの動作確認をお願いいたします。
+</div>
+
+<h2 class="section">2.3&nbsp;^PWD パスワードの取得経路</h2>
+
+<p>AUTOTYP スクリプトの <code>^PWD</code> 行は、実行時にパスワードへ置き換えられます。パスワードは <strong>構成ファイルに保存されません</strong> (= セキュリティのため平文・暗号化いずれでも保存しません)。取得経路は実行環境によって次の 2 通りに自動で切り替わります。</p>
+
+<table class="compact">
+  <tr><th style="width:42mm">実行環境</th><th>パスワードの取得元</th></tr>
+  <tr><td>ビューアー接続中 (= ブラウザでセッションを開いている)</td><td><strong>パスワード入力ダイアログ</strong>を表示し、利用者がその場で入力します (= 主経路、60 秒でタイムアウト)。このとき「パスワード環境変数」は参照されません。</td></tr>
+  <tr><td>ヘッドレス (= ビューアー未接続、自動接続・バッチ運用等)</td><td>「パスワード環境変数」欄で指定した <strong>Windows 環境変数の値</strong>を使用します。</td></tr>
+</table>
+
+<p>ヘッドレス運用でパスワードを画面入力せずに自動接続したい場合は、Windows の環境変数にパスワードを格納し、その変数名を接続構成の「パスワード環境変数」欄に指定してください。</p>
+
+<div class="box note">
+  <div class="box-title">ヘッドレスで環境変数が無い場合</div>
+  ビューアー未接続かつ環境変数が未設定 (または空) のときは、入力ダイアログは表示されず、AUTOTYP はエラー (<code>PWD_ENV_MISSING</code> / <code>PWD_NO_SOURCE</code>) で停止します。ヘッドレスにはダイアログを表示するブラウザが無いためです。エラー時はビューアーを開いて対話入力するか、サーバー起動前に環境変数を設定してください。
+</div>
+
+<div class="box forbid">
+  <div class="box-title">運用上の禁止事項</div>
+  パスワード環境変数を業務 PC に常時設定したまま放置しないでください。離席時はターミナルを閉じる、ロックする等の管理を行ってください。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 3 章 既定値の設定                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;3&nbsp;章</div>
+  <div class="cc-title">既定値の設定</div>
+  <div class="cc-sub">ツールバー初期値と接続後の自動実行を設定します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">3</span>既定値の設定</h1>
+
+<h2 class="section">3.1&nbsp;ツールバー初期値</h2>
+
+<p>ビューアー全体で 1 セットの初期値として、ユーザー・ガイド 5.4 節で説明したツールバーの 4 つの表示切替を設定できます (= 接続構成ごとではありません)。<code>config.json</code> のトップレベルにある <code>viewer_defaults</code> ブロックに記録されます。</p>
+
+<table class="compact">
+  <tr><th style="width:55mm">項目</th><th>キー</th><th>選択肢</th></tr>
+  <tr><td>入力フィールド強調 (初期値)</td><td><code>input_highlight</code></td><td><code>true</code> (= ✦ オン) / <code>false</code> (= ✦ オフ)</td></tr>
+  <tr><td>桁区切り (初期値)</td><td><code>cs_style</code></td><td><code>"Line"</code> (= ⦀) / <code>"Dot"</code> (= ┅)</td></tr>
+  <tr><td>SBCS コード・ページ (初期値)</td><td><code>sbcs_cp</code></td><td><code>"1027"</code> (= A) / <code>"290"</code> (= ｱ) (DBCS 限定)</td></tr>
+  <tr><td>シフト文字表示 (初期値)</td><td><code>shift_visible</code></td><td><code>true</code> (= { } を表示) / <code>false</code> (= 非表示、何も表示しない) (DBCS 限定)</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">編集方法</div>
+  ビューアー上でツールバーのアイコンをクリックすると、現在の値が <code>viewer_defaults</code> に保存されます。<code>config.json</code> を直接編集することもできます (= サーバー起動時のみ反映)。
+</div>
+
+<h2 class="section">3.2&nbsp;接続後の自動実行</h2>
+
+<p>接続構成の「接続後の自動実行 AUTOTYP」欄に AUTOTYP スクリプト名 (例: <code>signon.autotyp</code>) を指定すると、接続成功直後にそのスクリプトが自動実行されます。</p>
+
+<ol class="compact-list">
+  <li>サインオン操作を自動化し、利用者にメニュー画面から作業を始めてもらう</li>
+  <li>運用バッチで、毎回同じ画面まで自動遷移させる</li>
+  <li>テスト・自動化で、ある特定の状態から開始させる</li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">自動実行の中断</div>
+  自動実行中に処理を止めたいときは、ツールバーの ⏹&nbsp;<strong>Stop</strong> で終了できます。失敗時もログに記録されますが、接続自体は成功扱いとなります。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 4 章 AUTOTYP                                               -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;4&nbsp;章</div>
+  <div class="cc-title">AUTOTYP スクリプト</div>
+  <div class="cc-sub">スクリプトの書き方と記録機能の使い方を説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">4</span>AUTOTYP スクリプト</h1>
+
+<h2 class="section">4.1&nbsp;スクリプト文法</h2>
+
+<p>AUTOTYP スクリプトはプレーン・テキスト形式で、<code>scripts/*.autotyp</code> に配置します。基本構造は次のとおりです。</p>
+
+<pre><code>^ATP
+← サインオンの自動実行
+USER01           ← 1 行目はカーソル位置に入力後、TAB
+^PWD             ← パスワードに置換 (ビューアー接続中は入力ダイアログ、ヘッドレスは環境変数)
+^ENTER
+^END</code></pre>
+
+<p><strong>構造マーカーとコメント</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">行頭の記号</th><th>意味</th></tr>
+  <tr><td><code>^ATP</code></td><td>スクリプト開始マーカー。1 行目に必ず記述します。</td></tr>
+  <tr><td><code>^END</code></td><td>スクリプト終了マーカー。</td></tr>
+  <tr><td><code>←</code></td><td>コメント記号 (本製品独自仕様)。<code>←</code> 以降の文字は実行時に無視されます。<code>^ATP</code> 直後の <code>←</code> 行はスクリプトの説明として扱われ、一覧で表示されます。</td></tr>
+  <tr><td><code>[<em>ラベル</em></code></td><td>ジャンプ先ラベルの定義。<code>^GO</code> / <code>^DSP</code> / <code>^INH</code> の飛び先になります。</td></tr>
+  <tr><td>その他のテキスト</td><td>カーソル位置にそのテキストを入力し、現在のフィールドにバッファリングします。</td></tr>
+  <tr><td><code>^PWD</code></td><td>パスワードに置換して入力します。ビューアー接続中は入力ダイアログを表示し、ヘッドレス時は「パスワード環境変数」の値を使用します (= 2.3 節)。</td></tr>
+</table>
+
+<p><strong>AID キー (画面遷移を伴う送信)</strong> — バッファ内の全フィールドを送信してから AID コードを送ります。</p>
+<table class="compact">
+  <tr><th style="width:48mm">コマンド</th><th>意味</th></tr>
+  <tr><td><code>^ENTER</code></td><td>実行キー。</td></tr>
+  <tr><td><code>^F1</code>〜<code>^F24</code> (= <code>^CMD01</code>〜<code>^CMD24</code>)</td><td>ファンクションキー F1〜F24。<code>^F3</code> と <code>^CMD03</code> は同義です。</td></tr>
+  <tr><td><code>^HELP</code></td><td>ヘルプ (HELP AID)。</td></tr>
+  <tr><td><code>^ROLLDN</code> / <code>^ROLLUP</code></td><td>ロールダウン (Page Up) / ロールアップ (Page Down)。</td></tr>
+  <tr><td><code>^PRINT</code></td><td>印刷キー。</td></tr>
+  <tr><td><code>^HOME</code></td><td>レコード後退 (Home)。</td></tr>
+  <tr><td><code>^ATTN</code> / <code>^SYSRQ</code> / <code>^RESET</code></td><td>アテンション / システム要求 / リセット。</td></tr>
+</table>
+
+<p><strong>フィールド移動・編集 (AID 送信なし)</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">コマンド</th><th>意味</th></tr>
+  <tr><td><code>^FLDEXIT</code> / <code>^FLDEXIT+</code> / <code>^FLDEXIT-</code></td><td>Field Exit。現在のフィールドを確定して次のフィールドへ移動します。数値フィールドでは符号を指定します — <code>^FLDEXIT</code> と <code>^FLDEXIT+</code> は正、<code>^FLDEXIT-</code> は負 (= 符号付き数値フィールドは末尾の符号位置に <code>-</code>、数値項目フィールドは最終桁のゾーンを負に設定)。数値以外のフィールドで <code>^FLDEXIT-</code> は無効です (= 警告ログのみで通常移動)。<code>-</code> は「前のフィールド」ではありません (前へ戻るのは <code>^BTAB</code>)。</td></tr>
+  <tr><td><code>^FTAB</code> / <code>^BTAB</code></td><td>タブ (次のフィールド) / バックタブ (前のフィールド)。</td></tr>
+  <tr><td><code>^ERASEEOF</code></td><td>現フィールドのカーソル位置以降を消去します。</td></tr>
+  <tr><td><code>^ERASEINPUT</code></td><td>変更済みの全入力フィールドをクリアし、カーソルを先頭の入力フィールドへ戻します。</td></tr>
+  <tr><td><code>^DUP</code></td><td>DUP 文字でカーソル位置から末尾まで埋め、次フィールドへ移動します。</td></tr>
+  <tr><td><code>^DEL</code> / <code>^INSERT</code></td><td>削除 / 挿入モード切替。</td></tr>
+  <tr><td><code>^CSRUP</code> / <code>^CSRDN</code> / <code>^CSRLFT</code> / <code>^CSRRGT</code></td><td>カーソルを上 / 下 / 左 / 右へ移動します。</td></tr>
+</table>
+
+<p><strong>制御・フロー</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">コマンド</th><th>意味</th></tr>
+  <tr><td><code>^WAITX <em>nn</em></code></td><td><em>nn</em> × 500 ミリ秒待機します (例: <code>^WAITX 4</code> = 2000ms)。</td></tr>
+  <tr><td><code>^DSP<em>xxyyy</em>文字列 [<em>ラベル</em></code></td><td>行 <em>xx</em> (2 桁) 列 <em>yyy</em> (3 桁) の画面文字列を照合し、一致すれば <em>ラベル</em> へジャンプします。</td></tr>
+  <tr><td><code>^GO [<em>ラベル</em></code></td><td>無条件で <em>ラベル</em> へジャンプします。</td></tr>
+  <tr><td><code>^INHON</code> / <code>^INHOFF</code></td><td>入力不可 (キーボードロック) 検出を有効化 / 無効化します (<strong>初期値: 無効</strong>)。<code>^INH</code> によるジャンプは <code>^INHON</code> を実行した後のみ動作します。</td></tr>
+  <tr><td><code>^INH [<em>ラベル</em></code></td><td><code>^INHON</code> 状態で入力不可なら <em>ラベル</em> へジャンプします。</td></tr>
+  <tr><td><code>^ERMON</code> / <code>^ERMOFF</code></td><td>エラーリセットモードを有効化 / 無効化します。</td></tr>
+  <tr><td><code>^CSRON</code> / <code>^CSROFF</code></td><td>カーソル制御モードを有効化 / 無効化します。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">エラーコード</div>
+  実行エラーは 0 (正常) 〜 25 のコードで返されます (例: 13 = スクリプト行数 / コマンド数の上限超過、14 = <code>^ATP</code> マーカー未検出、20 = ジャンプ先ラベル未定義、21/22 = <code>^DSP</code> の行 / 列番号不正)。全コードの一覧は <code>docs/feature-specs.md</code> の AUTOTYP 仕様を参照してください。
+</div>
+
+<div class="box note">
+  <div class="box-title">ファイル名について</div>
+  AUTOTYP スクリプト名 (拡張子は <code>.autotyp</code>) には、ASCII 英数字と一部の記号 (<code>-_.</code>) のご利用を推奨します。日本語ファイル名は OS 側では扱えますが、AUTOTYP コマンドライン引数や運用上の互換性のため、英数字での命名をお勧めします。
+</div>
+
+<h3 class="subsection">4.1.1&nbsp;入力不可 (キーボードロック) 時の命令の扱い</h3>
+
+<p>5250 では、ホストがキーボードをロックしている間 (= 入力禁止インジケーター点灯、いわゆる X SYSTEM 状態) は、操作の種類によって受け付けられるものと無視されるものが分かれます (5494 仕様 16.1.2 / 16.2.1 節)。AUTOTYP コマンドも同じ区別に従います。</p>
+
+<table class="compact">
+  <tr><th style="width:42mm">区分</th><th>該当コマンド</th><th>入力不可時の挙動</th></tr>
+  <tr><td>ロック中でも到達</td><td><code>^SYSRQ</code> / <code>^ATTN</code> / <code>^PRINT</code> / <code>^RESET</code></td><td>システム要求・アテンション・印刷 (取消) ・エラーリセットは、キーボードがロックされていてもホストに送られます (= ロック解除を要しない信号・特殊キー)。</td></tr>
+  <tr><td>ロック解除を待つ</td><td><code>^ENTER</code> / <code>^F1</code>〜<code>^F24</code> (<code>^CMDnn</code>) / データ入力行 / <code>^FLDEXIT</code> 系 / <code>^FTAB</code> / <code>^BTAB</code> / <code>^DUP</code> / <code>^ERASEEOF</code> 系</td><td>これらの AID キー・入力・編集は、ロック中は無効です。AUTOTYP は AID 送信前に最大 30 秒間ロック解除を待機します (<code>^PRINT</code> のみ待たずに送信)。タイムアウトするとエラーコード 24 で終了します。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">スクリプトでの入力不可ハンドリング</div>
+  入力不可が想定される画面では、<code>^INHON</code> + <code>^INH [ラベル</code> で分岐させるか、<code>^ERMON</code> で送信リトライを有効化してください。<code>^INHON</code> の初期値は無効のため、<code>^INH</code> を使う前に <code>^INHON</code> を実行する必要があります。
+</div>
+
+<h2 class="section">4.2&nbsp;操作記録機能</h2>
+
+<p>ツールバーの ●&nbsp;<strong>Rec</strong> ボタンで、画面操作をそのまま AUTOTYP スクリプトとして自動生成できます。</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">記録開始</div>
+    <p>●&nbsp;<strong>Rec</strong> をクリックします。ボタンが赤色に変わります。</p>
+  </li>
+  <li>
+    <div class="step-title">記録する操作を行います</div>
+    <p>キー入力、ファンクションキー、貼り付けなど、AUTOTYP として残したい操作を行います。</p>
+  </li>
+  <li>
+    <div class="step-title">記録停止と保存</div>
+    <p>もう一度 ●&nbsp;<strong>Rec</strong> をクリックすると、編集ダイアログが開きます。ファイル名を入力し、保存します。</p>
+  </li>
+</ol>
+
+<h2 class="section">4.3&nbsp;HAScript からの変換</h2>
+
+<p>IBM HOD (Host on-Demand) や HCL ZIE 用に作成された HAScript XML マクロ (.mac) は、本製品の MCP ツール <code>convert_macro</code> を使って AUTOTYP 形式へ変換できます。詳しくは第 5 章の MCP ツール一覧をご参照ください。</p>
+
+<!-- ============================================================ -->
+<!-- 第 5 章 MCP ツール                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;5&nbsp;章</div>
+  <div class="cc-title">MCP ツール</div>
+  <div class="cc-sub">生成 AI エージェントから呼出可能なツールの一覧です。</div>
+</section>
+
+<h1 class="chapter"><span class="num">5</span>MCP ツール</h1>
+
+<p class="lead">本製品は Model Context Protocol (MCP) サーバーとしても動作します。Claude などの生成 AI エージェントから、以下のツールを呼出して 5250 画面を操作できます。</p>
+
+<h2 class="section">5.1&nbsp;接続管理</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">ツール名</th><th>説明</th></tr>
+  <tr><td><code>connect_5250</code></td><td>IBM&nbsp;i に接続します。preset 名で接続構成を指定できます。</td></tr>
+  <tr><td><code>disconnect_5250</code></td><td>セッションを切断します。</td></tr>
+  <tr><td><code>list_sessions</code></td><td>現在のアクティブなセッション一覧を返します。</td></tr>
+  <tr><td><code>list_connection_presets</code></td><td>config.json に登録されている接続構成の一覧を返します。</td></tr>
+  <tr><td><code>save_connection_preset</code></td><td>接続構成を追加・更新します。</td></tr>
+  <tr><td><code>open_viewer</code></td><td>ビューアーをブラウザ ウィンドウで開きます。<code>session_id</code> 省略時は未接続の接続フォーム (launcher)、指定時はそのセッションのウィンドウの開き直しです (誤ってウィンドウを閉じた場合の復旧)。<code>mode</code> (browser / browser-app) 省略時は config.json の auto_open に従います。</td></tr>
+</table>
+
+<h2 class="section">5.2&nbsp;画面操作</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">ツール名</th><th>説明</th></tr>
+  <tr><td><code>get_screen</code></td><td>現在の画面を取得します。text 形式と json 形式 (構造化データ) が選択できます。</td></tr>
+  <tr><td><code>get_field_text</code></td><td>指定位置のフィールド値を取得します。</td></tr>
+  <tr><td><code>send_key</code></td><td>AID キーや編集キーを送信します。</td></tr>
+  <tr><td><code>send_text</code></td><td>指定位置にテキストを入力し、AID キーを送信します。</td></tr>
+  <tr><td><code>paste_text</code></td><td>複数行のテキストを貼り付けます (Tab・改行に応じてフィールド移動)。</td></tr>
+</table>
+
+<h2 class="section">5.3&nbsp;スクリプト / マクロ</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">ツール名</th><th>説明</th></tr>
+  <tr><td><code>run_autotyp</code></td><td>AUTOTYP スクリプト (テキストまたはファイル) を実行します。<code>step_delay</code> 引数で各 AID キー送信後の待機ミリ秒 (= 目視確認用のステップ実行) を指定できます。</td></tr>
+  <tr><td><code>list_autotyp_scripts</code></td><td>scripts/ 配下の AUTOTYP スクリプト一覧と説明を返します。</td></tr>
+  <tr><td><code>run_macro</code></td><td>HAScript XML マクロを実行します。</td></tr>
+  <tr><td><code>convert_macro</code></td><td>HAScript XML を AUTOTYP 形式に変換します。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">AUTOTYP の一時停止 / 終了</div>
+  実行中の AUTOTYP の一時停止 / 終了は、現状ビューアー画面のツールバー (⏸&nbsp;<strong>Pause</strong> / ⏹&nbsp;<strong>Stop</strong> ボタン) からのみ行えます。専用の MCP ツールは提供していません。
+</div>
+
+<h2 class="section">5.4&nbsp;ログ</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">ツール名</th><th>説明</th></tr>
+  <tr><td><code>get_session_log</code></td><td>セッションのログ (メモリー内 / ファイル) を取得します。</td></tr>
+</table>
+
+<h2 class="section">5.5&nbsp;主要ツールの引数・戻り値・例</h2>
+
+<p>代表的なツールについて、引数・主な戻り値・呼出例 (JSON) を示します。最初の <code>connect_5250</code> で得た <code>session_id</code> を以降の全ツールで指定します。座標 (<code>row</code> / <code>col</code>) は 1 始まりです。</p>
+
+<h3 class="subsection">connect_5250 — 接続</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>preset</code></td><td></td><td>config.json の接続構成名。host / port / code_page / screen_size 等を読込 (個別引数で上書き可)</td></tr>
+  <tr><td><code>host</code></td><td>△</td><td>ホスト名または IP アドレス (preset を使わない場合は必須)</td></tr>
+  <tr><td><code>port</code></td><td></td><td>ポート番号 (既定 23)</td></tr>
+  <tr><td><code>code_page</code></td><td></td><td>cp037 / cp500 / cp1148 / cp1399 / cp5035 / cp5026_current / cp5026_legacy</td></tr>
+  <tr><td><code>screen_size</code></td><td></td><td>24x80 (既定) / 27x132</td></tr>
+  <tr><td><code>session_id</code></td><td></td><td>セッション識別子 (省略時は自動生成)</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td></td><td>off (無視) / log (記録のみ) / execute (実行、既定)。PGM からの PC コマンド要求 (STRPCCMD) の扱い</td></tr>
+  <tr><td><code>allow_ds4</code></td><td></td><td>27x132 (DS4) 切替を許可するか (既定 true)。false で 24x80 固定</td></tr>
+  <tr><td><code>log</code></td><td></td><td>セッション・ログをファイルに保存するか (既定 false = メモリー内のみ)</td></tr>
+  <tr><td><code>log_file</code></td><td></td><td>ログ・ファイルのパス (省略時は log/ に自動生成、<code>log=true</code> 時のみ有効)</td></tr>
+  <tr><td><code>device_name</code></td><td></td><td>装置名 (RFC 4777 DEVNAME、英大文字+数字 最大 10。省略時は QPADEVnnnn 自動命名)</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>{ success, session_id, host, port, code_page, screen_size, terminal_type }</code></p>
+<pre><code>{ "preset": "&lt;接続構成名&gt;", "session_id": "s1" }</code></pre>
+
+<h3 class="subsection">get_screen — 画面取得</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>format</code></td><td></td><td><code>text</code> (既定、画面文字列) / <code>json</code> (構造化データ)</td></tr>
+</table>
+<p><strong>戻り値 (json)</strong>: <code>rows</code> / <code>cols</code> / <code>cursor {row, col}</code> / <code>text</code> / <code>fields[]</code> (各フィールドの <code>row</code> / <code>col</code> / <code>length</code> / <code>protected</code> / <code>numeric</code> / <code>modified</code> など) / <code>inputReady</code> (false = X&nbsp;II 入力ロック)。<code>text</code> 形式は画面文字列のみを返します。</p>
+<pre><code>{ "session_id": "s1", "format": "json" }</code></pre>
+
+<h3 class="subsection">send_key — キー送信</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>key</code></td><td>○</td><td>AID キー (<code>ENTER</code> / <code>F1</code>〜<code>F24</code> / <code>CLEAR</code> / <code>HELP</code> / <code>PRINT</code> / <code>PA1</code>〜<code>PA3</code> / <code>ROLLUP</code> / <code>ROLLDN</code> 等)、ナビキー (<code>TAB</code> / <code>BTAB</code> / <code>UP</code> / <code>DOWN</code> / <code>LEFT</code> / <code>RIGHT</code> / <code>HOME</code>)、編集キー (<code>ERASE_EOF</code> / <code>ERASE_INPUT</code> / <code>FIELD_EXIT</code> / <code>FIELD_EXIT_PLUS</code> / <code>FIELD_EXIT_MINUS</code> / <code>DEL</code> / <code>DUP</code> / <code>INSERT</code>)</td></tr>
+  <tr><td><code>data</code></td><td></td><td>キー送信前に入力するデータ (任意)</td></tr>
+</table>
+<pre><code>{ "session_id": "s1", "key": "F3" }</code></pre>
+
+<h3 class="subsection">send_text — テキスト入力 + AID 送信</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>text</code></td><td>○</td><td>入力する文字列</td></tr>
+  <tr><td><code>row</code> / <code>col</code></td><td></td><td>入力開始位置 (1 始まり)。省略時は現在のカーソル位置</td></tr>
+  <tr><td><code>key</code></td><td></td><td>入力後に送る AID キー (既定 <code>ENTER</code>)</td></tr>
+  <tr><td><code>overflow</code></td><td></td><td><code>true</code> でフィールド超過分を下の行のフィールドへ送る (既定 <code>false</code> = 超過分は切り捨てて報告)</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>truncated</code> (切り捨てが起きたか) / <code>accepted_chars</code> (受理文字数) / <code>dropped_chars</code> (切り捨て文字数)。フィールド型に合わない入力は <code>DBCS_FIELD_TYPE_VIOLATION</code>、対象フィールドが見つからない場合は <code>NO_TARGET_FIELD</code> を返し、AID を送信しません。</p>
+<pre><code>{ "session_id": "s1", "text": "DSPLIBL", "key": "ENTER" }</code></pre>
+
+<h3 class="subsection">run_autotyp — スクリプト実行</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>script</code> / <code>script_file</code></td><td>○</td><td>AUTOTYP スクリプト本文 (<code>script</code>) または scripts/ 配下のファイルパス (<code>script_file</code>) のいずれか (排他)</td></tr>
+  <tr><td><code>max_commands</code></td><td></td><td>最大実行コマンド数 (既定 1000)</td></tr>
+  <tr><td><code>timeout</code></td><td></td><td>全体タイムアウト (ミリ秒、既定 60000)</td></tr>
+  <tr><td><code>step_delay</code></td><td></td><td>各 AID キー送信後の待機ミリ秒 (既定 0、目視確認用のステップ実行)</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>success</code> / <code>error_code</code> (4.2 のエラーコード表を参照) / <code>error_message</code></p>
+<pre><code>{ "session_id": "s1", "script_file": "scripts/signon.autotyp" }</code></pre>
+
+<h3 class="subsection">paste_text — 複数行テキスト貼り付け</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>text</code></td><td>○</td><td>貼り付ける文字列。改行 (<code>\n</code>) を含むと次のフィールドへ進む (ブロックコピー)</td></tr>
+  <tr><td><code>is_block_copy</code></td><td></td><td>改行をフィールド跨ぎとして扱う (<code>true</code>、既定) か、単純な連続テキストとして扱う (<code>false</code>) か</td></tr>
+  <tr><td><code>key</code></td><td></td><td>貼り付け後に送る AID キー。省略時は貼り付けのみで AID を送らない</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>truncated</code> / <code>dropped_chars</code> (フィールド容量超過分)</p>
+
+<h3 class="subsection">get_field_text — フィールド値取得</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>row</code> / <code>col</code></td><td>○</td><td>取得開始位置 (1 始まり、データ位置 = field.col + 1)</td></tr>
+  <tr><td><code>length</code></td><td>○</td><td>取得する文字数</td></tr>
+</table>
+<p><strong>戻り値</strong>: 指定範囲の文字列</p>
+
+<h3 class="subsection">disconnect_5250 — 切断</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>{ success, session_id, message }</code>。切断前に IBM&nbsp;i 側で SIGNOFF を行ってください (1.4 節)。</p>
+
+<h3 class="subsection">get_session_log — ログ取得</h3>
+<table class="compact">
+  <tr><th style="width:36mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>tail</code></td><td></td><td>末尾から取得するエントリ数 (省略時は全件)</td></tr>
+</table>
+<p><strong>戻り値</strong>: ログ・エントリの配列 (時系列。記録内容は 6.1 節を参照)</p>
+
+<h3 class="subsection">list_sessions — セッション一覧</h3>
+<p>引数なし。<strong>戻り値</strong>: アクティブなセッションの配列 (各 <code>id</code> / <code>host</code> / <code>port</code> / <code>codePage</code> / <code>terminalType</code> / <code>connected</code>)。</p>
+
+<h3 class="subsection">list_connection_presets — 接続構成一覧</h3>
+<p>引数なし。<strong>戻り値</strong>: config.json の接続構成の配列 (各 <code>name</code> / <code>host</code> / <code>port</code> / <code>code_page</code> / <code>screen_size</code> / <code>description</code> など。<code>connect_5250</code> の <code>preset</code> で参照)。</p>
+
+<h3 class="subsection">list_autotyp_scripts — スクリプト一覧</h3>
+<p>引数なし。<strong>戻り値</strong>: <code>{ count, scripts: [ { name, description, path } ] }</code> (scripts/ 配下の <code>*.autotyp</code>。説明は <code>^ATP</code> 直後の <code>← </code> 行から抽出)。</p>
+
+<h3 class="subsection">save_connection_preset — 接続構成の保存</h3>
+<table class="compact">
+  <tr><th style="width:40mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>name</code></td><td>○</td><td>接続構成名 (一意の識別子)</td></tr>
+  <tr><td><code>host</code></td><td>○</td><td>ホスト名 / IP アドレス</td></tr>
+  <tr><td><code>port</code></td><td></td><td>ポート番号 (既定 23)</td></tr>
+  <tr><td><code>code_page</code></td><td></td><td>cp037 / cp500 / cp1148 / cp1399 / cp5035 / cp5026_current / cp5026_legacy</td></tr>
+  <tr><td><code>screen_size</code></td><td></td><td>24x80 (既定) / 27x132</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td></td><td>off / log / execute (既定)</td></tr>
+  <tr><td><code>device_name</code></td><td></td><td>装置名 (任意)</td></tr>
+  <tr><td><code>pwd_env_var</code></td><td></td><td>^PWD で参照する環境変数名 (ビューアー未接続/ヘッドレス時に使用)</td></tr>
+  <tr><td><code>autorun_autotyp</code></td><td></td><td>接続成功直後に自動実行する AUTOTYP スクリプト名</td></tr>
+  <tr><td><code>allow_ds4</code></td><td></td><td>27x132 (DS4) 切替を許可するか (既定 true)</td></tr>
+  <tr><td><code>description</code></td><td></td><td>構成の説明文 (任意)</td></tr>
+</table>
+<p><strong>戻り値</strong>: <code>{ success }</code>。パスワードは保存されません (^PWD は <code>pwd_env_var</code> またはビューアーのモーダルで取得)。</p>
+
+<h3 class="subsection">run_macro — HAScript マクロ実行</h3>
+<table class="compact">
+  <tr><th style="width:40mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>セッション識別子</td></tr>
+  <tr><td><code>macro_xml</code> / <code>macro_file</code></td><td>○</td><td>HAScript XML 文字列 (<code>macro_xml</code>) またはファイルパス (<code>macro_file</code>) のいずれか (排他)</td></tr>
+  <tr><td><code>variables</code></td><td></td><td>マクロ変数 (<code>{ "userid": "...", ... }</code>。プロンプト値など)</td></tr>
+  <tr><td><code>max_screens</code></td><td></td><td>処理する最大画面数 (既定 50)</td></tr>
+</table>
+<p><strong>戻り値</strong>: マクロ実行結果 (成否・処理画面数など)</p>
+
+<h3 class="subsection">convert_macro — HAScript ⇔ AUTOTYP 変換</h3>
+<table class="compact">
+  <tr><th style="width:40mm">引数</th><th style="width:12mm">必須</th><th>説明</th></tr>
+  <tr><td><code>direction</code></td><td>○</td><td><code>hascript-to-autotyp</code> (HAScript XML → AUTOTYP) / <code>autotyp-to-hascript</code> (AUTOTYP → HAScript JSON)</td></tr>
+  <tr><td><code>input</code></td><td>○</td><td>入力文字列 (direction に応じて HAScript XML または AUTOTYP テキスト)</td></tr>
+</table>
+<p><strong>戻り値</strong>: 変換後のテキスト / 構造</p>
+
+<div class="box note">
+  <div class="box-title">get_screen の fields 座標</div>
+  get_screen json の <code>fields[]</code> の <code>row</code> / <code>col</code> は属性バイトの位置を示します。データの開始位置は <code>col + 1</code> です。send_text / get_field_text の <code>row</code> / <code>col</code> はデータ開始位置 (1 始まり) を指定します。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 6 章 ログと運用                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;6&nbsp;章</div>
+  <div class="cc-title">ログと運用</div>
+  <div class="cc-sub">ログの確認方法とトラブルシューティングを説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">6</span>ログと運用</h1>
+
+<h2 class="section">6.1&nbsp;セッション・ログ</h2>
+
+<p>接続時に <code>log=true</code> を指定すると、セッション・ログがファイルに記録されます (省略時はメモリー内のみで、<code>get_session_log</code> で取得できます)。ファイルの既定パスは次のとおりです。</p>
+
+<pre><code>log/<em>セッション ID</em>_YYYYMMDD-HHMMSS.log</code></pre>
+
+<p>ログは時系列のテキストで、各行は <code>[時刻] 種別: 内容</code> の形式です。記録される主な種別は次のとおりです。</p>
+
+<table class="compact">
+  <tr><th style="width:46mm">種別</th><th>記録される内容</th></tr>
+  <tr><td>接続 / 切断</td><td>接続先ホスト・ポート・コードページ・端末タイプ、装置名、切断の契機。</td></tr>
+  <tr><td>送信バイト列 (SEND)</td><td>IBM&nbsp;i へ送信した 5250 データストリームの要約 (AID コード、SBA アドレス、フィールド内容の 16 進など)。</td></tr>
+  <tr><td>受信バイト列 (RECV)</td><td>IBM&nbsp;i から受信したコマンド (Write to Display / Clear Unit / Write Structured Field など) と制御文字の要約。</td></tr>
+  <tr><td>AID キー</td><td>送信した AID キー (ENTER / F1〜F24 / CLEAR など) の種別。</td></tr>
+  <tr><td>AUTOTYP</td><td>スクリプト実行の開始 (<code>AUTOTYP_START</code>) / 終了 (<code>AUTOTYP_END</code>) と、各行のコマンド・入力データ・待機・条件分岐の実行ステップ。</td></tr>
+  <tr><td>入力状態 / エラー</td><td>キーボードロック (X&nbsp;II / X SYSTEM) の発生・解除、入力不可待ちのタイムアウト、フィールド検証エラー、プロトコル例外。</td></tr>
+  <tr><td>STRPCCMD</td><td><code>strpccmd_mode</code> が <code>log</code> / <code>execute</code> のとき、PGM から要求された PC コマンドの内容と扱い (検出 / 実行)。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">ログの取得</div>
+  ファイル出力 (<code>log=true</code>) のほか、<code>get_session_log</code> ツールでメモリー内ログを随時取得できます。バイト列の詳細な 16 進ダンプが必要な場合は、サーバーを <code>DEBUG_5250</code> 環境変数付きで起動します。
+</div>
+
+<h2 class="section">6.2&nbsp;よくあるトラブル</h2>
+
+<table>
+  <tr><th style="width:55mm">症状</th><th>確認ポイント</th></tr>
+  <tr>
+    <td>接続できない</td>
+    <td>
+      <ul class="compact-list" style="margin:0">
+        <li>IBM&nbsp;i が起動しているか</li>
+        <li>ホスト名・ポート番号が正しいか</li>
+        <li>ファイアウォール / VPN の状況</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>AUTOTYP が失敗する</td>
+    <td>サーバー応答待ちでタイムアウトしている可能性があります。<code>^WAITX</code> で待機時間を挟む、または接続直後ではなく十分待ってから run_autotyp してください。</td>
+  </tr>
+  <tr>
+    <td>文字化けする</td>
+    <td>code_page の指定を確認してください。日本語環境で最も一般的なのは <strong>cp5026_legacy (= 290 ホストカタカナ、IBM 提供の日本語 5250 エミュレーターの既定。英小文字は大文字に変換)</strong> です。現代版の 290 拡張ホストカタカナは <strong>cp5026_current</strong>、DBCS 環境では cp1399 (= JIS2004 DBCS) を選びます。</td>
+  </tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">本製品の停止・再起動の影響について</div>
+  本製品 (MCP サーバー・プロセス) を停止・再起動すると、そのプロセスが保持している 5250 セッションはすべて切断されます。<br>
+  なお、別 PC や別ユーザーが個別に起動している本製品の MCP インスタンスには影響しません。それぞれ独立に動作します。
+</div>
+
+<h2 class="section">6.3&nbsp;Playwright 経由のビューアー操作時の制約</h2>
+
+<h3 class="subsection">6.3.1&nbsp;Playwright ライブラリと <code>@playwright/mcp</code> の違い</h3>
+
+<p>「Playwright」という語は 2 種類の利用形態を指すため、区別が必要です。</p>
+
+<table class="compact">
+  <tr>
+    <th style="width:28mm">項目</th>
+    <th>Playwright ライブラリ (直接利用)</th>
+    <th><code>@playwright/mcp</code> (MCP 経由)</th>
+  </tr>
+  <tr>
+    <td>位置づけ</td>
+    <td>Node.js / Python 等でコードを書いて直接呼ぶ API 群</td>
+    <td>Playwright を内部利用する MCP サーバー。Claude が <code>browser_navigate</code> 等の MCP ツールを呼ぶ</td>
+  </tr>
+  <tr>
+    <td>制御対象</td>
+    <td>自分が起動した全ブラウザーインスタンス</td>
+    <td>起動時に自動生成した 1 Chrome インスタンスのみ</td>
+  </tr>
+  <tr>
+    <td>app モード<br>(<code>--app=...</code>)</td>
+    <td>◯ <code>chromium.launch({ args: ['--app=...'] })</code> で可能</td>
+    <td>× 公開ツールに相当する起動オプションなし</td>
+  </tr>
+</table>
+
+<p>本製品の Claude 連携では <code>@playwright/mcp</code> を利用します。Claude が呼ぶ <code>browser_navigate</code> / <code>browser_take_screenshot</code> 等は、すべてこの MCP サーバー経由です。</p>
+
+<h3 class="subsection">6.3.2&nbsp;app モードウィンドウと Playwright ウィンドウの 2 窓構成</h3>
+
+<p><strong>app モード</strong> (<code>chrome.exe --app=http://localhost:5250/...</code> を Bash/PowerShell で起動) で開いたウィンドウは、Playwright の CDP 制御外となります。そのため、同一ウィンドウを Playwright でスクリーンショット撮影・操作することは<strong>できません</strong>。</p>
+
+<table class="compact">
+  <tr>
+    <th style="width:46mm">起動方法</th>
+    <th style="width:32mm">app モード<br>(アドレスバーなし)</th>
+    <th>Playwright 制御<br>(スクリーンショット・操作)</th>
+  </tr>
+  <tr>
+    <td><code>chrome.exe --app=...</code> を Bash で起動</td>
+    <td>◯</td>
+    <td>× (CDP 接続なし)</td>
+  </tr>
+  <tr>
+    <td><code>browser_navigate</code> (<code>@playwright/mcp</code>)</td>
+    <td>× (アドレスバーあり)</td>
+    <td>◯</td>
+  </tr>
+</table>
+
+<p>スクリーンショット撮影には <code>@playwright/mcp</code> 経由で開いたウィンドウが必要です。管理者がビューアーを app モードで目視しながら、Claude がスクリーンショットを別の Playwright ウィンドウで撮るという <strong>2 窓構成</strong>になります。</p>
+
+<h3 class="subsection">6.3.3&nbsp;スクリーンショットの正しい撮り方 (<code>toolbar_hidden</code>)</h3>
+
+<p>マニュアル用やテスト用に 5250 画面のみをスクリーンショットとして取得するには、次の手順を使います。</p>
+
+<ol>
+  <li><code>config.json</code> の接続構成プリセットに <code>"toolbar_hidden": true</code> を指定した接続構成を用意する (= 設定方法は 2.1 節参照)。</li>
+  <li>その接続構成で <code>connect_5250</code> を実行し、セッション ID を取得する。</li>
+  <li>Playwright MCP で <code>browser_navigate</code> を使い、<code>http://localhost:5250/?session=&lt;セッション ID&gt;</code> を開く。</li>
+  <li><code>browser_take_screenshot</code> で撮影する。<code>toolbar_hidden: true</code> により全ツールバーが CSS で非表示となり、<strong>5250 端末キャンバスのみが viewport を占有</strong>した状態で撮影されます。</li>
+</ol>
+
+<div class="box note">
+  <div class="box-title"><code>toolbar_hidden: true</code> 設定の仕組み</div>
+  ビューアーの読込時に <code>GET /api/viewer-defaults</code> でこの設定を取得し、<code>document.body.classList.add('tb-collapsed')</code> を適用します。CSS により全ツールバー (接続フォーム / キーボード / フェーズバー) が非表示となり、<code>body { height: 100vh; display: flex; flex-direction: column; }</code> により 5250 画面が viewport を埋めます。アドレスバーは viewport 外であるため、<code>browser_take_screenshot</code> の出力は 5250 画面のみになります。
+</div>
+
+<h3 class="subsection">6.3.4&nbsp;制約と役割の比較</h3>
+
+<p>Playwright は Web ブラウザーを自動操作するためのツールです。生成 AI エージェント (= Claude 等) は Playwright MCP を通じて本製品のビューアー画面を<strong>観測</strong> (= 画面取得・スクリーンショット・要素確認) できます。<strong>推奨</strong>: Playwright の利用はビューアーの起動と観測 (<code>browser_navigate</code> / <code>browser_snapshot</code> / <code>browser_take_screenshot</code> など) に限定し、5250 へのキー入力・AID 送信は<strong>本製品の MCP ツール</strong> (<code>send_key</code> / <code>send_text</code> / <code>run_autotyp</code> / <code>paste_text</code>)、またはユーザーによるビューアーでのキーボード入力で行ってください。ビューアーのキー入力はサーバーへ<strong>非同期</strong>に送信されますが、ビューアー内で発生した入力は送信順序が保証されています。一方、MCP の AID 送信はこの入力直列化を経由しないため、Playwright のキー入力と MCP の AID 送信 (= ENTER / F キーなど画面送信キー) を<strong>同時に、かつ大量・高速に</strong>混在させると、両者の到着順序が前後し、入力が AID 送信に取りこぼされる場合があります。これは Playwright のキー入力機能の使用そのものを禁じるものではなく、MCP の AID と同時に大量・高速で混在させた場合にのみ起こりうる問題です。キー入力をユーザーによるキーボードからの入力と MCP ツールに統一すれば、この順序の問題は起きず、自動操作の再現性も確保できます。あわせて次の制約と対応をご確認ください。</p>
+
+<p>次の表は、ビューアーを操作・観測する 3 者 (= 本製品の MCP ツール / Playwright / ユーザーの通常ブラウザー操作) を横に並べ、用途・機能ごとに比較したものです (◯ = 可能、△ = 間接的・部分的にのみ可能、× = 不可。競合などの注意点はセル内に注記)。</p>
+
+<table class="role-compare">
+  <tr>
+    <th style="width:42mm">用途・機能</th>
+    <th>本製品の MCP ツール</th>
+    <th>Playwright<br>(専用 Chromium)</th>
+    <th>ユーザーの通常ブラウザー<br>(手動操作)</th>
+  </tr>
+  <tr>
+    <td>主な用途</td>
+    <td>入力全般・論理画面取得・自動操作の主軸</td>
+    <td>視覚 / DOM の観測専用 (AI が自動で行う場合)</td>
+    <td>日常の対話操作と最終的な見た目確認</td>
+  </tr>
+  <tr>
+    <td>キー入力・AID 送信</td>
+    <td>◯ プロトコル層で送出 (<code>send_key</code> / <code>send_text</code>)</td>
+    <td>◯ <code>browser_type</code> 等で可能 (注: MCP の AID と同時・大量・高速に混在すると競合。入力は MCP に統一を推奨)</td>
+    <td>◯ 人間がキーボードで直接入力</td>
+  </tr>
+  <tr>
+    <td>複数行の貼り付け</td>
+    <td>◯ <code>paste_text</code> でまとめて貼り付け</td>
+    <td>◯ <code>browser_type</code> でテキスト投入が可能 (注: 同じく MCP の AID との同時・高速混在で競合)</td>
+    <td>◯ Ctrl+V で貼り付け</td>
+  </tr>
+  <tr>
+    <td>決定論的スクリプト実行 (AUTOTYP / マクロ)</td>
+    <td>◯ <code>run_autotyp</code> / <code>run_macro</code> で実行</td>
+    <td>× 実行する手段なし</td>
+    <td>× 実行手段なし (人間の手操作のみ)</td>
+  </tr>
+  <tr>
+    <td>マウス操作・テキスト選択</td>
+    <td>× マウスを持たない (キー・AID のみ)</td>
+    <td>◯ <code>browser_click</code> / <code>browser_drag</code> で DOM 操作</td>
+    <td>◯ 人間がマウスで操作</td>
+  </tr>
+  <tr>
+    <td>論理画面の取得 (文字・属性)</td>
+    <td>◯ <code>get_screen</code> で文字・色・属性を取得</td>
+    <td>△ DOM のテキストから間接取得 (専用 API なし)</td>
+    <td>△ 人間が目視 / DevTools で確認</td>
+  </tr>
+  <tr>
+    <td>スクリーンショット (描画画像)・見た目の確認</td>
+    <td>△ テキスト形式の画面は <code>get_screen</code> で取得可。描画ピクセル画像は不可</td>
+    <td>◯ <code>browser_take_screenshot</code> で描画を画像取得</td>
+    <td>◯ 肉眼 / OS のスクリーンショット</td>
+  </tr>
+  <tr>
+    <td>DOM / CSS・レイアウトの検査</td>
+    <td>× ライブ DOM にアクセス不可</td>
+    <td>◯ <code>browser_evaluate</code> で DOM・計算済みスタイルを検査</td>
+    <td>◯ 人間が DevTools (F12) で検査</td>
+  </tr>
+  <tr>
+    <td>ブラウザーの console / network の確認<br>(開発者ツール: JS コンソール出力・通信ログ)</td>
+    <td>△ サーバーが受信したリクエストのみ把握 (<code>get_session_log</code>)。ブラウザーの console / network ログは不可</td>
+    <td>◯ <code>browser_console_messages</code> / network 取得で確認</td>
+    <td>◯ 開発者ツール (F12) の Console / Network タブで確認</td>
+  </tr>
+  <tr>
+    <td>接続管理 (接続 / 切断)</td>
+    <td>◯ <code>connect_5250</code> / <code>disconnect_5250</code> で管理</td>
+    <td>△ 専用 API はないが、DOM の接続 / 切断ボタンを <code>browser_click</code> すれば操作可能</td>
+    <td>◯ ビューアーの接続フォーム・プリセット選択／切断トグルボタンで接続・切断</td>
+  </tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">AI エージェント向けの注意: Playwright のキー入力と MCP ツールの AID を同時に大量・高速で混在させない</div>
+  <strong>要点</strong>: 5250 へのキー入力・AID 送信は MCP ツール (<code>send_key</code> / <code>send_text</code> / <code>run_autotyp</code> / <code>paste_text</code>) またはユーザーのキーボード入力に統一し、Playwright は観測 (<code>browser_navigate</code> / <code>browser_snapshot</code> / <code>browser_take_screenshot</code> / <code>browser_evaluate</code>) に用いてください。Playwright のキー入力 (<code>browser_type</code> 等) 自体は禁止ではありませんが、MCP の AID と同時・大量・高速に混在させると取りこぼし・順序入替が起きえます。仕組みの詳細と各操作の可否は本節冒頭の説明および上の比較表を参照してください。
+</div>
+
+<div class="box caution">
+  <div class="box-title">Playwright で <code>browser_resize</code> を呼ばないこと</div>
+  Playwright MCP の <code>browser_resize</code> (= <code>page.setViewportSize</code>) を呼出すと、ビューアーの window 外枠と viewport の自動追従が解除され、以降のリサイズ操作がビューアーに反映されなくなります。<br>
+  本製品では <code>%USERPROFILE%\.claude\playwright-mcp-config.json</code> の <code>contextOptions.viewport: null</code> によって viewport を user の OS ウィンドウに追従させる運用が正典です。Playwright 経由のテストでは <code>browser_navigate</code> など観測系の操作のみを使用してください。
+</div>
+
+<table>
+  <tr><th style="width:42mm">現象</th><th style="width:60mm">原因</th><th>対応</th></tr>
+  <tr>
+    <td>ビューアーのウィンドウを手動でリサイズしても画面サイズが変わらない</td>
+    <td>Playwright (= AI エージェント) が直前に <code>browser_resize</code> を呼出し、viewport を固定状態に切替えた</td>
+    <td>
+      <ol class="compact-list" style="margin:0">
+        <li>本製品 MCP サーバーを再起動する (= Playwright MCP もあわせて再 spawn され、clean state で <code>viewport: null</code> 設定が再適用される)。</li>
+        <li>または Chrome 等の通常ブラウザーから同じ URL <code>http://localhost:5250/?session=&lt;セッション ID&gt;</code> を開き直す (= user の OS ウィンドウ管理下で操作する。Playwright の Chromium インスタンスとは独立)。</li>
+        <li><code>playwright-mcp-config.json</code> の <code>contextOptions.viewport: null</code> が削除されていないか確認する (= 削除されている場合は復元)。</li>
+      </ol>
+    </td>
+  </tr>
+  <tr>
+    <td>AI エージェントが「Playwright の resize ができない」「viewport が固定されている」等と述べる</td>
+    <td>AI エージェントが <code>browser_resize</code> ツールを使用しようとしている / 使用した</td>
+    <td>当該ツールの使用を停止させ、上記 1〜3 の手順で復旧してください。本現象は AI エージェント側の構造的な再発パターンとして既知です (= 詳細は <code>docs/postmortems.md</code> および <code>CLAUDE.md</code> ルール 22 sub-bullet をご参照ください)。</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 7 章 付録                                                  -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;7&nbsp;章</div>
+  <div class="cc-title">付録</div>
+  <div class="cc-sub">ポート割当、config.json 仕様、用語集を掲載します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">7</span>付録</h1>
+
+<h2 class="section">7.1&nbsp;ポート割当</h2>
+
+<table class="compact">
+  <tr><th style="width:50mm">ポート</th><th>用途</th></tr>
+  <tr><td>23</td><td>IBM&nbsp;i 側 Telnet (= 接続先)</td></tr>
+  <tr><td>5250 (= 既定)</td><td>本製品の Web ビューアー HTTP ポート</td></tr>
+  <tr><td>5251, 5252, ...</td><td>5250 が使用中の場合、自動的に空きポートへフォールバック</td></tr>
+</table>
+
+<h2 class="section">7.2&nbsp;config.json の項目一覧</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">キー</th><th>説明</th></tr>
+  <tr><td><code>host</code></td><td>接続先ホスト名または IP アドレス</td></tr>
+  <tr><td><code>port</code></td><td>接続先 Telnet ポート (既定 23)</td></tr>
+  <tr><td><code>code_page</code></td><td>ホスト・コード・ページ</td></tr>
+  <tr><td><code>dbcs_unicode_mapping</code></td><td>cp1399 の DBCS 記号の Unicode 並び。<code>"ms"</code> (既定) = MS 互換 (全角寄せ、半角幅レンダリング回避)、<code>"unicode_standard"</code> = IBM / Unicode 標準。<strong>cp1399 のときだけ有効</strong>で、cp5035 / cp5026 は MS 並び固定のため無視されます。対象の 5 記号は X'4260' (－/−)、X'426A' (￤/¦)、X'43A1' (～/〜)、X'444A' (―/—)、X'447C' (∥/‖) です。</td></tr>
+  <tr><td><code>screen_size</code></td><td>"24x80" または "27x132"</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td>"off" / "log" / "execute"</td></tr>
+  <tr><td><code>device_name</code></td><td>ワークステーション ID (= 装置名、ワイルドカード可)</td></tr>
+  <tr><td><code>pwd_env_var</code></td><td>パスワード格納環境変数名</td></tr>
+  <tr><td><code>autorun_autotyp</code></td><td>接続後の自動実行スクリプト名</td></tr>
+  <tr><td><code>session_counter</code></td><td>device_name のワイルドカード「*」用カウンター (内部管理)</td></tr>
+  <tr><td><code>description</code></td><td>構成の説明文</td></tr>
+</table>
+
+<p>以下の項目は <code>config.json</code> のトップレベル (= "presets" の外側) に記述します。</p>
+
+<table class="compact">
+  <tr><th style="width:54mm">キー</th><th>説明</th></tr>
+  <tr><td><code>viewer_defaults</code></td><td>ビューアーの 4 つの表示切替の初期値 (= ビューアー全体で 1 セット、3.1 節参照)。サブキー: <code>input_highlight</code> (= 入力フィールド強調、true/false)、<code>cs_style</code> (= 桁区切り、"Line"/"Dot")、<code>sbcs_cp</code> (= SBCS コード・ページ、"1027"/"290")、<code>shift_visible</code> (= シフト文字表示、true/false)。</td></tr>
+  <tr><td><code>autoconnect_preset</code></td><td>MCP サーバー起動時に自動接続する接続構成名を指定します (空のとき自動接続なし)。サーバー起動完了直後に内部的に <code>connect_5250 preset=&lt;名前&gt;</code> を呼び出し、確立したセッション ID は <code>/api/autoconnect-session</code> 経由でビューアーへ通知されます。ビューアーは URL に <code>?session=</code> パラメーターがない場合、当該セッションへ自動的に接続します。</td></tr>
+</table>
+
+<p>環境変数 <code>IBM5250_AUTOCONNECT_PRESET</code>、または起動時 CLI 引数 <code>--autoconnect-preset=&lt;名前&gt;</code> でも同等の指定が可能です (優先度: CLI 引数 &gt; 環境変数 &gt; config.json)。</p>
+
+<h2 class="section">7.3&nbsp;用語集</h2>
+
+<table class="compact">
+  <tr><th style="width:42mm">用語</th><th>説明</th></tr>
+  <tr><td>5250</td><td>IBM&nbsp;i (AS/400) の画面端末プロトコル。本製品がエミュレートする対象。</td></tr>
+  <tr><td>MCP (Model Context Protocol)</td><td>生成 AI エージェントがツールを呼び出すための規格。本製品は MCP サーバーとして 5250 操作ツールを提供します。</td></tr>
+  <tr><td>AID キー</td><td>Attention Identification。ENTER / F1〜F24 / CLEAR など、画面を IBM&nbsp;i へ送信するキー。</td></tr>
+  <tr><td>OIA</td><td>Operator Information Area。画面最下行の状況表示行 (入力状態・カーソル位置・通信状態など)。</td></tr>
+  <tr><td>X&nbsp;II / X SYSTEM</td><td>キーボードがロックされ入力できない状態 (Input Inhibited)。<span class="key">RESET</span> で解除します。</td></tr>
+  <tr><td>フィールド</td><td>画面上の入力 / 表示領域。DDS で定義され、保護 / 非保護・数値・DBCS などの属性を持ちます。</td></tr>
+  <tr><td>DDS</td><td>Data Description Specifications。IBM&nbsp;i で表示装置ファイル (画面) を定義する記述。</td></tr>
+  <tr><td>FFW / FCW</td><td>Field Format Word / Field Control Word。フィールドの属性 (数値・必須・大文字変換・DBCS 型など) を表すプロトコル上のビット。</td></tr>
+  <tr><td>SBCS / DBCS</td><td>Single-Byte / Double-Byte Character Set。英数カナは SBCS、漢字・かなは DBCS (2 バイト)。</td></tr>
+  <tr><td>SO / SI</td><td>Shift-Out / Shift-In。DBCS 領域の開始 / 終了を示すシフト文字。表示上 <code>{</code> <code>}</code> に置換できます。</td></tr>
+  <tr><td>CNTFLD</td><td>継続入力フィールド。複数行にまたがる 1 つの論理フィールド。</td></tr>
+  <tr><td>EBCDIC</td><td>IBM&nbsp;i / メインフレームの文字コード体系。コード・ページで Unicode と相互変換します。</td></tr>
+  <tr><td>コード・ページ</td><td>EBCDIC ↔ Unicode の変換表 (cp037 / cp1399 / cp5026_current など)。</td></tr>
+  <tr><td>DS3 / DS4</td><td>画面サイズ。DS3 = 24×80、DS4 = 27×132。</td></tr>
+  <tr><td>AUTOTYP</td><td>本製品のテキストベース自動入力スクリプト (第 4 章)。</td></tr>
+  <tr><td>HAScript</td><td>HCL ZIEWeb / IBM HOD のマクロ XML 形式。<code>run_macro</code> / <code>convert_macro</code> で対応します。</td></tr>
+  <tr><td>STRPCCMD</td><td>IBM&nbsp;i のプログラムから PC 側コマンドの実行を要求する仕組み。<code>strpccmd_mode</code> で扱いを制御します。</td></tr>
+  <tr><td>^PWD</td><td>AUTOTYP のパスワード置換命令。環境変数またはビューアーのモーダルから取得します (2.3 節)。</td></tr>
+  <tr><td>接続構成 (preset)</td><td>config.json に保存した接続パラメータの組。<code>connect_5250</code> の <code>preset</code> で参照します。</td></tr>
+  <tr><td>SIGNOFF</td><td>IBM&nbsp;i のサインオフ。切断前に行い、対話ジョブ (QPADEVxxxx) の孤児化を防ぎます (1.4 節)。</td></tr>
+</table>
+
+<h2 class="section">7.4&nbsp;SBCS コード表</h2>
+
+<p>本製品が扱う主要な SBCS (1 バイト) EBCDIC コード・ページの対応表です。各表は<strong>上位 4 ビット (列、16 進)</strong> × <strong>下位 4 ビット (行、16 進)</strong> で、交点のセルが該当バイトの文字を表します (例: 列 4・行 A = <code>0x4A</code>)。0x00〜0x3F は制御コードのため省略しています。<strong>空白セル</strong>は空白文字、または文字が割り当てられていない未定義コード (IBM / ICU 定義準拠) です。<strong>▒</strong> は CP290 (非拡張) で旧表示装置が ■ 表示する変換不能コードを表します。書式は <code>reference/cp290_old.pdf</code> (IBM カタカナ文字セットとそのコード表) に準じています。</p>
+
+<style>
+.cptable{border-collapse:collapse;margin:2mm 0 1.5mm 0;font-family:"Consolas","Courier New","DejaVu Sans Mono","MS Gothic","Yu Gothic",monospace}
+.cptable th,.cptable td{border:0.5pt solid #777;width:10mm;height:6.4mm;text-align:center;vertical-align:middle;padding:0;font-size:14.5pt;line-height:1;font-family:"Consolas","Courier New","DejaVu Sans Mono","MS Gothic","Yu Gothic",monospace}
+.cptable th{background:#e8eef4;font-weight:bold;font-size:11.5pt}
+.cptable th.cpcorner{font-size:7pt;font-weight:normal;color:#555;white-space:nowrap;width:12mm}
+.cpwrap{page-break-inside:avoid;margin-bottom:5mm}
+.cpwrap h3{font-size:11.5pt;margin:3mm 0 0.5mm 0}
+.cpwrap .cpnote{font-size:8.5pt;color:#444;margin:0.5mm 0 0 0}
+</style>
+<div class="cpwrap">
+<h3>CP290 (非拡張 / 旧 290) — 日本語カタカナ</h3>
+<table class="cptable">
+<tr><th class="cpcorner">下位＼上位</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td></td><td></td><td>ｿ</td><td>▒</td><td>▒</td><td>{</td><td>}</td><td>$</td><td>0</td></tr>
+<tr><th>1</th><td>｡</td><td>ｪ</td><td>/</td><td></td><td>ｱ</td><td>ﾀ</td><td>‾</td><td></td><td>A</td><td>J</td><td></td><td>1</td></tr>
+<tr><th>2</th><td>｢</td><td>ｫ</td><td></td><td></td><td>ｲ</td><td>ﾁ</td><td>ﾍ</td><td></td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｣</td><td>ｬ</td><td></td><td></td><td>ｳ</td><td>ﾂ</td><td>ﾎ</td><td></td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>､</td><td>ｭ</td><td></td><td></td><td>ｴ</td><td>ﾃ</td><td>ﾏ</td><td></td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>･</td><td>ｮ</td><td></td><td></td><td>ｵ</td><td>ﾄ</td><td>ﾐ</td><td></td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ｦ</td><td>ｯ</td><td></td><td></td><td>ｶ</td><td>ﾅ</td><td>ﾑ</td><td></td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｧ</td><td></td><td></td><td></td><td>ｷ</td><td>ﾆ</td><td>ﾒ</td><td></td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｨ</td><td>ｰ</td><td></td><td></td><td>ｸ</td><td>ﾇ</td><td>ﾓ</td><td></td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｩ</td><td></td><td></td><td>▒</td><td>ｹ</td><td>ﾈ</td><td>ﾔ</td><td></td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>£</td><td>!</td><td>▒</td><td>:</td><td>ｺ</td><td>ﾉ</td><td>ﾕ</td><td>ﾚ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>¥</td><td>,</td><td>#</td><td></td><td></td><td></td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ｻ</td><td></td><td>ﾖ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ｼ</td><td>ﾊ</td><td>ﾗ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ｽ</td><td>ﾋ</td><td>ﾘ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ｾ</td><td>ﾌ</td><td>ﾙ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">IBM 5250PC (1984 当時) の文字セット。英小文字は持たず、入力時は大文字に強制変換されます。▒ = 未定義 / 変換不能コード。</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP290 (拡張) — 日本語カタカナ</h3>
+<table class="cptable">
+<tr><th class="cpcorner">下位＼上位</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>[</td><td>]</td><td>ｿ</td><td>~</td><td>^</td><td>{</td><td>}</td><td>$</td><td>0</td></tr>
+<tr><th>1</th><td>｡</td><td>ｪ</td><td>/</td><td>i</td><td>ｱ</td><td>ﾀ</td><td>‾</td><td>¢</td><td>A</td><td>J</td><td></td><td>1</td></tr>
+<tr><th>2</th><td>｢</td><td>ｫ</td><td>a</td><td>j</td><td>ｲ</td><td>ﾁ</td><td>ﾍ</td><td>\</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｣</td><td>ｬ</td><td>b</td><td>k</td><td>ｳ</td><td>ﾂ</td><td>ﾎ</td><td>t</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>､</td><td>ｭ</td><td>c</td><td>l</td><td>ｴ</td><td>ﾃ</td><td>ﾏ</td><td>u</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>･</td><td>ｮ</td><td>d</td><td>m</td><td>ｵ</td><td>ﾄ</td><td>ﾐ</td><td>v</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ｦ</td><td>ｯ</td><td>e</td><td>n</td><td>ｶ</td><td>ﾅ</td><td>ﾑ</td><td>w</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｧ</td><td>ｰ</td><td>f</td><td>o</td><td>ｷ</td><td>ﾆ</td><td>ﾒ</td><td>x</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｨ</td><td>ｰ</td><td>g</td><td>p</td><td>ｸ</td><td>ﾇ</td><td>ﾓ</td><td>y</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｩ</td><td>!</td><td>h</td><td>`</td><td>ｹ</td><td>ﾈ</td><td>ﾔ</td><td>z</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>£</td><td>!</td><td>i</td><td>:</td><td>ｺ</td><td>ﾉ</td><td>ﾕ</td><td>ﾚ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>¥</td><td>,</td><td>#</td><td>q</td><td>r</td><td>s</td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ｻ</td><td>ﾊ</td><td>ﾖ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ｼ</td><td>ﾊ</td><td>ﾗ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ｽ</td><td>ﾋ</td><td>ﾘ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ｾ</td><td>ﾌ</td><td>ﾙ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">拡張版 290。英小文字・一部記号を追加。</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP1027 (日本語英数字)</h3>
+<table class="cptable">
+<tr><th class="cpcorner">下位＼上位</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ｺ</td><td></td><td></td><td>‾</td><td>^</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>ｩ</td><td>/</td><td>ｻ</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>€</td><td>1</td></tr>
+<tr><th>2</th><td>｡</td><td>ｪ</td><td>ｲ</td><td>ｼ</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｢</td><td>ｫ</td><td>ｳ</td><td>ｽ</td><td>c</td><td>l</td><td>t</td><td>ﾔ</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>｣</td><td>ｬ</td><td>ｴ</td><td>ｾ</td><td>d</td><td>m</td><td>u</td><td>ﾕ</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>､</td><td>ｭ</td><td>ｵ</td><td>ｿ</td><td>e</td><td>n</td><td>v</td><td>ﾖ</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>･</td><td>ｮ</td><td>ｶ</td><td>ﾀ</td><td>f</td><td>o</td><td>w</td><td>ﾗ</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｦ</td><td>ｯ</td><td>ｷ</td><td>ﾁ</td><td>g</td><td>p</td><td>x</td><td>ﾘ</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｧ</td><td>ｰ</td><td>ｸ</td><td>ﾂ</td><td>h</td><td>q</td><td>y</td><td>ﾙ</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｨ</td><td>ｱ</td><td>ｹ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>ﾚ</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>¢</td><td>!</td><td></td><td>:</td><td>ﾃ</td><td>ﾉ</td><td>ﾏ</td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>ﾄ</td><td>ﾊ</td><td>ﾐ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ﾅ</td><td>ﾋ</td><td>ﾑ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ﾆ</td><td>ﾌ</td><td>[</td><td>]</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ﾇ</td><td>ﾍ</td><td>ﾒ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ﾈ</td><td>ﾎ</td><td>ﾓ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">cp1399 / cp5035 の SBCS 構成要素。空白セルは文字が割り当てられていない未定義コードです。<br><strong>注</strong>: 厳密には本表は CP1027 そのものではなく、本製品が使用する <strong>CCSID 5123</strong> (= CP1027 の Euro 拡張) です。CP5123 は通りが悪いため通称の CP1027 名で示しています。<strong>両者の違いは 0xE1 のみ</strong> — CP1027 では ÷ (U+00F7)、CP5123 では € (U+20AC)。本表は CP5123 準拠で 0xE1 = € を表示しています。参照: <a href="https://github.com/unicode-org/icu/blob/main/icu4c/source/data/mappings/ibm-5123_P100-1999.ucm">ICU ibm-5123_P100-1999.ucm</a></p>
+</div>
+
+<div class="cpwrap">
+<h3>CP037 (US 英語) — EBCDIC US/Canada</h3>
+<table class="cptable">
+<tr><th class="cpcorner">下位＼上位</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ø</td><td>Ø</td><td>°</td><td>µ</td><td>^</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>é</td><td>/</td><td>É</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>÷</td><td>1</td></tr>
+<tr><th>2</th><td>â</td><td>ê</td><td>Â</td><td>Ê</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>ä</td><td>ë</td><td>Ä</td><td>Ë</td><td>c</td><td>l</td><td>t</td><td>·</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>à</td><td>è</td><td>À</td><td>È</td><td>d</td><td>m</td><td>u</td><td>©</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>á</td><td>í</td><td>Á</td><td>Í</td><td>e</td><td>n</td><td>v</td><td>§</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ã</td><td>î</td><td>Ã</td><td>Î</td><td>f</td><td>o</td><td>w</td><td>¶</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>å</td><td>ï</td><td>Å</td><td>Ï</td><td>g</td><td>p</td><td>x</td><td>¼</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ç</td><td>ì</td><td>Ç</td><td>Ì</td><td>h</td><td>q</td><td>y</td><td>½</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ñ</td><td>ß</td><td>Ñ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>¾</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>¢</td><td>!</td><td>¦</td><td>:</td><td>«</td><td>ª</td><td>¡</td><td>[</td><td>­</td><td>¹</td><td>²</td><td>³</td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>»</td><td>º</td><td>¿</td><td>]</td><td>ô</td><td>û</td><td>Ô</td><td>Û</td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ð</td><td>æ</td><td>Ð</td><td>¯</td><td>ö</td><td>ü</td><td>Ö</td><td>Ü</td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ý</td><td>¸</td><td>Ý</td><td>¨</td><td>ò</td><td>ù</td><td>Ò</td><td>Ù</td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>þ</td><td>Æ</td><td>Þ</td><td>´</td><td>ó</td><td>ú</td><td>Ó</td><td>Ú</td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>±</td><td>¤</td><td>®</td><td>×</td><td>õ</td><td>ÿ</td><td>Õ</td><td></td></tr>
+</table>
+<p class="cpnote">米国・カナダ向け EBCDIC。</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP500 (EBCDIC International / ISO-8859-1 文字)</h3>
+<table class="cptable">
+<tr><th class="cpcorner">下位＼上位</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ø</td><td>Ø</td><td>°</td><td>µ</td><td>¢</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>é</td><td>/</td><td>É</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>÷</td><td>1</td></tr>
+<tr><th>2</th><td>â</td><td>ê</td><td>Â</td><td>Ê</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>ä</td><td>ë</td><td>Ä</td><td>Ë</td><td>c</td><td>l</td><td>t</td><td>·</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>à</td><td>è</td><td>À</td><td>È</td><td>d</td><td>m</td><td>u</td><td>©</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>á</td><td>í</td><td>Á</td><td>Í</td><td>e</td><td>n</td><td>v</td><td>§</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ã</td><td>î</td><td>Ã</td><td>Î</td><td>f</td><td>o</td><td>w</td><td>¶</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>å</td><td>ï</td><td>Å</td><td>Ï</td><td>g</td><td>p</td><td>x</td><td>¼</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ç</td><td>ì</td><td>Ç</td><td>Ì</td><td>h</td><td>q</td><td>y</td><td>½</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ñ</td><td>ß</td><td>Ñ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>¾</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>[</td><td>]</td><td>¦</td><td>:</td><td>«</td><td>ª</td><td>¡</td><td>¬</td><td>­</td><td>¹</td><td>²</td><td>³</td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>»</td><td>º</td><td>¿</td><td>|</td><td>ô</td><td>û</td><td>Ô</td><td>Û</td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ð</td><td>æ</td><td>Ð</td><td>¯</td><td>ö</td><td>ü</td><td>Ö</td><td>Ü</td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ý</td><td>¸</td><td>Ý</td><td>¨</td><td>ò</td><td>ù</td><td>Ò</td><td>Ù</td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>þ</td><td>Æ</td><td>Þ</td><td>´</td><td>ó</td><td>ú</td><td>Ó</td><td>Ú</td></tr>
+<tr><th>F</th><td>!</td><td>^</td><td></td><td>"</td><td>±</td><td>¤</td><td>®</td><td>×</td><td>õ</td><td>ÿ</td><td>Õ</td><td></td></tr>
+</table>
+<p class="cpnote">国際 EBCDIC (Latin-1)。</p>
+</div>
+
+
+</div><!-- /.manual-body -->
+
+<!-- ============================================================ -->
+<!-- 裏表紙                                                        -->
+<!-- ============================================================ -->
+<section class="back-cover">
+  <div class="bc-inner">
+    <div class="bc-title">IBM&nbsp;5250&nbsp;MCP 管理ガイド</div>
+    <div class="bc-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;プロジェクト</div>
+    <div class="bc-meta">
+      第&nbsp;1&nbsp;版 &nbsp;2026&nbsp;年&nbsp;5&nbsp;月発行<br>
+      技術的なお問い合わせはプロジェクト窓口まで
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
