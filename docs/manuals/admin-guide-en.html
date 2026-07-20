@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IBM 5250 MCP Administrator Guide</title>
+<link rel="stylesheet" href="manual.css">
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 表紙                                                          -->
+<!-- ============================================================ -->
+<section class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">ADMIN&nbsp;GUIDE</div>
+  <div class="cover-inner">
+    <div class="cover-product">IBM&nbsp;i&nbsp;5250 Terminal Emulator for Development Support<br>(with MCP Server Support)</div>
+    <h1 class="cover-title">IBM&nbsp;5250&nbsp;MCP</h1>
+    <div class="cover-divider"></div>
+    <div class="cover-sub">Administrator Guide</div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;Project</div>
+    <div class="cover-meta">
+      First&nbsp;Edition<br>
+      May&nbsp;2026
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 安全表示 (= 管理者向け)                                       -->
+<!-- ============================================================ -->
+<section class="safety">
+  <h1>Administrative Notes</h1>
+
+  <table class="safety-table">
+    <tr>
+      <th>Caution</th>
+      <td>The contents of this guide include operations that change the configuration and operation of this product. Incorrect settings may interrupt users' work, so make a backup (= keep a copy of config.json) before changing any settings.</td>
+    </tr>
+    <tr>
+      <th>Prohibited</th>
+      <td>Never share passwords or authentication credentials in plain text outside your organization. Use this product's password environment variable (pwd_env_var) feature.</td>
+    </tr>
+    <tr>
+      <th>Notice</th>
+      <td>This guide assumes the contents of the User Guide. Please refer to it together with this guide.</td>
+    </tr>
+  </table>
+
+  <div class="box note" style="margin-top:5mm">
+    <div class="box-title">Intended Audience of This Guide</div>
+    This guide is intended for administrators responsible for the connection configuration, AUTOTYP scripts, log management, and print spool handling of IBM&nbsp;5250&nbsp;MCP.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 目次                                                          -->
+<!-- ============================================================ -->
+<section class="toc">
+  <h1>Table of Contents</h1>
+  <ul>
+    <li class="l1">1.&nbsp;Introduction</li>
+    <li class="l2">1.1&nbsp;Structure of This Guide</li>
+    <li class="l2">1.2&nbsp;System Configuration</li>
+    <li class="l2">1.3&nbsp;Installation and Initial Setup</li>
+    <li class="l2">1.4&nbsp;Starting and Stopping the Server</li>
+    <li class="l2">1.5&nbsp;Configuration File (config.json)</li>
+    <li class="l2">1.6&nbsp;Voice Input Setup</li>
+
+    <li class="l1">2.&nbsp;Creating and Editing Connection Configurations</li>
+    <li class="l2">2.1&nbsp;Description of Settings</li>
+    <li class="l2">2.2&nbsp;Workstation ID Rules</li>
+    <li class="l2">2.3&nbsp;^PWD Password Retrieval Paths</li>
+
+    <li class="l1">3.&nbsp;Setting Defaults</li>
+    <li class="l2">3.1&nbsp;Toolbar Default Values</li>
+    <li class="l2">3.2&nbsp;Automatic Execution After Connection</li>
+
+    <li class="l1">4.&nbsp;AUTOTYP Scripts</li>
+    <li class="l2">4.1&nbsp;Script Syntax</li>
+    <li class="l2">4.2&nbsp;Operation Recording Feature</li>
+    <li class="l2">4.3&nbsp;Conversion from HAScript</li>
+
+    <li class="l1">5.&nbsp;MCP Tools</li>
+    <li class="l1">6.&nbsp;Logging and Operations</li>
+    <li class="l1">7.&nbsp;Appendix</li>
+  </ul>
+</section>
+
+<!-- 本文 (= 第1章〜最終章)。generate-manual.mjs が display 制御で本文だけを別 pass に切り出し、
+     フッターに第1章起点の論理ノンブルを付ける。 -->
+<div class="manual-body">
+<!-- ============================================================ -->
+<!-- 第 1 章 はじめに                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;1</div>
+  <div class="cc-title">Introduction</div>
+  <div class="cc-sub">This chapter explains the structure of this guide, the system configuration, the installation procedure, how to start and stop the server, and an overview of the configuration file.</div>
+</section>
+
+<h1 class="chapter"><span class="num">1</span>Introduction</h1>
+
+<h2 class="section">1.1&nbsp;Structure of This Guide</h2>
+
+<table>
+  <tr><th style="width:30mm">Chapter</th><th>Main Contents</th></tr>
+  <tr><td>Chapter&nbsp;2</td><td>Explains how to add, edit, and delete connection configurations, and the meaning of each setting.</td></tr>
+  <tr><td>Chapter&nbsp;3</td><td>Explains how to set defaults, such as toolbar default values and automatic execution after connection.</td></tr>
+  <tr><td>Chapter&nbsp;4</td><td>Explains how to write AUTOTYP scripts and how to use the recording feature.</td></tr>
+  <tr><td>Chapter&nbsp;5</td><td>A list of MCP tools that can be called from generative AI agents (such as Claude), with each tool's arguments, return values, and examples.</td></tr>
+  <tr><td>Chapter&nbsp;6</td><td>Explains how to check logs and how to troubleshoot.</td></tr>
+  <tr><td>Chapter&nbsp;7</td><td>Appendix (port assignments, config.json specification, and glossary).</td></tr>
+</table>
+
+<h2 class="section">1.2&nbsp;System Configuration</h2>
+
+<p>This product operates around an MCP server (= a single executable <code>ibm5250-mcp-windows-x64.exe</code>) that connects four parties: the generative AI agent (Claude), VSCode, the web browser, and IBM&nbsp;i. No Node.js installation is required to run it (the runtime is bundled). The relationship among these components is as follows.</p>
+
+<figure class="large">
+  <img src="screenshots-en/system-architecture.png" alt="System Configuration Diagram" style="width:108mm; max-width:100%;">
+  <figcaption>Figure 1.2-1 &nbsp;System Configuration (relationship among Claude / VSCode / browser / IBM&nbsp;i)</figcaption>
+</figure>
+
+<ul class="compact-list">
+  <li><strong>Claude (generative AI)</strong> — Decides on operations and calls MCP tools. Rather than operating the browser screen directly, it instructs the MCP server through the tools.</li>
+  <li><strong>VSCode (Claude Code extension = MCP client)</strong> — Maintains the conversation, <strong>automatically starts the MCP server (exe) over stdio</strong> according to the MCP settings, and communicates via JSON-RPC.</li>
+  <li><strong>Web browser</strong> — Connects to the viewer HTTP server provided by the MCP server, displays the 5250 screen in real time (SSE), and allows manual operation. Claude's operations and the browser's operations are reflected on the same screen.</li>
+  <li><strong>MCP server (<code>ibm5250-mcp-windows-x64.exe</code>)</strong> — The center of all of the above. It connects to IBM&nbsp;i via TN5250E, maintains the screen buffer, and provides it to both the MCP tools and the viewer.</li>
+</ul>
+
+<p><strong>Layout of the main files</strong> (= directly under the folder where the exe resides, e.g. <code>C:\ibm5250-mcp\</code>):</p>
+
+<figure>
+<pre class="diagram"><code>ibm5250-mcp/
+├─ ibm5250-mcp-windows-x64.exe   ← the MCP server itself (single executable)
+├─ config.json                   ← connection configurations and viewer defaults (Section 1.5)
+├─ docs/manuals/                 ← this manual (PDF)
+└─ log/                          ← session logs (output when log=true is specified at connection)</code></pre>
+<figcaption>Figure 1.2-2 &nbsp;Layout of the main files</figcaption>
+</figure>
+
+<div class="box note">
+  <div class="box-title">Overview of Starting and Stopping</div>
+  In normal operation, VSCode (Claude Code) automatically starts and stops the MCP server (exe). For the specific start and stop operations, see Section 1.4. The server reads and writes <code>config.json</code> and logs relative to the folder where the exe resides.
+</div>
+
+<h2 class="section">1.3&nbsp;Installation and Initial Setup</h2>
+
+<p>Installing this product follows these steps: place the executable → register with the MCP client → create a connection configuration. Obtaining or building the source is not required.</p>
+
+<h3 class="subsection">1.3.1&nbsp;Prerequisites</h3>
+
+<table class="compact">
+  <tr><th style="width:48mm">Item</th><th>Required Version / Notes</th></tr>
+  <tr><td>OS</td><td>Windows (x64). Verified on 10 / 11.</td></tr>
+  <tr><td>MCP client</td><td>Claude Code (VSCode extension) or similar that can start a stdio MCP server.</td></tr>
+  <tr><td>IBM&nbsp;i</td><td>Reachable over the TN5250E (Telnet) port (= default 23)</td></tr>
+  <tr><td>Web browser</td><td>For viewing the screen viewer (optional)</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">No Node.js installation required</div>
+  This product is distributed as a single executable with the runtime bundled. Installing Node.js or npm, or building from source, is not required.
+</div>
+
+<h3 class="subsection">1.3.2&nbsp;Placing the Executable</h3>
+
+<p>Obtain <code>ibm5250-mcp-windows-x64.exe</code> from the distribution's Releases and place it in any folder (e.g., <code>C:\ibm5250-mcp\</code>). Put <code>config.json</code> (Section 1.5) in the same folder. The server reads and writes its configuration and logs relative to the folder where the exe resides, so you do not need to set a working directory on the MCP client side.</p>
+
+<h3 class="subsection">1.3.3&nbsp;Registering with the MCP Client</h3>
+
+<p>To use this product as an MCP server, register it in the configuration file of an MCP client such as Claude Code.</p>
+
+<p>For Claude Code, add the following entry to the project directory's <code>.mcp.json</code> or to the user-wide MCP settings file.</p>
+
+<pre><code>{
+  "mcpServers": {
+    "ibm5250": {
+      "command": "C:\\ibm5250-mcp\\ibm5250-mcp-windows-x64.exe",
+      "env": {}
+    }
+  }
+}</code></pre>
+
+<table class="compact">
+  <tr><th style="width:32mm">Key</th><th>Description</th></tr>
+  <tr><td><code>command</code></td><td>Specify the absolute path to the placed <code>ibm5250-mcp-windows-x64.exe</code>.</td></tr>
+  <tr><td><code>env</code></td><td>Specify environment variables (= password environment variable, etc.) as needed.</td></tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">To Apply the Settings</div>
+  After editing <code>.mcp.json</code>, restart the MCP client (= Claude Code, etc.) to apply the settings.
+</div>
+
+<h3 class="subsection">1.3.4&nbsp;Creating the Initial Configuration</h3>
+
+<p>On first use, <code>config.json</code> either does not exist or is empty. Create a connection configuration using one of the following methods.</p>
+
+<ol class="compact-list">
+  <li><strong>Add a new entry from the "⚙&nbsp;Manage Configurations" dialog in the viewer screen</strong> &nbsp;&nbsp;Open <code>http://localhost:5250/</code> in a web browser, then enter the items via "⚙&nbsp;Manage Configurations" → "+ Add New" (see Chapter 2 for details).</li>
+  <li><strong>Register via the MCP tool <code>save_connection_preset</code></strong> &nbsp;&nbsp;You can register connection configurations in bulk by calling this tool from an AI agent (see Chapter 5 for details).</li>
+  <li><strong>Edit <code>config.json</code> directly</strong> &nbsp;&nbsp;Write it manually following the format in Section 1.5 (be careful with JSON syntax).</li>
+</ol>
+
+<h2 class="section">1.4&nbsp;Starting and Stopping the Server</h2>
+
+<p>The basic behavior is that this product is started by the MCP client. When the "IBM&nbsp;i connection tool" is called on the client side, the MCP server process starts automatically (the stdio path in Figure 1.2-1).</p>
+
+<p><strong>Startup flow</strong></p>
+<ol class="compact-list">
+  <li>Open Claude Code in VSCode (= this product must already be registered in <code>.mcp.json</code>, Section 1.3.3).</li>
+  <li>When Claude calls the first MCP tool (= <code>connect_5250</code>, etc.), the extension automatically starts <code>ibm5250-mcp-windows-x64.exe</code> over stdio.</li>
+  <li>At the same time, the viewer HTTP server (= default port 5250) starts. Opening <code>http://localhost:5250/</code> in a browser displays the 5250 screen.</li>
+</ol>
+
+<p><strong>Shutdown flow</strong></p>
+<table class="compact">
+  <tr><th style="width:52mm">Operation</th><th>Method and Effect</th></tr>
+  <tr><td>Disconnect only the 5250 session</td><td>Call the MCP tool <code>disconnect_5250</code>. The connection to IBM&nbsp;i is broken, but the MCP server process and the viewer HTTP server remain alive, and reconnection is possible.</td></tr>
+  <tr><td>Terminate the whole server (normal)</td><td>When you exit VSCode (Claude Code), the automatically started MCP server process is terminated together with it.</td></tr>
+  <tr><td>Force termination / orphan process cleanup</td><td>If it is unresponsive or to clean up orphan processes, end <code>ibm5250-mcp-windows-x64.exe</code> in Task Manager, or run <code>taskkill /IM ibm5250-mcp-windows-x64.exe /F</code> in PowerShell.</td></tr>
+  <tr><td>Manual startup (verification)</td><td>Running <code>.\ibm5250-mcp-windows-x64.exe</code> directly in PowerShell starts it standalone without going through an MCP client (it waits on stdio). To stop it, press <kbd>Ctrl</kbd>+<kbd>C</kbd>.</td></tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">SIGNOFF the IBM&nbsp;i Session Before Disconnecting</div>
+  When ending an interactive 5250 session, perform <code>SIGNOFF</code> (or the menu sign-off) on the IBM&nbsp;i side before calling <code>disconnect_5250</code>. If you disconnect only at the TCP level, an interactive job (QPADEVxxxx) may remain on the IBM&nbsp;i side, consuming subsystem resources or causing a device name conflict on reconnection.
+</div>
+
+<div class="box note">
+  <div class="box-title">Automatic Port Fallback</div>
+  If the default port 5250 is in use, the viewer HTTP server automatically falls back to a free port such as 5251, 5252, and so on (see Section 7.1 in Chapter 7 for details).
+</div>
+
+<h2 class="section">1.5&nbsp;Configuration File (config.json)</h2>
+
+<p>This product's configuration is recorded in the <code>config.json</code> file directly under the project directory (= the one created in Section 1.3.4). Connection configurations, toolbar default values, auto-run scripts, and the viewer HTTP port are all consolidated in this file.</p>
+
+<pre><code>{
+  "presets": {
+    "(connection configuration name)": {
+      "host": "(IBM i host name or IP)",
+      "port": 23,
+      "code_page": "cp5026_legacy",
+      "screen_size": "27x132",
+      "strpccmd_mode": "execute",
+      "pwd_env_var": "",
+      "autorun_autotyp": "",
+      "description": "(description of the connection configuration)"
+    }
+  },
+  "viewer_defaults": {
+    "input_highlight": true,
+    "cs_style": "Line",
+    "sbcs_cp": "1027",
+    "shift_visible": true
+  }
+}</code></pre>
+
+<p><code>viewer_defaults</code> is placed outside the connection configurations (= at the top level). These are the default values for the viewer's four display toggles (input field highlight / column separators / SBCS code page / shift character display), and one set is saved for the entire viewer (= not per connection configuration). See Section 3.1 for details.</p>
+
+<div class="box caution">
+  <div class="box-title">Notes When Editing</div>
+  config.json is in JSON format. If a comma or quotation mark is missing, the server will not start. As a rule, we recommend editing it through the "⚙ Manage Configurations" dialog.
+</div>
+
+<h3 class="subsection">1.5.1&nbsp;Viewer Auto-Open and Multiple Windows (auto_open)</h3>
+
+<div class="box note">
+  <div class="box-title">Key points (read first)</div>
+  <ul>
+    <li>Each connection (connect) opens its <strong>own port and own window</strong> (= the same feel as ACS "run same configuration").</li>
+    <li><strong>Closing a window auto-disconnects that session after about 5 seconds; conversely, disconnecting from the tool side closes the window</strong> (bidirectional).</li>
+    <li><code>auto_open</code> opens an independent window only when the default browser is <strong>Chrome / Edge</strong>. If another browser (e.g., Firefox) is the default, it opens a <strong>new tab</strong> instead of an independent window.</li>
+  </ul>
+</div>
+
+<p>Configure viewer behavior in the <code>viewer</code> section of <code>config.json</code>.</p>
+
+<pre><code>{
+  "viewer": {
+    "port_default": 5250,        // starting viewer port (used in order from the first session)
+    "port_auto_assign": true,    // if in use, +1 to find a free port
+    "auto_open": "browser-app"   // "off" | "browser" | "browser-app" (default: browser-app)
+  }
+}</code></pre>
+
+<p><strong>Multiple windows / sessions:</strong> Each <code>connect_5250</code> assigns a free port starting from 5250 (5251, 5252, …) and opens an independent window per session. Ports are freed on disconnect or window close and reused from 5250 upward, so they are never exhausted in long runs. Port 5250 serves as the pre-connection form (launcher). The session ID is auto-generated in the form <code>(host)-(telnet port)-mcp(viewer port)</code> (e.g., <code>192.168.1.191-23-mcp5251</code>) and cannot be specified explicitly.</p>
+
+<p><strong>Auto-open (auto_open):</strong> With <code>browser</code> / <code>browser-app</code>, each connection automatically opens that session's window in a browser (<code>off</code> opens nothing and only returns the URL). It launches the OS default browser directly, so no additional tools are needed. The environment variable <code>SCREEN_VIEWER_AUTO_OPEN</code> on the side that registers this MCP takes precedence over <code>config.json</code>. Behavior by default browser:</p>
+
+<p><strong>Behavior at startup:</strong> Windows open automatically only <strong>when connecting</strong>. As the sole exception, when the product is started directly (double-clicking the executable or launching it from a command line), the pre-connection form (launcher) opens automatically at startup. When started by an MCP client (such as Claude), nothing opens at startup (use the MCP tool <code>open_viewer</code> if you need the connection form).</p>
+
+<table>
+  <tr><th>auto_open</th><th>Default browser</th><th>How it launches</th><th>Window shape</th></tr>
+  <tr><td><code>off</code></td><td>—</td><td>does not open</td><td>—</td></tr>
+  <tr><td><code>browser</code></td><td>Chrome</td><td>Chrome in a new window</td><td>independent normal window (tab / address bar / menu shown)</td></tr>
+  <tr><td><code>browser</code></td><td>Edge</td><td>Edge in a new window</td><td>same</td></tr>
+  <tr><td><code>browser</code></td><td>other (Firefox etc.) / not found</td><td>default browser (OS association)</td><td>new tab (not an independent window)</td></tr>
+  <tr><td><code>browser-app</code> (default)</td><td>Chrome</td><td>Chrome in app mode</td><td>independent chromeless window (no tab / address bar / menu)</td></tr>
+  <tr><td><code>browser-app</code></td><td>Edge</td><td>Edge in app mode</td><td>same</td></tr>
+  <tr><td><code>browser-app</code></td><td>other</td><td>whichever of Chrome→Edge is installed, in app mode</td><td>chromeless window</td></tr>
+  <tr><td><code>browser-app</code></td><td>other + neither Chrome/Edge installed</td><td>default browser (OS association)</td><td>new tab (app mode N/A)</td></tr>
+</table>
+
+<p><strong>Disconnect ⇄ window linkage (bidirectional):</strong> Running <code>disconnect_5250</code> from the tool closes that session's window and frees the port. Conversely, when the user closes the browser window, the session is automatically disconnected after about 5 seconds (reloads and transient network drops are not misinterpreted). In ACS you normally close the window to end a session, but because this product leaves a local port open when the browser is closed, this bidirectional linkage provides a feel close to ACS.</p>
+
+<h3 class="subsection">1.5.2&nbsp;Online Help (ℹ)</h3>
+
+<p>The <strong>Help (ℹ)</strong> button on the second toolbar row of the viewer, or <code>http://localhost:(port)/help</code>, opens the online help (always in a <strong>normal window</strong> of the default browser). The first page shows the product version and build date, and links to the End-User License Agreement (EULA), the third-party notices, the User Guide, and this Admin Guide.</p>
+
+<table class="compact">
+  <tr><th style="width:44mm">Item</th><th>Description</th></tr>
+  <tr><td>Guide content source</td><td>The HTML guides and images under <code>docs/manuals/</code> (bundled with the distribution). Identical in content to the PDF versions.</td></tr>
+  <tr><td>EULA / third-party notices</td><td>Rendered from <code>EULA.md</code> / <code>THIRD-PARTY-NOTICES.md</code> in the distribution root.</td></tr>
+  <tr><td>Build date</td><td>The modification time of the running program file. Use it to confirm which build is running when investigating problems.</td></tr>
+  <tr><td>Display language</td><td>Follows the viewer display language (Japanese / English; <code>?lang=ja</code> / <code>?lang=en</code>).</td></tr>
+</table>
+
+<h2 class="section">1.6&nbsp;Voice Input Setup</h2>
+
+<p>Voice input via the microphone button in the viewer (User Guide, Section 5.5) is available only when you use this viewer together with the <strong>Claude extension (Claude Code)</strong> in <strong>Visual Studio Code</strong>. To pass what you say to Claude, you need to add one <strong>hook</strong> on the Claude side.</p>
+
+<p>It works as follows. The voice captured by the microphone button in the viewer is sent to the MCP server's <code>/api/voice</code> endpoint and temporarily stored in <code>tmp/pending-voice.txt</code>. The hook below reads this file and injects the converted text (transcript) as input to Claude.</p>
+
+<p>The speech recognition language follows the viewer's display language (Japanese / English): ja-JP for Japanese and en-US for English.</p>
+
+<p>Add the following registration to <code>hooks</code> in Claude's settings file (<code>.claude/settings.json</code>).</p>
+
+<pre><code>{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "node scripts/voice-hook.cjs" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "node scripts/voice-hook.cjs" }] }
+    ]
+  }
+}</code></pre>
+
+<div class="box note">
+  <div class="box-title">Note</div>
+  Set the path in <code>command</code> to match the location of <code>voice-hook.cjs</code> in your environment. If you do not add this hook, the voice captured by the microphone button is not passed to Claude.
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 2 章 接続構成                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;2</div>
+  <div class="cc-title">Creating and Editing Connection Configurations</div>
+  <div class="cc-sub">This chapter explains how to add, edit, and delete connection configurations.</div>
+</section>
+
+<h1 class="chapter"><span class="num">2</span>Creating and Editing Connection Configurations</h1>
+
+<h2 class="section">2.1&nbsp;Description of Settings</h2>
+
+<p>Clicking "⚙&nbsp;Manage Configurations" in the toolbar displays the configuration edit dialog.</p>
+
+<figure class="large">
+  <img src="screenshots-en/02-settings-modal.png" alt="Configuration Edit Dialog">
+  <figcaption>Figure 2.1-1 &nbsp;Configuration Edit Dialog</figcaption>
+</figure>
+
+<table class="compact">
+  <tr><th style="width:55mm">Item</th><th>Description</th></tr>
+  <tr><td>Configuration name</td><td>A unique name for the connection configuration.</td></tr>
+  <tr><td>IBM&nbsp;i host name or IP address</td><td>Specify the host name or IP address of the destination server.</td></tr>
+  <tr><td>Destination port</td><td>The TN5250E port. The default is 23 (Telnet).</td></tr>
+  <tr><td>Host code page</td><td>Choose from cp5026_legacy (= 290 host katakana, the default of IBM-supplied Japanese 5250 emulators and the most common in Japanese environments; lowercase letters are forced to uppercase and undefined codes are shown as ■), cp5026_current (= modern extended host katakana based on 290), cp1399 (= JIS2004 DBCS), cp5035 (= host Latin), cp037 (= alphanumeric only), and so on.</td></tr>
+  <tr><td>Screen size</td><td>Select 24x80 or 27x132.</td></tr>
+  <tr><td>PC command (STRPCCMD) handling</td><td>off (= ignore. Silently returns only an ack and suppresses the screen; for security purposes) / log (= detect and only output to the log without executing; for auditing) / execute (= actually execute, honoring the wait flag). <strong>The default is execute (= equivalent to ACS)</strong>. In every mode, an ack is sent to the PCO to prevent IBM&nbsp;i from hanging. Because execute runs arbitrary OS commands, use it only with programs you trust.</td></tr>
+  <tr><td>Workstation ID</td><td>The device name passed to RFC 4777 USERVAR DEVNAME (see Section 2.2 for details).</td></tr>
+  <tr><td>Password environment variable (headless)</td><td>Specifying an environment variable name lets you skip password entry in headless operation (see Section 2.3 for details).</td></tr>
+  <tr><td>AUTOTYP to run after connection</td><td>Specify the name of an AUTOTYP script to run automatically immediately after connecting. When left blank, nothing is run automatically (e.g., automating sign-on).</td></tr>
+  <tr><td>Hide toolbar initially</td><td>When turned on, the toolbar is hidden at connection time and only the 5250 screen is displayed (the same state as the 🔧 button). To show it again, click the gray margin.</td></tr>
+  <tr><td>Display font</td><td>Specifies the display font, size, fixed size, bold, and italic of the 5250 screen. For Japanese (DBCS) sessions, a Japanese font is the default. Turning on fixed size adjusts the window size so that the 5250 screen fits.</td></tr>
+  <tr><td>Description</td><td>An arbitrary explanatory text representing the configuration contents (shown in the list screen).</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Language toggle and the defaults for a new configuration</div>
+  When you create a new configuration, the initial values selected for "Host code page" and "Display font" follow the viewer display language set by the toolbar language toggle (the JP / EN button). When the display is Japanese, the defaults are code page = cp1399 and font = MS Gothic; when the display is English, the defaults are code page = cp037 and font = Consolas. Already-saved configurations keep their own saved values and are not affected by the language toggle.
+</div>
+
+<h2 class="section">2.2&nbsp;Workstation ID Rules</h2>
+
+<p>The workstation ID (= device name) follows the naming rules of ACS's "Workstation ID (5250 display/printer session)".</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">Symbol</th><th>Meaning</th></tr>
+  <tr><td><code>&amp;COMPN</code></td><td>Expands to the computer name (the COMPUTERNAME environment variable).</td></tr>
+  <tr><td><code>&amp;USERN</code></td><td>Expands to the signed-on Windows user name.</td></tr>
+  <tr><td><code>*</code></td><td>Expands to a sequential letter A–Z (state is kept per configuration). Useful for distinguishing multiple sessions.</td></tr>
+  <tr><td><code>%</code></td><td>Expands to the fixed character <code>S</code>.</td></tr>
+  <tr><td><code>=</code></td><td>Expands to one random alphanumeric character to avoid collisions.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Usage Example</div>
+  If you set <code>PC&amp;COMPN*</code> and the computer name is <code>WS001</code>, the first time produces <code>PCWS001A</code>, the second time produces <code>PCWS001B</code>, and so on.
+</div>
+
+<div class="box caution">
+  <div class="box-title">Scope of Verification</div>
+  This feature has been verified with representative configurations, such as the combination of <code>&amp;COMPN</code> + the <code>*</code> sequence, but exhaustive testing of every symbol combination and special characters has not been performed. If you use complex device name rules, please verify the behavior with a small-scale test before putting it into operation.
+</div>
+
+<h2 class="section">2.3&nbsp;^PWD Password Retrieval Paths</h2>
+
+<p>The <code>^PWD</code> line in an AUTOTYP script is replaced with the password at run time. The password is <strong>not saved in the configuration file</strong> (= for security, it is saved neither in plain text nor encrypted). The retrieval path automatically switches between the following two depending on the execution environment.</p>
+
+<table class="compact">
+  <tr><th style="width:42mm">Execution Environment</th><th>Where the Password Is Obtained</th></tr>
+  <tr><td>Viewer connected (= a session is open in the browser)</td><td>A <strong>password entry dialog</strong> is displayed, and the user enters it on the spot (= the primary path, with a 60-second timeout). In this case, the "password environment variable" is not referenced.</td></tr>
+  <tr><td>Headless (= viewer not connected, automatic connection / batch operation, etc.)</td><td>Uses the <strong>value of the Windows environment variable</strong> specified in the "password environment variable" field.</td></tr>
+</table>
+
+<p>If you want to connect automatically in headless operation without entering the password on the screen, store the password in a Windows environment variable and specify that variable name in the "password environment variable" field of the connection configuration.</p>
+
+<div class="box note">
+  <div class="box-title">When There Is No Environment Variable in Headless Mode</div>
+  When the viewer is not connected and the environment variable is unset (or empty), the entry dialog is not displayed, and AUTOTYP stops with an error (<code>PWD_ENV_MISSING</code> / <code>PWD_NO_SOURCE</code>). This is because there is no browser to display a dialog in headless mode. On error, either open the viewer and enter it interactively, or set the environment variable before starting the server.
+</div>
+
+<div class="box forbid">
+  <div class="box-title">Operational Prohibitions</div>
+  Do not leave the password environment variable permanently set on a business PC. When you step away, manage it by closing the terminal, locking it, and so on.
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 3 章 既定値の設定                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;3</div>
+  <div class="cc-title">Setting Defaults</div>
+  <div class="cc-sub">Configure the toolbar default values and automatic execution after connection.</div>
+</section>
+
+<h1 class="chapter"><span class="num">3</span>Setting Defaults</h1>
+
+<h2 class="section">3.1&nbsp;Toolbar Default Values</h2>
+
+<p>As one set of default values for the entire viewer, you can configure the four display toggles in the toolbar described in Section 5.4 of the User Guide (= not per connection configuration). They are recorded in the <code>viewer_defaults</code> block at the top level of <code>config.json</code>.</p>
+
+<table class="compact">
+  <tr><th style="width:55mm">Item</th><th>Key</th><th>Options</th></tr>
+  <tr><td>Input field highlight (default)</td><td><code>input_highlight</code></td><td><code>true</code> (= ✦ on) / <code>false</code> (= ✦ off)</td></tr>
+  <tr><td>Column separators (default)</td><td><code>cs_style</code></td><td><code>"Line"</code> (= ⦀) / <code>"Dot"</code> (= ┅)</td></tr>
+  <tr><td>SBCS code page (default)</td><td><code>sbcs_cp</code></td><td><code>"1027"</code> (= A) / <code>"290"</code> (= ｱ) (DBCS only)</td></tr>
+  <tr><td>Shift character display (default)</td><td><code>shift_visible</code></td><td><code>true</code> (= show { }) / <code>false</code> (= hidden, nothing displayed) (DBCS only)</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">How to Edit</div>
+  When you click a toolbar icon in the viewer, the current value is saved to <code>viewer_defaults</code>. You can also edit <code>config.json</code> directly (= applied only at server startup).
+</div>
+
+<h2 class="section">3.2&nbsp;Automatic Execution After Connection</h2>
+
+<p>If you specify an AUTOTYP script name (e.g., <code>signon.autotyp</code>) in the "AUTOTYP to run after connection" field of a connection configuration, that script runs automatically immediately after a successful connection.</p>
+
+<ol class="compact-list">
+  <li>Automate the sign-on operation so that users can start their work from the menu screen</li>
+  <li>In operational batches, automatically navigate to the same screen every time</li>
+  <li>In testing and automation, start from a specific state</li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">Interrupting Automatic Execution</div>
+  When you want to stop processing during automatic execution, you can end it with the toolbar's ⏹&nbsp;<strong>Stop</strong>. Failures are also recorded in the log, but the connection itself is treated as successful.
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 4 章 AUTOTYP                                               -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;4</div>
+  <div class="cc-title">AUTOTYP Scripts</div>
+  <div class="cc-sub">Explains how to write scripts and how to use the recording feature.</div>
+</section>
+
+<h1 class="chapter"><span class="num">4</span>AUTOTYP Scripts</h1>
+
+<h2 class="section">4.1&nbsp;Script Syntax</h2>
+
+<p>AUTOTYP scripts are in plain-text format and are placed in <code>scripts/*.autotyp</code>. The basic structure is as follows.</p>
+
+<pre><code>^ATP
+← Automatic sign-on execution
+USER01           ← The first line is entered at the cursor position, then TAB
+^PWD             ← Replaced with the password (entry dialog when the viewer is connected, environment variable in headless mode)
+^ENTER
+^END</code></pre>
+
+<p><strong>Structure markers and comments</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">Symbol at Line Start</th><th>Meaning</th></tr>
+  <tr><td><code>^ATP</code></td><td>The script start marker. Always write it on the first line.</td></tr>
+  <tr><td><code>^END</code></td><td>The script end marker.</td></tr>
+  <tr><td><code>←</code></td><td>The comment symbol (a feature specific to this product). Characters after <code>←</code> are ignored at run time. A <code>←</code> line immediately after <code>^ATP</code> is treated as the script description and is shown in the list.</td></tr>
+  <tr><td><code>[<em>label</em></code></td><td>Defines a jump target label. It becomes the destination for <code>^GO</code> / <code>^DSP</code> / <code>^INH</code>.</td></tr>
+  <tr><td>Other text</td><td>Enters that text at the cursor position and buffers it in the current field.</td></tr>
+  <tr><td><code>^PWD</code></td><td>Replaces with the password and enters it. When the viewer is connected, an entry dialog is displayed; in headless mode, the value of the "password environment variable" is used (= Section 2.3).</td></tr>
+</table>
+
+<p><strong>AID keys (sends that involve a screen transition)</strong> — Send all fields in the buffer, then send the AID code.</p>
+<table class="compact">
+  <tr><th style="width:48mm">Command</th><th>Meaning</th></tr>
+  <tr><td><code>^ENTER</code></td><td>The Enter key.</td></tr>
+  <tr><td><code>^F1</code>–<code>^F24</code> (= <code>^CMD01</code>–<code>^CMD24</code>)</td><td>Function keys F1–F24. <code>^F3</code> and <code>^CMD03</code> are synonymous.</td></tr>
+  <tr><td><code>^HELP</code></td><td>Help (HELP AID).</td></tr>
+  <tr><td><code>^ROLLDN</code> / <code>^ROLLUP</code></td><td>Roll down (Page Up) / Roll up (Page Down).</td></tr>
+  <tr><td><code>^PRINT</code></td><td>The Print key.</td></tr>
+  <tr><td><code>^HOME</code></td><td>Record backspace (Home).</td></tr>
+  <tr><td><code>^ATTN</code> / <code>^SYSRQ</code> / <code>^RESET</code></td><td>Attention / System Request / Reset.</td></tr>
+</table>
+
+<p><strong>Field movement and editing (no AID sent)</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">Command</th><th>Meaning</th></tr>
+  <tr><td><code>^FLDEXIT</code> / <code>^FLDEXIT+</code> / <code>^FLDEXIT-</code></td><td>Field Exit. Confirms the current field and moves to the next field. In numeric fields it specifies the sign — <code>^FLDEXIT</code> and <code>^FLDEXIT+</code> are positive, and <code>^FLDEXIT-</code> is negative (= for a signed numeric field, <code>-</code> is placed at the trailing sign position; for a numeric-only field, the zone of the last digit is set negative). <code>^FLDEXIT-</code> is invalid for non-numeric fields (= only a warning is logged, with normal movement). The <code>-</code> does not mean "previous field" (use <code>^BTAB</code> to go back).</td></tr>
+  <tr><td><code>^FTAB</code> / <code>^BTAB</code></td><td>Tab (next field) / Back Tab (previous field).</td></tr>
+  <tr><td><code>^ERASEEOF</code></td><td>Erases from the cursor position to the end of the current field.</td></tr>
+  <tr><td><code>^ERASEINPUT</code></td><td>Clears all modified input fields and returns the cursor to the first input field.</td></tr>
+  <tr><td><code>^DUP</code></td><td>Fills with the DUP character from the cursor position to the end and moves to the next field.</td></tr>
+  <tr><td><code>^DEL</code> / <code>^INSERT</code></td><td>Toggle delete / insert mode.</td></tr>
+  <tr><td><code>^CSRUP</code> / <code>^CSRDN</code> / <code>^CSRLFT</code> / <code>^CSRRGT</code></td><td>Moves the cursor up / down / left / right.</td></tr>
+</table>
+
+<p><strong>Control and flow</strong></p>
+<table class="compact">
+  <tr><th style="width:48mm">Command</th><th>Meaning</th></tr>
+  <tr><td><code>^WAITX <em>nn</em></code></td><td>Waits <em>nn</em> × 500 milliseconds (e.g., <code>^WAITX 4</code> = 2000ms).</td></tr>
+  <tr><td><code>^DSP<em>xxyyy</em>string [<em>label</em></code></td><td>Compares the on-screen string at row <em>xx</em> (2 digits) and column <em>yyy</em> (3 digits), and if it matches, jumps to <em>label</em>.</td></tr>
+  <tr><td><code>^GO [<em>label</em></code></td><td>Jumps unconditionally to <em>label</em>.</td></tr>
+  <tr><td><code>^INHON</code> / <code>^INHOFF</code></td><td>Enables / disables input-inhibited (keyboard lock) detection (<strong>default: disabled</strong>). A jump by <code>^INH</code> works only after <code>^INHON</code> has been executed.</td></tr>
+  <tr><td><code>^INH [<em>label</em></code></td><td>In the <code>^INHON</code> state, if input is inhibited, jumps to <em>label</em>.</td></tr>
+  <tr><td><code>^ERMON</code> / <code>^ERMOFF</code></td><td>Enables / disables error reset mode.</td></tr>
+  <tr><td><code>^CSRON</code> / <code>^CSROFF</code></td><td>Enables / disables cursor control mode.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Error Codes</div>
+  Execution errors are returned as codes from 0 (normal) to 25 (e.g., 13 = the script line count / command count limit is exceeded, 14 = the <code>^ATP</code> marker was not found, 20 = the jump target label is undefined, 21/22 = the row / column number of <code>^DSP</code> is invalid). For the full list of codes, see the AUTOTYP specification in <code>docs/feature-specs.md</code>.
+</div>
+
+<div class="box note">
+  <div class="box-title">About File Names</div>
+  For AUTOTYP script names (with the <code>.autotyp</code> extension), we recommend using ASCII alphanumerics and a few symbols (<code>-_.</code>). Japanese file names can be handled by the OS, but for compatibility with AUTOTYP command-line arguments and operations, we recommend naming with alphanumerics.
+</div>
+
+<h3 class="subsection">4.1.1&nbsp;Handling of Commands While Input Is Inhibited (Keyboard Locked)</h3>
+
+<p>In 5250, while the host has the keyboard locked (= the input-inhibited indicator is lit, the so-called X SYSTEM state), some operations are accepted and others are ignored, depending on the type of operation (5494 specification Sections 16.1.2 / 16.2.1). AUTOTYP commands follow the same distinction.</p>
+
+<table class="compact">
+  <tr><th style="width:42mm">Category</th><th>Applicable Commands</th><th>Behavior While Input Is Inhibited</th></tr>
+  <tr><td>Reaches the host even while locked</td><td><code>^SYSRQ</code> / <code>^ATTN</code> / <code>^PRINT</code> / <code>^RESET</code></td><td>System Request, Attention, Print (cancel), and Error Reset are sent to the host even when the keyboard is locked (= signals / special keys that do not require the lock to be released).</td></tr>
+  <tr><td>Waits for the lock to be released</td><td><code>^ENTER</code> / <code>^F1</code>–<code>^F24</code> (<code>^CMDnn</code>) / data input lines / the <code>^FLDEXIT</code> family / <code>^FTAB</code> / <code>^BTAB</code> / <code>^DUP</code> / the <code>^ERASEEOF</code> family</td><td>These AID keys, inputs, and edits are invalid while locked. AUTOTYP waits up to 30 seconds for the lock to be released before sending the AID (only <code>^PRINT</code> is sent without waiting). On timeout, it ends with error code 24.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Handling Input Inhibition in a Script</div>
+  On screens where input inhibition is expected, branch with <code>^INHON</code> + <code>^INH [label</code>, or enable send retries with <code>^ERMON</code>. Because the default of <code>^INHON</code> is disabled, you must execute <code>^INHON</code> before using <code>^INH</code>.
+</div>
+
+<h2 class="section">4.2&nbsp;Operation Recording Feature</h2>
+
+<p>With the toolbar's ●&nbsp;<strong>Rec</strong> button, you can automatically generate an AUTOTYP script directly from your screen operations.</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">Start recording</div>
+    <p>Click ●&nbsp;<strong>Rec</strong>. The button turns red.</p>
+  </li>
+  <li>
+    <div class="step-title">Perform the operations to record</div>
+    <p>Perform the operations you want to keep as AUTOTYP, such as key input, function keys, and pasting.</p>
+  </li>
+  <li>
+    <div class="step-title">Stop recording and save</div>
+    <p>Click ●&nbsp;<strong>Rec</strong> again, and the edit dialog opens. Enter a file name and save.</p>
+  </li>
+</ol>
+
+<h2 class="section">4.3&nbsp;Conversion from HAScript</h2>
+
+<p>HAScript XML macros (.mac) created for IBM HOD (Host on-Demand) or HCL ZIE can be converted to AUTOTYP format using this product's MCP tool <code>convert_macro</code>. See the MCP tool list in Chapter 5 for details.</p>
+
+<!-- ============================================================ -->
+<!-- 第 5 章 MCP ツール                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;5</div>
+  <div class="cc-title">MCP Tools</div>
+  <div class="cc-sub">A list of tools that can be called from generative AI agents.</div>
+</section>
+
+<h1 class="chapter"><span class="num">5</span>MCP Tools</h1>
+
+<p class="lead">This product also operates as a Model Context Protocol (MCP) server. From generative AI agents such as Claude, you can call the following tools to operate the 5250 screen.</p>
+
+<h2 class="section">5.1&nbsp;Connection Management</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">Tool Name</th><th>Description</th></tr>
+  <tr><td><code>connect_5250</code></td><td>Connects to IBM&nbsp;i. You can specify a connection configuration by preset name.</td></tr>
+  <tr><td><code>disconnect_5250</code></td><td>Disconnects the session.</td></tr>
+  <tr><td><code>list_sessions</code></td><td>Returns a list of the currently active sessions.</td></tr>
+  <tr><td><code>list_connection_presets</code></td><td>Returns a list of the connection configurations registered in config.json.</td></tr>
+  <tr><td><code>save_connection_preset</code></td><td>Adds or updates a connection configuration.</td></tr>
+  <tr><td><code>open_viewer</code></td><td>Opens the viewer in a browser window. Without <code>session_id</code>, it opens the unconnected connection form (launcher); with <code>session_id</code>, it reopens that session's window (recovery after closing the window by mistake). Without <code>mode</code> (browser / browser-app), it follows auto_open in config.json.</td></tr>
+</table>
+
+<h2 class="section">5.2&nbsp;Screen Operations</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">Tool Name</th><th>Description</th></tr>
+  <tr><td><code>get_screen</code></td><td>Gets the current screen. You can choose text format or json format (structured data).</td></tr>
+  <tr><td><code>get_field_text</code></td><td>Gets the field value at the specified position.</td></tr>
+  <tr><td><code>send_key</code></td><td>Sends an AID key or an edit key.</td></tr>
+  <tr><td><code>send_text</code></td><td>Enters text at the specified position and sends an AID key.</td></tr>
+  <tr><td><code>paste_text</code></td><td>Pastes multi-line text (moves between fields according to Tab and line breaks).</td></tr>
+</table>
+
+<h2 class="section">5.3&nbsp;Scripts / Macros</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">Tool Name</th><th>Description</th></tr>
+  <tr><td><code>run_autotyp</code></td><td>Runs an AUTOTYP script (text or file). The <code>step_delay</code> argument lets you specify the wait in milliseconds after each AID key send (= step execution for visual confirmation).</td></tr>
+  <tr><td><code>list_autotyp_scripts</code></td><td>Returns the list of AUTOTYP scripts under scripts/ and their descriptions.</td></tr>
+  <tr><td><code>run_macro</code></td><td>Runs a HAScript XML macro.</td></tr>
+  <tr><td><code>convert_macro</code></td><td>Converts HAScript XML to AUTOTYP format.</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Pausing / Stopping AUTOTYP</div>
+  Pausing / stopping a running AUTOTYP can currently only be done from the viewer screen's toolbar (the ⏸&nbsp;<strong>Pause</strong> / ⏹&nbsp;<strong>Stop</strong> buttons). No dedicated MCP tool is provided.
+</div>
+
+<h2 class="section">5.4&nbsp;Logs</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">Tool Name</th><th>Description</th></tr>
+  <tr><td><code>get_session_log</code></td><td>Gets the session log (in memory / file).</td></tr>
+</table>
+
+<h2 class="section">5.5&nbsp;Arguments, Return Values, and Examples of Major Tools</h2>
+
+<p>For representative tools, the arguments, main return values, and call examples (JSON) are shown. The <code>session_id</code> obtained from the first <code>connect_5250</code> is specified in all subsequent tools. Coordinates (<code>row</code> / <code>col</code>) are 1-based.</p>
+
+<h3 class="subsection">connect_5250 — Connect</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>preset</code></td><td></td><td>The connection configuration name in config.json. Loads host / port / code_page / screen_size, etc. (can be overridden by individual arguments)</td></tr>
+  <tr><td><code>host</code></td><td>△</td><td>Host name or IP address (required when not using a preset)</td></tr>
+  <tr><td><code>port</code></td><td></td><td>Port number (default 23)</td></tr>
+  <tr><td><code>code_page</code></td><td></td><td>cp037 / cp500 / cp1148 / cp1399 / cp5035 / cp5026_current / cp5026_legacy</td></tr>
+  <tr><td><code>screen_size</code></td><td></td><td>24x80 (default) / 27x132</td></tr>
+  <tr><td><code>session_id</code></td><td></td><td>Session identifier (auto-generated when omitted)</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td></td><td>off (ignore) / log (record only) / execute (run, default). Handling of PC command requests (STRPCCMD) from a PGM</td></tr>
+  <tr><td><code>allow_ds4</code></td><td></td><td>Whether to permit switching to 27x132 (DS4) (default true). false fixes it to 24x80</td></tr>
+  <tr><td><code>log</code></td><td></td><td>Whether to save the session log to a file (default false = memory only)</td></tr>
+  <tr><td><code>log_file</code></td><td></td><td>Path of the log file (auto-generated in log/ when omitted, valid only when <code>log=true</code>)</td></tr>
+  <tr><td><code>device_name</code></td><td></td><td>Device name (RFC 4777 DEVNAME, uppercase letters + digits, max 10. Auto-named QPADEVnnnn when omitted)</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>{ success, session_id, host, port, code_page, screen_size, terminal_type }</code></p>
+<pre><code>{ "preset": "&lt;connection configuration name&gt;", "session_id": "s1" }</code></pre>
+
+<h3 class="subsection">get_screen — Get Screen</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>format</code></td><td></td><td><code>text</code> (default, screen string) / <code>json</code> (structured data)</td></tr>
+</table>
+<p><strong>Return value (json)</strong>: <code>rows</code> / <code>cols</code> / <code>cursor {row, col}</code> / <code>text</code> / <code>fields[]</code> (each field's <code>row</code> / <code>col</code> / <code>length</code> / <code>protected</code> / <code>numeric</code> / <code>modified</code>, etc.) / <code>inputReady</code> (false = X&nbsp;II input lock). The <code>text</code> format returns only the screen string.</p>
+<pre><code>{ "session_id": "s1", "format": "json" }</code></pre>
+
+<h3 class="subsection">send_key — Send Key</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>key</code></td><td>○</td><td>AID key (<code>ENTER</code> / <code>F1</code>–<code>F24</code> / <code>CLEAR</code> / <code>HELP</code> / <code>PRINT</code> / <code>PA1</code>–<code>PA3</code> / <code>ROLLUP</code> / <code>ROLLDN</code>, etc.), navigation key (<code>TAB</code> / <code>BTAB</code> / <code>UP</code> / <code>DOWN</code> / <code>LEFT</code> / <code>RIGHT</code> / <code>HOME</code>), edit key (<code>ERASE_EOF</code> / <code>ERASE_INPUT</code> / <code>FIELD_EXIT</code> / <code>FIELD_EXIT_PLUS</code> / <code>FIELD_EXIT_MINUS</code> / <code>DEL</code> / <code>DUP</code> / <code>INSERT</code>)</td></tr>
+  <tr><td><code>data</code></td><td></td><td>Data to enter before sending the key (optional)</td></tr>
+</table>
+<pre><code>{ "session_id": "s1", "key": "F3" }</code></pre>
+
+<h3 class="subsection">send_text — Text Input + AID Send</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>text</code></td><td>○</td><td>The string to enter</td></tr>
+  <tr><td><code>row</code> / <code>col</code></td><td></td><td>Input start position (1-based). Uses the current cursor position when omitted</td></tr>
+  <tr><td><code>key</code></td><td></td><td>The AID key to send after input (default <code>ENTER</code>)</td></tr>
+  <tr><td><code>overflow</code></td><td></td><td>With <code>true</code>, sends the part exceeding the field to the field on the line below (default <code>false</code> = the excess is truncated and reported)</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>truncated</code> (whether truncation occurred) / <code>accepted_chars</code> (number of accepted characters) / <code>dropped_chars</code> (number of truncated characters). Input that does not match the field type returns <code>DBCS_FIELD_TYPE_VIOLATION</code>, and when no target field is found it returns <code>NO_TARGET_FIELD</code> and does not send the AID.</p>
+<pre><code>{ "session_id": "s1", "text": "DSPLIBL", "key": "ENTER" }</code></pre>
+
+<h3 class="subsection">run_autotyp — Run Script</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>script</code> / <code>script_file</code></td><td>○</td><td>Either the AUTOTYP script body (<code>script</code>) or a file path under scripts/ (<code>script_file</code>) (mutually exclusive)</td></tr>
+  <tr><td><code>max_commands</code></td><td></td><td>Maximum number of commands to execute (default 1000)</td></tr>
+  <tr><td><code>timeout</code></td><td></td><td>Overall timeout (milliseconds, default 60000)</td></tr>
+  <tr><td><code>step_delay</code></td><td></td><td>Wait in milliseconds after each AID key send (default 0, step execution for visual confirmation)</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>success</code> / <code>error_code</code> (see the error code table in Section 4.2) / <code>error_message</code></p>
+<pre><code>{ "session_id": "s1", "script_file": "scripts/signon.autotyp" }</code></pre>
+
+<h3 class="subsection">paste_text — Paste Multi-Line Text</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>text</code></td><td>○</td><td>The string to paste. When it contains line breaks (<code>\n</code>), it advances to the next field (block copy)</td></tr>
+  <tr><td><code>is_block_copy</code></td><td></td><td>Whether to treat line breaks as crossing fields (<code>true</code>, default) or as plain continuous text (<code>false</code>)</td></tr>
+  <tr><td><code>key</code></td><td></td><td>The AID key to send after pasting. When omitted, only pastes without sending an AID</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>truncated</code> / <code>dropped_chars</code> (the part exceeding the field capacity)</p>
+
+<h3 class="subsection">get_field_text — Get Field Value</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>row</code> / <code>col</code></td><td>○</td><td>Retrieval start position (1-based, data position = field.col + 1)</td></tr>
+  <tr><td><code>length</code></td><td>○</td><td>Number of characters to retrieve</td></tr>
+</table>
+<p><strong>Return value</strong>: The string in the specified range</p>
+
+<h3 class="subsection">disconnect_5250 — Disconnect</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>{ success, session_id, message }</code>. Perform SIGNOFF on the IBM&nbsp;i side before disconnecting (Section 1.4).</p>
+
+<h3 class="subsection">get_session_log — Get Log</h3>
+<table class="compact">
+  <tr><th style="width:36mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>tail</code></td><td></td><td>Number of entries to retrieve from the end (all entries when omitted)</td></tr>
+</table>
+<p><strong>Return value</strong>: An array of log entries (chronological. For the recorded contents, see Section 6.1)</p>
+
+<h3 class="subsection">list_sessions — Session List</h3>
+<p>No arguments. <strong>Return value</strong>: An array of active sessions (each with <code>id</code> / <code>host</code> / <code>port</code> / <code>codePage</code> / <code>terminalType</code> / <code>connected</code>).</p>
+
+<h3 class="subsection">list_connection_presets — Connection Configuration List</h3>
+<p>No arguments. <strong>Return value</strong>: An array of the connection configurations in config.json (each with <code>name</code> / <code>host</code> / <code>port</code> / <code>code_page</code> / <code>screen_size</code> / <code>description</code>, etc. Referenced by the <code>preset</code> of <code>connect_5250</code>).</p>
+
+<h3 class="subsection">list_autotyp_scripts — Script List</h3>
+<p>No arguments. <strong>Return value</strong>: <code>{ count, scripts: [ { name, description, path } ] }</code> (the <code>*.autotyp</code> under scripts/. The description is extracted from the <code>← </code> line immediately after <code>^ATP</code>).</p>
+
+<h3 class="subsection">save_connection_preset — Save Connection Configuration</h3>
+<table class="compact">
+  <tr><th style="width:40mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>name</code></td><td>○</td><td>Connection configuration name (unique identifier)</td></tr>
+  <tr><td><code>host</code></td><td>○</td><td>Host name / IP address</td></tr>
+  <tr><td><code>port</code></td><td></td><td>Port number (default 23)</td></tr>
+  <tr><td><code>code_page</code></td><td></td><td>cp037 / cp500 / cp1148 / cp1399 / cp5035 / cp5026_current / cp5026_legacy</td></tr>
+  <tr><td><code>screen_size</code></td><td></td><td>24x80 (default) / 27x132</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td></td><td>off / log / execute (default)</td></tr>
+  <tr><td><code>device_name</code></td><td></td><td>Device name (optional)</td></tr>
+  <tr><td><code>pwd_env_var</code></td><td></td><td>The environment variable name referenced by ^PWD (used when the viewer is not connected / headless)</td></tr>
+  <tr><td><code>autorun_autotyp</code></td><td></td><td>The name of the AUTOTYP script to run automatically immediately after a successful connection</td></tr>
+  <tr><td><code>allow_ds4</code></td><td></td><td>Whether to permit switching to 27x132 (DS4) (default true)</td></tr>
+  <tr><td><code>description</code></td><td></td><td>Description of the configuration (optional)</td></tr>
+</table>
+<p><strong>Return value</strong>: <code>{ success }</code>. The password is not saved (^PWD is obtained from <code>pwd_env_var</code> or the viewer modal).</p>
+
+<h3 class="subsection">run_macro — Run HAScript Macro</h3>
+<table class="compact">
+  <tr><th style="width:40mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>session_id</code></td><td>○</td><td>Session identifier</td></tr>
+  <tr><td><code>macro_xml</code> / <code>macro_file</code></td><td>○</td><td>Either a HAScript XML string (<code>macro_xml</code>) or a file path (<code>macro_file</code>) (mutually exclusive)</td></tr>
+  <tr><td><code>variables</code></td><td></td><td>Macro variables (<code>{ "userid": "...", ... }</code>. Prompt values, etc.)</td></tr>
+  <tr><td><code>max_screens</code></td><td></td><td>Maximum number of screens to process (default 50)</td></tr>
+</table>
+<p><strong>Return value</strong>: The macro execution result (success/failure, number of screens processed, etc.)</p>
+
+<h3 class="subsection">convert_macro — HAScript ⇔ AUTOTYP Conversion</h3>
+<table class="compact">
+  <tr><th style="width:40mm">Argument</th><th style="width:12mm">Required</th><th>Description</th></tr>
+  <tr><td><code>direction</code></td><td>○</td><td><code>hascript-to-autotyp</code> (HAScript XML → AUTOTYP) / <code>autotyp-to-hascript</code> (AUTOTYP → HAScript JSON)</td></tr>
+  <tr><td><code>input</code></td><td>○</td><td>The input string (HAScript XML or AUTOTYP text, depending on direction)</td></tr>
+</table>
+<p><strong>Return value</strong>: The converted text / structure</p>
+
+<div class="box note">
+  <div class="box-title">The fields Coordinates of get_screen</div>
+  In get_screen json, the <code>row</code> / <code>col</code> of <code>fields[]</code> indicate the position of the attribute byte. The data start position is <code>col + 1</code>. The <code>row</code> / <code>col</code> of send_text / get_field_text specify the data start position (1-based).
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 6 章 ログと運用                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;6</div>
+  <div class="cc-title">Logging and Operations</div>
+  <div class="cc-sub">Explains how to check logs and how to troubleshoot.</div>
+</section>
+
+<h1 class="chapter"><span class="num">6</span>Logging and Operations</h1>
+
+<h2 class="section">6.1&nbsp;Session Logs</h2>
+
+<p>If you specify <code>log=true</code> at connection time, the session log is recorded to a file (when omitted, it is in memory only and can be retrieved with <code>get_session_log</code>). The default file path is as follows.</p>
+
+<pre><code>log/<em>session ID</em>_YYYYMMDD-HHMMSS.log</code></pre>
+
+<p>The log is chronological text, with each line in the format <code>[time] type: content</code>. The main types recorded are as follows.</p>
+
+<table class="compact">
+  <tr><th style="width:46mm">Type</th><th>Recorded Content</th></tr>
+  <tr><td>Connect / Disconnect</td><td>The destination host, port, code page, terminal type, device name, and the trigger for disconnection.</td></tr>
+  <tr><td>Sent byte stream (SEND)</td><td>A summary of the 5250 data stream sent to IBM&nbsp;i (AID code, SBA address, field content in hex, etc.).</td></tr>
+  <tr><td>Received byte stream (RECV)</td><td>A summary of the commands received from IBM&nbsp;i (Write to Display / Clear Unit / Write Structured Field, etc.) and control characters.</td></tr>
+  <tr><td>AID key</td><td>The type of AID key sent (ENTER / F1–F24 / CLEAR, etc.).</td></tr>
+  <tr><td>AUTOTYP</td><td>The start (<code>AUTOTYP_START</code>) / end (<code>AUTOTYP_END</code>) of script execution, and the execution steps of each line's command, input data, waits, and conditional branches.</td></tr>
+  <tr><td>Input state / Error</td><td>The occurrence and release of the keyboard lock (X&nbsp;II / X SYSTEM), input-inhibited wait timeouts, field validation errors, and protocol exceptions.</td></tr>
+  <tr><td>STRPCCMD</td><td>When <code>strpccmd_mode</code> is <code>log</code> / <code>execute</code>, the content of the PC command requested from the PGM and its handling (detected / executed).</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">Retrieving the Log</div>
+  In addition to file output (<code>log=true</code>), you can retrieve the in-memory log at any time with the <code>get_session_log</code> tool. If you need a detailed hex dump of the byte stream, start the server with the <code>DEBUG_5250</code> environment variable.
+</div>
+
+<h2 class="section">6.2&nbsp;Common Problems</h2>
+
+<table>
+  <tr><th style="width:55mm">Symptom</th><th>Points to Check</th></tr>
+  <tr>
+    <td>Cannot connect</td>
+    <td>
+      <ul class="compact-list" style="margin:0">
+        <li>Whether IBM&nbsp;i is running</li>
+        <li>Whether the host name and port number are correct</li>
+        <li>The status of the firewall / VPN</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>AUTOTYP fails</td>
+    <td>It may be timing out while waiting for the server response. Insert wait time with <code>^WAITX</code>, or run run_autotyp after waiting sufficiently rather than immediately after connecting.</td>
+  </tr>
+  <tr>
+    <td>Garbled characters</td>
+    <td>Check the code_page setting. The most common in a Japanese environment is <strong>cp5026_legacy (= 290 host katakana, the default of IBM-supplied Japanese 5250 emulators; lowercase letters are forced to uppercase)</strong>. The modern extended host katakana variant is <strong>cp5026_current</strong>, and in DBCS environments choose cp1399 (= JIS2004 DBCS).</td>
+  </tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">Effect of Stopping / Restarting This Product</div>
+  When you stop or restart this product (the MCP server process), all 5250 sessions held by that process are disconnected.<br>
+  Note that MCP instances of this product started individually by another PC or another user are not affected. They operate independently of each other.
+</div>
+
+<h2 class="section">6.3&nbsp;Constraints When Operating the Viewer via Playwright</h2>
+
+<h3 class="subsection">6.3.1&nbsp;Playwright Library vs. <code>@playwright/mcp</code></h3>
+
+<p>The word "Playwright" covers two distinct usage models; it is important to tell them apart.</p>
+
+<table class="compact">
+  <tr>
+    <th style="width:28mm">Item</th>
+    <th>Playwright library (direct use)</th>
+    <th><code>@playwright/mcp</code> (via MCP)</th>
+  </tr>
+  <tr>
+    <td>Role</td>
+    <td>API set called directly from Node.js / Python code (<code>chromium.launch()</code>, etc.)</td>
+    <td>MCP server that uses Playwright internally. Claude calls MCP tools such as <code>browser_navigate</code></td>
+  </tr>
+  <tr>
+    <td>Controlled instance</td>
+    <td>All browser instances the code launched</td>
+    <td>One Chrome instance auto-created at startup only</td>
+  </tr>
+  <tr>
+    <td>App mode<br>(<code>--app=...</code>)</td>
+    <td>◯ Possible with <code>chromium.launch({ args: ['--app=...'] })</code></td>
+    <td>× No equivalent launch option exposed by the public tools</td>
+  </tr>
+</table>
+
+<p>In this product's Claude integration, <code>@playwright/mcp</code> is used. All <code>browser_navigate</code> / <code>browser_take_screenshot</code> calls that Claude makes go through this MCP server.</p>
+
+<h3 class="subsection">6.3.2&nbsp;Two-Window Setup: App-Mode Window and Playwright Window</h3>
+
+<p>A window opened in <strong>app mode</strong> (<code>chrome.exe --app=http://localhost:5250/...</code> launched from Bash / PowerShell) is <strong>outside Playwright's CDP control</strong>. That means Playwright cannot take screenshots of or operate that same window.</p>
+
+<table class="compact">
+  <tr>
+    <th style="width:46mm">How launched</th>
+    <th style="width:32mm">App mode<br>(no address bar)</th>
+    <th>Playwright control<br>(screenshot / operation)</th>
+  </tr>
+  <tr>
+    <td><code>chrome.exe --app=...</code> via Bash</td>
+    <td>◯</td>
+    <td>× (no CDP connection)</td>
+  </tr>
+  <tr>
+    <td><code>browser_navigate</code> (<code>@playwright/mcp</code>)</td>
+    <td>× (address bar visible)</td>
+    <td>◯</td>
+  </tr>
+</table>
+
+<p>To capture screenshots, a window opened through <code>@playwright/mcp</code> is required. The typical setup is a <strong>two-window configuration</strong>: the administrator views the app-mode window, while Claude takes screenshots in a separate Playwright window.</p>
+
+<h3 class="subsection">6.3.3&nbsp;Correct Way to Take Screenshots (<code>toolbar_hidden</code>)</h3>
+
+<p>To capture only the 5250 terminal screen (no toolbars) as a screenshot for manuals or tests, follow these steps.</p>
+
+<ol>
+  <li>Prepare a connection preset in <code>config.json</code> that has <code>"toolbar_hidden": true</code> (see section 2.1 for how to configure).</li>
+  <li>Run <code>connect_5250</code> using that preset and obtain the session ID.</li>
+  <li>Use <code>browser_navigate</code> in Playwright MCP to open <code>http://localhost:5250/?session=&lt;session ID&gt;</code>.</li>
+  <li>Take the screenshot with <code>browser_take_screenshot</code>. Because <code>toolbar_hidden: true</code> hides all toolbars via CSS, the <strong>5250 terminal canvas fills the entire viewport</strong> in the captured image.</li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">How <code>toolbar_hidden: true</code> works</div>
+  When the viewer loads, it fetches this setting from <code>GET /api/viewer-defaults</code> and applies <code>document.body.classList.add('tb-collapsed')</code>. CSS hides all toolbars (connection form / keyboard / phase bar), and <code>body { height: 100vh; display: flex; flex-direction: column; }</code> makes the 5250 canvas fill the viewport. Because the address bar is outside the viewport, the output of <code>browser_take_screenshot</code> contains only the 5250 screen.
+</div>
+
+<h3 class="subsection">6.3.4&nbsp;Constraints and Role Comparison</h3>
+
+<p>Playwright is a tool for automating a web browser. A generative AI agent (= Claude, etc.) can <strong>observe</strong> this product's viewer screen (= getting the screen, taking screenshots, inspecting elements) through Playwright MCP. <strong>Recommendation</strong>: limit Playwright to launching the browser and observation (<code>browser_navigate</code> / <code>browser_snapshot</code> / <code>browser_take_screenshot</code>, etc.), and send keystrokes and AID to the 5250 via <strong>this product's MCP tools</strong> (<code>send_key</code> / <code>send_text</code> / <code>run_autotyp</code> / <code>paste_text</code>) or by a user's own keyboard input in the viewer. Viewer keystrokes are sent to the server <strong>asynchronously</strong>, but input originating in the viewer is sent in a guaranteed order; the MCP AID send does not go through that input serialization. So mixing Playwright keystrokes with an MCP AID send (= ENTER / function keys and other screen-submit keys) <strong>simultaneously and at high volume / high speed</strong> can reorder the two, and a keystroke may be dropped before the AID is sent. This does not forbid using Playwright's keystroke functions as such; the problem only arises when they are mixed with the MCP AID simultaneously and at high volume / high speed. Routing all keystrokes through a user's keyboard input and the MCP tools avoids the ordering problem and keeps automation reproducible. Please also check the following constraints and responses.</p>
+
+<p>The table below places the three parties that operate or observe the viewer (= this product's MCP tools / Playwright / a user's normal browser) side by side and compares them by purpose / function (◯ = available, △ = only indirectly / partially, × = not available; caveats such as conflicts are noted in the cell).</p>
+
+<table class="role-compare">
+  <tr>
+    <th style="width:42mm">Purpose / function</th>
+    <th>This product's MCP tools</th>
+    <th>Playwright<br>(dedicated Chromium)</th>
+    <th>User's normal browser<br>(manual)</th>
+  </tr>
+  <tr>
+    <td>Primary use</td>
+    <td>The backbone for all input, logical-screen retrieval, and automation</td>
+    <td>Visual / DOM observation only (when done automatically by the AI)</td>
+    <td>Everyday interactive operation and final visual check</td>
+  </tr>
+  <tr>
+    <td>Keystroke / AID input</td>
+    <td>◯ sent at the protocol layer (<code>send_key</code> / <code>send_text</code>)</td>
+    <td>◯ possible via <code>browser_type</code> etc. (note: conflicts with the MCP AID when mixed simultaneously / at high volume / fast — route input through MCP)</td>
+    <td>◯ typed directly by the user on the keyboard</td>
+  </tr>
+  <tr>
+    <td>Multi-line paste</td>
+    <td>◯ pasted in one go with <code>paste_text</code></td>
+    <td>◯ text can be entered via <code>browser_type</code> (note: same conflict when concurrent / fast)</td>
+    <td>◯ pasted with Ctrl+V</td>
+  </tr>
+  <tr>
+    <td>Deterministic script execution (AUTOTYP / macro)</td>
+    <td>◯ run with <code>run_autotyp</code> / <code>run_macro</code></td>
+    <td>× no means to run</td>
+    <td>× no means to run (manual operation only)</td>
+  </tr>
+  <tr>
+    <td>Mouse operation / text selection</td>
+    <td>× has no mouse (keys / AID only)</td>
+    <td>◯ DOM operations via <code>browser_click</code> / <code>browser_drag</code></td>
+    <td>◯ operated with the mouse by the user</td>
+  </tr>
+  <tr>
+    <td>Logical screen retrieval (text / attributes)</td>
+    <td>◯ retrieves text / color / attributes with <code>get_screen</code></td>
+    <td>△ indirectly from the DOM text (no dedicated API)</td>
+    <td>△ read by eye / via DevTools</td>
+  </tr>
+  <tr>
+    <td>Screenshot (rendered image) / appearance check</td>
+    <td>△ a text form of the screen is available via <code>get_screen</code>; a rendered pixel image is not</td>
+    <td>◯ captures the rendering as an image with <code>browser_take_screenshot</code></td>
+    <td>◯ by eye / OS screenshot</td>
+  </tr>
+  <tr>
+    <td>DOM / CSS / layout inspection</td>
+    <td>× no access to the live DOM</td>
+    <td>◯ inspects DOM / computed styles with <code>browser_evaluate</code></td>
+    <td>◯ inspected via DevTools (F12)</td>
+  </tr>
+  <tr>
+    <td>Browser console / network inspection<br>(DevTools: JS console output / traffic log)</td>
+    <td>△ only requests received by the server (<code>get_session_log</code>); the browser's console / network log is not visible</td>
+    <td>◯ via <code>browser_console_messages</code> / network retrieval</td>
+    <td>◯ via the Console / Network tabs of DevTools (F12)</td>
+  </tr>
+  <tr>
+    <td>Connection management (connect / disconnect)</td>
+    <td>◯ managed with <code>connect_5250</code> / <code>disconnect_5250</code></td>
+    <td>△ no dedicated API, but possible by clicking the on-screen connect / disconnect button via <code>browser_click</code></td>
+    <td>◯ via the viewer's connect form / preset selection and the disconnect toggle button</td>
+  </tr>
+</table>
+
+<div class="box caution">
+  <div class="box-title">AI agent guidance: do not mix Playwright keystrokes with the MCP tools' AID simultaneously at high volume / high speed</div>
+  <strong>Key point</strong>: route 5250 keystrokes / AID through the MCP tools (<code>send_key</code> / <code>send_text</code> / <code>run_autotyp</code> / <code>paste_text</code>) or the user's keyboard, and use Playwright for observation (<code>browser_navigate</code> / <code>browser_snapshot</code> / <code>browser_take_screenshot</code> / <code>browser_evaluate</code>). Playwright's keystroke functions (<code>browser_type</code> etc.) are not forbidden as such, but mixing them with the MCP AID simultaneously at high volume / high speed can drop or reorder input. For the mechanism and what each party can do, see the introduction to this section and the comparison table above.
+</div>
+
+<div class="box caution">
+  <div class="box-title">Do Not Call <code>browser_resize</code> in Playwright</div>
+  Calling Playwright MCP's <code>browser_resize</code> (= <code>page.setViewportSize</code>) releases the automatic following between the viewer's window frame and the viewport, and subsequent resize operations no longer affect the viewer.<br>
+  In this product, the canonical operation is to have the viewport follow the user's OS window via <code>contextOptions.viewport: null</code> in <code>%USERPROFILE%\.claude\playwright-mcp-config.json</code>. In tests via Playwright, use only observational operations such as <code>browser_navigate</code>.
+</div>
+
+<table>
+  <tr><th style="width:42mm">Phenomenon</th><th style="width:60mm">Cause</th><th>Response</th></tr>
+  <tr>
+    <td>Manually resizing the viewer window does not change the screen size</td>
+    <td>Playwright (= the AI agent) called <code>browser_resize</code> just before, switching the viewport to a fixed state</td>
+    <td>
+      <ol class="compact-list" style="margin:0">
+        <li>Restart this product's MCP server (= Playwright MCP is also re-spawned together, and the <code>viewport: null</code> setting is reapplied in a clean state).</li>
+        <li>Or reopen the same URL <code>http://localhost:5250/?session=&lt;session ID&gt;</code> from a normal browser such as Chrome (= operate under the user's OS window management. Independent of Playwright's Chromium instance).</li>
+        <li>Check that <code>contextOptions.viewport: null</code> in <code>playwright-mcp-config.json</code> has not been deleted (= restore it if it has been deleted).</li>
+      </ol>
+    </td>
+  </tr>
+  <tr>
+    <td>The AI agent states things like "Playwright resize does not work" or "the viewport is fixed"</td>
+    <td>The AI agent is trying to use / has used the <code>browser_resize</code> tool</td>
+    <td>Stop the agent from using that tool, and recover using steps 1–3 above. This phenomenon is known as a structural recurring pattern on the AI agent side (= see <code>docs/postmortems.md</code> and the rule 22 sub-bullet in <code>CLAUDE.md</code> for details).</td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 7 章 付録                                                  -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">Chapter&nbsp;7</div>
+  <div class="cc-title">Appendix</div>
+  <div class="cc-sub">Covers port assignments, the config.json specification, and a glossary.</div>
+</section>
+
+<h1 class="chapter"><span class="num">7</span>Appendix</h1>
+
+<h2 class="section">7.1&nbsp;Port Assignments</h2>
+
+<table class="compact">
+  <tr><th style="width:50mm">Port</th><th>Use</th></tr>
+  <tr><td>23</td><td>Telnet on the IBM&nbsp;i side (= destination)</td></tr>
+  <tr><td>5250 (= default)</td><td>The web viewer HTTP port of this product</td></tr>
+  <tr><td>5251, 5252, ...</td><td>Automatically falls back to a free port if 5250 is in use</td></tr>
+</table>
+
+<h2 class="section">7.2&nbsp;List of config.json Items</h2>
+
+<table class="compact">
+  <tr><th style="width:54mm">Key</th><th>Description</th></tr>
+  <tr><td><code>host</code></td><td>The destination host name or IP address</td></tr>
+  <tr><td><code>port</code></td><td>The destination Telnet port (default 23)</td></tr>
+  <tr><td><code>code_page</code></td><td>The host code page</td></tr>
+  <tr><td><code>dbcs_unicode_mapping</code></td><td>Unicode mapping of the cp1399 DBCS symbols. <code>"ms"</code> (default) = MS-compatible (fullwidth, avoids half-width rendering); <code>"unicode_standard"</code> = IBM / Unicode standard. <strong>Effective only for cp1399</strong>; cp5035 / cp5026 are fixed to the MS mapping and ignore this setting. The five symbols are X'4260' (－/−), X'426A' (￤/¦), X'43A1' (～/〜), X'444A' (―/—), and X'447C' (∥/‖).</td></tr>
+  <tr><td><code>screen_size</code></td><td>"24x80" or "27x132"</td></tr>
+  <tr><td><code>strpccmd_mode</code></td><td>"off" / "log" / "execute"</td></tr>
+  <tr><td><code>device_name</code></td><td>The workstation ID (= device name, wildcards allowed)</td></tr>
+  <tr><td><code>pwd_env_var</code></td><td>The name of the environment variable storing the password</td></tr>
+  <tr><td><code>autorun_autotyp</code></td><td>The name of the script to run automatically after connection</td></tr>
+  <tr><td><code>session_counter</code></td><td>The counter for the "*" wildcard of device_name (managed internally)</td></tr>
+  <tr><td><code>description</code></td><td>The description of the configuration</td></tr>
+</table>
+
+<p>The following items are written at the top level of <code>config.json</code> (= outside "presets").</p>
+
+<table class="compact">
+  <tr><th style="width:54mm">Key</th><th>Description</th></tr>
+  <tr><td><code>viewer_defaults</code></td><td>The default values for the viewer's four display toggles (= one set for the entire viewer, see Section 3.1). Subkeys: <code>input_highlight</code> (= input field highlight, true/false), <code>cs_style</code> (= column separators, "Line"/"Dot"), <code>sbcs_cp</code> (= SBCS code page, "1027"/"290"), <code>shift_visible</code> (= shift character display, true/false).</td></tr>
+  <tr><td><code>autoconnect_preset</code></td><td>Specifies the name of the connection configuration to connect to automatically when the MCP server starts (no automatic connection when empty). Immediately after server startup completes, it internally calls <code>connect_5250 preset=&lt;name&gt;</code>, and the established session ID is notified to the viewer via <code>/api/autoconnect-session</code>. If the URL has no <code>?session=</code> parameter, the viewer automatically connects to that session.</td></tr>
+</table>
+
+<p>The same specification is also possible via the environment variable <code>IBM5250_AUTOCONNECT_PRESET</code> or the startup CLI argument <code>--autoconnect-preset=&lt;name&gt;</code> (priority: CLI argument &gt; environment variable &gt; config.json).</p>
+
+<h2 class="section">7.3&nbsp;Glossary</h2>
+
+<table class="compact">
+  <tr><th style="width:42mm">Term</th><th>Description</th></tr>
+  <tr><td>5250</td><td>The screen terminal protocol of IBM&nbsp;i (AS/400). The target this product emulates.</td></tr>
+  <tr><td>MCP (Model Context Protocol)</td><td>The standard by which generative AI agents call tools. This product provides 5250 operation tools as an MCP server.</td></tr>
+  <tr><td>AID key</td><td>Attention Identification. Keys that send the screen to IBM&nbsp;i, such as ENTER / F1–F24 / CLEAR.</td></tr>
+  <tr><td>OIA</td><td>Operator Information Area. The status display line at the bottom of the screen (input state, cursor position, communication status, etc.).</td></tr>
+  <tr><td>X&nbsp;II / X SYSTEM</td><td>A state where the keyboard is locked and input is not possible (Input Inhibited). Release it with <span class="key">RESET</span>.</td></tr>
+  <tr><td>Field</td><td>An input / display area on the screen. Defined in DDS, with attributes such as protected / unprotected, numeric, and DBCS.</td></tr>
+  <tr><td>DDS</td><td>Data Description Specifications. The description that defines display device files (screens) on IBM&nbsp;i.</td></tr>
+  <tr><td>FFW / FCW</td><td>Field Format Word / Field Control Word. The protocol-level bits representing a field's attributes (numeric, mandatory, uppercase conversion, DBCS type, etc.).</td></tr>
+  <tr><td>SBCS / DBCS</td><td>Single-Byte / Double-Byte Character Set. Alphanumerics and katakana are SBCS, while kanji and kana are DBCS (2 bytes).</td></tr>
+  <tr><td>SO / SI</td><td>Shift-Out / Shift-In. The shift characters indicating the start / end of a DBCS region. They can be replaced with <code>{</code> <code>}</code> in the display.</td></tr>
+  <tr><td>CNTFLD</td><td>Continued entry field. A single logical field spanning multiple lines.</td></tr>
+  <tr><td>EBCDIC</td><td>The character code system of IBM&nbsp;i / mainframes. Converted to and from Unicode via code pages.</td></tr>
+  <tr><td>Code page</td><td>The conversion table between EBCDIC and Unicode (cp037 / cp1399 / cp5026_current, etc.).</td></tr>
+  <tr><td>DS3 / DS4</td><td>Screen size. DS3 = 24×80, DS4 = 27×132.</td></tr>
+  <tr><td>AUTOTYP</td><td>This product's text-based automatic input script (Chapter 4).</td></tr>
+  <tr><td>HAScript</td><td>The macro XML format of HCL ZIEWeb / IBM HOD. Supported by <code>run_macro</code> / <code>convert_macro</code>.</td></tr>
+  <tr><td>STRPCCMD</td><td>A mechanism by which an IBM&nbsp;i program requests the execution of a command on the PC side. Its handling is controlled by <code>strpccmd_mode</code>.</td></tr>
+  <tr><td>^PWD</td><td>The AUTOTYP password substitution command. Obtained from an environment variable or the viewer modal (Section 2.3).</td></tr>
+  <tr><td>Connection configuration (preset)</td><td>A set of connection parameters saved in config.json. Referenced by the <code>preset</code> of <code>connect_5250</code>.</td></tr>
+  <tr><td>SIGNOFF</td><td>IBM&nbsp;i sign-off. Perform it before disconnecting to prevent orphaning of the interactive job (QPADEVxxxx) (Section 1.4).</td></tr>
+</table>
+
+<h2 class="section">7.4&nbsp;SBCS Code Tables</h2>
+
+<p>Correspondence tables for the main SBCS (single-byte) EBCDIC code pages handled by this product. In each table the <strong>high 4 bits (column, hex)</strong> × <strong>low 4 bits (row, hex)</strong> intersect to give the character for that byte (e.g., column 4 / row A = <code>0x4A</code>). Bytes 0x00&ndash;0x3F are control codes and are omitted. A <strong>blank cell</strong> is the space character or an undefined code point (no character assigned, per the IBM / ICU definition); <strong>▒</strong> marks a non-convertible code shown as ■ on legacy displays in CP290 (non-extended). The layout follows <code>reference/cp290_old.pdf</code> (the IBM katakana character set and its code table).</p>
+
+<style>
+.cptable{border-collapse:collapse;margin:2mm 0 1.5mm 0;font-family:"Consolas","Courier New","DejaVu Sans Mono","MS Gothic","Yu Gothic",monospace}
+.cptable th,.cptable td{border:0.5pt solid #777;width:10mm;height:6.4mm;text-align:center;vertical-align:middle;padding:0;font-size:14.5pt;line-height:1;font-family:"Consolas","Courier New","DejaVu Sans Mono","MS Gothic","Yu Gothic",monospace}
+.cptable th{background:#e8eef4;font-weight:bold;font-size:11.5pt}
+.cptable th.cpcorner{font-size:7pt;font-weight:normal;color:#555;white-space:nowrap;width:12mm}
+.cpwrap{page-break-inside:avoid;margin-bottom:5mm}
+.cpwrap h3{font-size:11.5pt;margin:3mm 0 0.5mm 0}
+.cpwrap .cpnote{font-size:8.5pt;color:#444;margin:0.5mm 0 0 0}
+</style>
+<div class="cpwrap">
+<h3>CP290 (non-extended / legacy 290) — Japanese katakana</h3>
+<table class="cptable">
+<tr><th class="cpcorner">lo＼hi</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td></td><td></td><td>ｿ</td><td>▒</td><td>▒</td><td>{</td><td>}</td><td>$</td><td>0</td></tr>
+<tr><th>1</th><td>｡</td><td>ｪ</td><td>/</td><td></td><td>ｱ</td><td>ﾀ</td><td>‾</td><td></td><td>A</td><td>J</td><td></td><td>1</td></tr>
+<tr><th>2</th><td>｢</td><td>ｫ</td><td></td><td></td><td>ｲ</td><td>ﾁ</td><td>ﾍ</td><td></td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｣</td><td>ｬ</td><td></td><td></td><td>ｳ</td><td>ﾂ</td><td>ﾎ</td><td></td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>､</td><td>ｭ</td><td></td><td></td><td>ｴ</td><td>ﾃ</td><td>ﾏ</td><td></td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>･</td><td>ｮ</td><td></td><td></td><td>ｵ</td><td>ﾄ</td><td>ﾐ</td><td></td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ｦ</td><td>ｯ</td><td></td><td></td><td>ｶ</td><td>ﾅ</td><td>ﾑ</td><td></td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｧ</td><td></td><td></td><td></td><td>ｷ</td><td>ﾆ</td><td>ﾒ</td><td></td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｨ</td><td>ｰ</td><td></td><td></td><td>ｸ</td><td>ﾇ</td><td>ﾓ</td><td></td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｩ</td><td></td><td></td><td>▒</td><td>ｹ</td><td>ﾈ</td><td>ﾔ</td><td></td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>£</td><td>!</td><td>▒</td><td>:</td><td>ｺ</td><td>ﾉ</td><td>ﾕ</td><td>ﾚ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>¥</td><td>,</td><td>#</td><td></td><td></td><td></td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ｻ</td><td></td><td>ﾖ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ｼ</td><td>ﾊ</td><td>ﾗ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ｽ</td><td>ﾋ</td><td>ﾘ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ｾ</td><td>ﾌ</td><td>ﾙ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">The character set of the IBM 5250PC era (circa 1984). It has no lowercase letters; on input they are forced to uppercase. ▒ = undefined / non-convertible code.</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP290 (extended) — Japanese katakana</h3>
+<table class="cptable">
+<tr><th class="cpcorner">lo＼hi</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>[</td><td>]</td><td>ｿ</td><td>~</td><td>^</td><td>{</td><td>}</td><td>$</td><td>0</td></tr>
+<tr><th>1</th><td>｡</td><td>ｪ</td><td>/</td><td>i</td><td>ｱ</td><td>ﾀ</td><td>‾</td><td>¢</td><td>A</td><td>J</td><td></td><td>1</td></tr>
+<tr><th>2</th><td>｢</td><td>ｫ</td><td>a</td><td>j</td><td>ｲ</td><td>ﾁ</td><td>ﾍ</td><td>\</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｣</td><td>ｬ</td><td>b</td><td>k</td><td>ｳ</td><td>ﾂ</td><td>ﾎ</td><td>t</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>､</td><td>ｭ</td><td>c</td><td>l</td><td>ｴ</td><td>ﾃ</td><td>ﾏ</td><td>u</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>･</td><td>ｮ</td><td>d</td><td>m</td><td>ｵ</td><td>ﾄ</td><td>ﾐ</td><td>v</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ｦ</td><td>ｯ</td><td>e</td><td>n</td><td>ｶ</td><td>ﾅ</td><td>ﾑ</td><td>w</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｧ</td><td>ｰ</td><td>f</td><td>o</td><td>ｷ</td><td>ﾆ</td><td>ﾒ</td><td>x</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｨ</td><td>ｰ</td><td>g</td><td>p</td><td>ｸ</td><td>ﾇ</td><td>ﾓ</td><td>y</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｩ</td><td>!</td><td>h</td><td>`</td><td>ｹ</td><td>ﾈ</td><td>ﾔ</td><td>z</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>£</td><td>!</td><td>i</td><td>:</td><td>ｺ</td><td>ﾉ</td><td>ﾕ</td><td>ﾚ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>¥</td><td>,</td><td>#</td><td>q</td><td>r</td><td>s</td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ｻ</td><td>ﾊ</td><td>ﾖ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ｼ</td><td>ﾊ</td><td>ﾗ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ｽ</td><td>ﾋ</td><td>ﾘ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ｾ</td><td>ﾌ</td><td>ﾙ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">The extended 290. Adds lowercase letters and some symbols.</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP1027 (Japanese Latin / alphanumeric)</h3>
+<table class="cptable">
+<tr><th class="cpcorner">lo＼hi</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ｺ</td><td></td><td></td><td>‾</td><td>^</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>ｩ</td><td>/</td><td>ｻ</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>€</td><td>1</td></tr>
+<tr><th>2</th><td>｡</td><td>ｪ</td><td>ｲ</td><td>ｼ</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>｢</td><td>ｫ</td><td>ｳ</td><td>ｽ</td><td>c</td><td>l</td><td>t</td><td>ﾔ</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>｣</td><td>ｬ</td><td>ｴ</td><td>ｾ</td><td>d</td><td>m</td><td>u</td><td>ﾕ</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>､</td><td>ｭ</td><td>ｵ</td><td>ｿ</td><td>e</td><td>n</td><td>v</td><td>ﾖ</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>･</td><td>ｮ</td><td>ｶ</td><td>ﾀ</td><td>f</td><td>o</td><td>w</td><td>ﾗ</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>ｦ</td><td>ｯ</td><td>ｷ</td><td>ﾁ</td><td>g</td><td>p</td><td>x</td><td>ﾘ</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ｧ</td><td>ｰ</td><td>ｸ</td><td>ﾂ</td><td>h</td><td>q</td><td>y</td><td>ﾙ</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ｨ</td><td>ｱ</td><td>ｹ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>ﾚ</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>¢</td><td>!</td><td></td><td>:</td><td>ﾃ</td><td>ﾉ</td><td>ﾏ</td><td>ﾛ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>ﾄ</td><td>ﾊ</td><td>ﾐ</td><td>ﾜ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ﾅ</td><td>ﾋ</td><td>ﾑ</td><td>ﾝ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ﾆ</td><td>ﾌ</td><td>[</td><td>]</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>ﾇ</td><td>ﾍ</td><td>ﾒ</td><td>ﾞ</td><td></td><td></td><td></td><td></td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>ﾈ</td><td>ﾎ</td><td>ﾓ</td><td>ﾟ</td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="cpnote">The SBCS component of cp1399 / cp5035. Blank cells are code points with no character assigned.<br><strong>Note</strong>: strictly this table is not CP1027 itself but the <strong>CCSID 5123</strong> (the Euro extension of CP1027) used by this product; since CP5123 is not well known it is shown under the common CP1027 name. <strong>The only difference is 0xE1</strong> — ÷ (U+00F7) in CP1027 vs € (U+20AC) in CP5123. This table follows CP5123, so 0xE1 = €. Reference: <a href="https://github.com/unicode-org/icu/blob/main/icu4c/source/data/mappings/ibm-5123_P100-1999.ucm">ICU ibm-5123_P100-1999.ucm</a></p>
+</div>
+
+<div class="cpwrap">
+<h3>CP037 (US English) — EBCDIC US/Canada</h3>
+<table class="cptable">
+<tr><th class="cpcorner">lo＼hi</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ø</td><td>Ø</td><td>°</td><td>µ</td><td>^</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>é</td><td>/</td><td>É</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>÷</td><td>1</td></tr>
+<tr><th>2</th><td>â</td><td>ê</td><td>Â</td><td>Ê</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>ä</td><td>ë</td><td>Ä</td><td>Ë</td><td>c</td><td>l</td><td>t</td><td>·</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>à</td><td>è</td><td>À</td><td>È</td><td>d</td><td>m</td><td>u</td><td>©</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>á</td><td>í</td><td>Á</td><td>Í</td><td>e</td><td>n</td><td>v</td><td>§</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ã</td><td>î</td><td>Ã</td><td>Î</td><td>f</td><td>o</td><td>w</td><td>¶</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>å</td><td>ï</td><td>Å</td><td>Ï</td><td>g</td><td>p</td><td>x</td><td>¼</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ç</td><td>ì</td><td>Ç</td><td>Ì</td><td>h</td><td>q</td><td>y</td><td>½</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ñ</td><td>ß</td><td>Ñ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>¾</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>¢</td><td>!</td><td>¦</td><td>:</td><td>«</td><td>ª</td><td>¡</td><td>[</td><td>­</td><td>¹</td><td>²</td><td>³</td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>»</td><td>º</td><td>¿</td><td>]</td><td>ô</td><td>û</td><td>Ô</td><td>Û</td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ð</td><td>æ</td><td>Ð</td><td>¯</td><td>ö</td><td>ü</td><td>Ö</td><td>Ü</td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ý</td><td>¸</td><td>Ý</td><td>¨</td><td>ò</td><td>ù</td><td>Ò</td><td>Ù</td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>þ</td><td>Æ</td><td>Þ</td><td>´</td><td>ó</td><td>ú</td><td>Ó</td><td>Ú</td></tr>
+<tr><th>F</th><td>|</td><td>¬</td><td></td><td>"</td><td>±</td><td>¤</td><td>®</td><td>×</td><td>õ</td><td>ÿ</td><td>Õ</td><td></td></tr>
+</table>
+<p class="cpnote">EBCDIC for the US and Canada.</p>
+</div>
+
+<div class="cpwrap">
+<h3>CP500 (EBCDIC International / ISO-8859-1 characters)</h3>
+<table class="cptable">
+<tr><th class="cpcorner">lo＼hi</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+<tr><th>0</th><td></td><td>&amp;</td><td>-</td><td>ø</td><td>Ø</td><td>°</td><td>µ</td><td>¢</td><td>{</td><td>}</td><td>\</td><td>0</td></tr>
+<tr><th>1</th><td></td><td>é</td><td>/</td><td>É</td><td>a</td><td>j</td><td>~</td><td>£</td><td>A</td><td>J</td><td>÷</td><td>1</td></tr>
+<tr><th>2</th><td>â</td><td>ê</td><td>Â</td><td>Ê</td><td>b</td><td>k</td><td>s</td><td>¥</td><td>B</td><td>K</td><td>S</td><td>2</td></tr>
+<tr><th>3</th><td>ä</td><td>ë</td><td>Ä</td><td>Ë</td><td>c</td><td>l</td><td>t</td><td>·</td><td>C</td><td>L</td><td>T</td><td>3</td></tr>
+<tr><th>4</th><td>à</td><td>è</td><td>À</td><td>È</td><td>d</td><td>m</td><td>u</td><td>©</td><td>D</td><td>M</td><td>U</td><td>4</td></tr>
+<tr><th>5</th><td>á</td><td>í</td><td>Á</td><td>Í</td><td>e</td><td>n</td><td>v</td><td>§</td><td>E</td><td>N</td><td>V</td><td>5</td></tr>
+<tr><th>6</th><td>ã</td><td>î</td><td>Ã</td><td>Î</td><td>f</td><td>o</td><td>w</td><td>¶</td><td>F</td><td>O</td><td>W</td><td>6</td></tr>
+<tr><th>7</th><td>å</td><td>ï</td><td>Å</td><td>Ï</td><td>g</td><td>p</td><td>x</td><td>¼</td><td>G</td><td>P</td><td>X</td><td>7</td></tr>
+<tr><th>8</th><td>ç</td><td>ì</td><td>Ç</td><td>Ì</td><td>h</td><td>q</td><td>y</td><td>½</td><td>H</td><td>Q</td><td>Y</td><td>8</td></tr>
+<tr><th>9</th><td>ñ</td><td>ß</td><td>Ñ</td><td>`</td><td>i</td><td>r</td><td>z</td><td>¾</td><td>I</td><td>R</td><td>Z</td><td>9</td></tr>
+<tr><th>A</th><td>[</td><td>]</td><td>¦</td><td>:</td><td>«</td><td>ª</td><td>¡</td><td>¬</td><td>­</td><td>¹</td><td>²</td><td>³</td></tr>
+<tr><th>B</th><td>.</td><td>$</td><td>,</td><td>#</td><td>»</td><td>º</td><td>¿</td><td>|</td><td>ô</td><td>û</td><td>Ô</td><td>Û</td></tr>
+<tr><th>C</th><td>&lt;</td><td>*</td><td>%</td><td>@</td><td>ð</td><td>æ</td><td>Ð</td><td>¯</td><td>ö</td><td>ü</td><td>Ö</td><td>Ü</td></tr>
+<tr><th>D</th><td>(</td><td>)</td><td>_</td><td>'</td><td>ý</td><td>¸</td><td>Ý</td><td>¨</td><td>ò</td><td>ù</td><td>Ò</td><td>Ù</td></tr>
+<tr><th>E</th><td>+</td><td>;</td><td>&gt;</td><td>=</td><td>þ</td><td>Æ</td><td>Þ</td><td>´</td><td>ó</td><td>ú</td><td>Ó</td><td>Ú</td></tr>
+<tr><th>F</th><td>!</td><td>^</td><td></td><td>"</td><td>±</td><td>¤</td><td>®</td><td>×</td><td>õ</td><td>ÿ</td><td>Õ</td><td></td></tr>
+</table>
+<p class="cpnote">International EBCDIC (Latin-1).</p>
+</div>
+
+
+</div><!-- /.manual-body -->
+
+<!-- ============================================================ -->
+<!-- 裏表紙                                                        -->
+<!-- ============================================================ -->
+<section class="back-cover">
+  <div class="bc-inner">
+    <div class="bc-title">IBM&nbsp;5250&nbsp;MCP Administrator Guide</div>
+    <div class="bc-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;Project</div>
+    <div class="bc-meta">
+      First&nbsp;Edition &nbsp;Issued&nbsp;May&nbsp;2026<br>
+      For technical inquiries, please contact the project desk
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

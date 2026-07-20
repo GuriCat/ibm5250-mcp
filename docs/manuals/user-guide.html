@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>IBM 5250 MCP ユーザー・ガイド</title>
+<link rel="stylesheet" href="manual.css">
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 表紙                                                          -->
+<!-- ============================================================ -->
+<section class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-badge">USER&nbsp;GUIDE</div>
+  <div class="cover-inner">
+    <div class="cover-product">開発支援用&nbsp;IBM&nbsp;i&nbsp;5250 端末エミュレーター<br>(MCP サーバー対応)</div>
+    <h1 class="cover-title">IBM&nbsp;5250&nbsp;MCP</h1>
+    <div class="cover-divider"></div>
+    <div class="cover-sub">ユーザー・ガイド</div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;プロジェクト</div>
+    <div class="cover-meta">
+      第&nbsp;1&nbsp;版<br>
+      2026&nbsp;年&nbsp;5&nbsp;月
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 安全表示                                                      -->
+<!-- ============================================================ -->
+<section class="safety">
+  <h1>取り扱い上のご注意</h1>
+  <p>本製品をお使いになる前に、必ずこの「取り扱い上のご注意」をよくお読みのうえ、正しくお使いください。</p>
+
+  <table class="safety-table">
+    <tr>
+      <th>注意</th>
+      <td>誤った取り扱いをすると、業務データや IBM&nbsp;i 上の資源に影響が生じる可能性があります。</td>
+    </tr>
+    <tr>
+      <th>禁止</th>
+      <td>絶対に行ってはならない操作です。</td>
+    </tr>
+    <tr>
+      <th>お知らせ</th>
+      <td>知っておくと便利な情報や、参考となる情報です。</td>
+    </tr>
+  </table>
+
+  <div class="box caution" style="margin-top:5mm">
+    <div class="box-title">操作内容のご確認</div>
+    本ソフトウェアは IBM&nbsp;i (旧称 AS/400, iSeries) との通信を行います。サーバー上のデータを意図せず変更してしまう操作 (例: 削除コマンド、システム値の更新) は、実行前に内容を必ずご確認ください。
+  </div>
+
+  <div class="box forbid">
+    <div class="box-title">パスワードについて</div>
+    パスワードを画面に入力したまま、機器を離れたり画面を共有したりしないでください。社内の運用ルールに従って取り扱ってください。
+  </div>
+
+  <div class="box note">
+    <div class="box-title">本ガイドの画面例について</div>
+    本ガイドに掲載している画面は、テスト環境を用いて撮影したものです。お使いの環境とは表示が異なる場合があります。
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 目次                                                          -->
+<!-- ============================================================ -->
+<section class="toc">
+  <h1>目次</h1>
+  <ul>
+    <li class="l1">1.&nbsp;はじめに</li>
+    <li class="l2">1.1&nbsp;本製品の概要</li>
+    <li class="l2">1.2&nbsp;本ガイドの構成</li>
+
+    <li class="l1">2.&nbsp;各部の名称</li>
+    <li class="l2">2.1&nbsp;画面全体</li>
+    <li class="l2">2.2&nbsp;ツールバーの説明</li>
+    <li class="l2">2.3&nbsp;状況表示行 (OIA)</li>
+    <li class="l2">2.4&nbsp;入力の専有と共有</li>
+
+    <li class="l1">3.&nbsp;ご使用の前に</li>
+    <li class="l2">3.1&nbsp;接続の開始</li>
+    <li class="l2">3.2&nbsp;サインオン</li>
+
+    <li class="l1">4.&nbsp;基本操作</li>
+    <li class="l2">4.1&nbsp;文字入力</li>
+    <li class="l2">4.2&nbsp;ファンクションキー</li>
+    <li class="l2">4.3&nbsp;コピーと貼り付け</li>
+    <li class="l2">4.4&nbsp;マウス操作</li>
+
+    <li class="l1">5.&nbsp;便利な機能</li>
+    <li class="l2">5.1&nbsp;AUTOTYP (自動入力)</li>
+    <li class="l2">5.2&nbsp;接続後の自動実行</li>
+    <li class="l2">5.3&nbsp;操作の記録</li>
+    <li class="l2">5.4&nbsp;表示の切替</li>
+    <li class="l2">5.5&nbsp;音声入力</li>
+    <li class="l2">5.6&nbsp;オンラインヘルプ</li>
+
+    <li class="l1">6.&nbsp;困ったときは</li>
+    <li class="l2">6.1&nbsp;接続できない</li>
+    <li class="l2">6.2&nbsp;画面が応答しない</li>
+    <li class="l2">6.3&nbsp;その他</li>
+
+    <li class="l1">7.&nbsp;用語集</li>
+    <li class="l1">8.&nbsp;キーボード一覧</li>
+  </ul>
+</section>
+
+<!-- 本文 (= 第1章〜最終章)。generate-manual.mjs が display 制御で本文だけを別 pass に切り出し、
+     フッターに第1章起点の論理ノンブルを付ける。 -->
+<div class="manual-body">
+<!-- ============================================================ -->
+<!-- 第 1 章 はじめに                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;1&nbsp;章</div>
+  <div class="cc-title">はじめに</div>
+  <div class="cc-sub">本製品の概要と、本ガイドの読み方をご紹介します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">1</span>はじめに</h1>
+
+<h2 class="section">1.1&nbsp;本製品の概要</h2>
+
+<p class="lead">IBM&nbsp;5250&nbsp;MCP は、IBM&nbsp;i (旧称 AS/400, iSeries) 上で動作する 5250 端末画面を、Web ブラウザー上で操作するための開発支援用ソフトウェアです。あわせて Model Context Protocol (MCP) サーバーとしても動作し、生成 AI エージェント (Claude 等) からの自動操作にも対応しています。</p>
+
+<ol class="compact-list">
+  <li><strong>Web ブラウザーで操作</strong> &nbsp;&nbsp;専用クライアントの導入は不要です。お手元の Web ブラウザーから 5250 画面を操作できます。</li>
+  <li><strong>日本語表示に対応</strong> &nbsp;&nbsp;DBCS (2 バイト文字) と SBCS (1 バイト文字) が混在する画面を正しく表示します。</li>
+  <li><strong>自動入力機能</strong> &nbsp;&nbsp;よく行う一連の操作を「AUTOTYP スクリプト」として保存し、ワンクリックで再現できます。</li>
+  <li><strong>MCP サーバー対応</strong> &nbsp;&nbsp;生成 AI エージェントから 5250 画面を呼出し、自動操作させることができます。テストの自動化、運用バッチへの組み込みにご活用いただけます。</li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">対応する IBM&nbsp;i のバージョン</div>
+  本製品は TN5250E プロトコル (RFC 4777 / RFC 1205 準拠) を実装しています。一般的な IBM&nbsp;i 7.x 系のシステムであれば、特別な設定なしにご利用いただけます。
+</div>
+
+<h2 class="section">1.2&nbsp;本ガイドの構成</h2>
+
+<table>
+  <tr><th style="width:30mm">章</th><th>主な内容</th></tr>
+  <tr><td>第&nbsp;1&nbsp;章</td><td>本製品の概要と本ガイドの構成をご紹介します。</td></tr>
+  <tr><td>第&nbsp;2&nbsp;章</td><td>画面の各部の名称と役割を説明します。</td></tr>
+  <tr><td>第&nbsp;3&nbsp;章</td><td>接続を開始し、サインオンする手順を説明します。</td></tr>
+  <tr><td>第&nbsp;4&nbsp;章</td><td>文字入力、ファンクションキー、コピーと貼り付けなどの基本操作を説明します。</td></tr>
+  <tr><td>第&nbsp;5&nbsp;章</td><td>AUTOTYP、操作記録、表示切替などの便利な機能を説明します。</td></tr>
+  <tr><td>第&nbsp;6&nbsp;章</td><td>動作がおかしいときの確認手順をご案内します。</td></tr>
+  <tr><td>第&nbsp;7&nbsp;章</td><td>本ガイドで使用する専門用語を解説します。</td></tr>
+  <tr><td>第&nbsp;8&nbsp;章</td><td>キーボードショートカット一覧です。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">管理者の方へ</div>
+  接続構成の作成、AUTOTYP スクリプトの開発、印刷スプールの取り扱いなど、管理者向けの内容は別冊「IBM&nbsp;5250&nbsp;MCP 管理ガイド」をご参照ください。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 2 章 各部の名称                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;2&nbsp;章</div>
+  <div class="cc-title">各部の名称</div>
+  <div class="cc-sub">画面の各部の名称と役割を説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">2</span>各部の名称</h1>
+
+<h2 class="section">2.1&nbsp;画面全体</h2>
+
+<p>本製品の画面は、次の 3 つの領域から構成されています。①〜③ の番号と画面上の対応位置をご確認ください。</p>
+
+<div class="callout-wrap">
+  <div class="callout-img">
+    <img src="screenshots/01-signon.png" alt="画面全体">
+    <span class="callout" style="top:-4mm; left:50%; transform:translateX(-50%);">1</span>
+    <span class="callout" style="top:45%; left:-4mm;">2</span>
+    <span class="callout" style="top:83%; right:-4mm;">3</span>
+  </div>
+</div>
+
+<ol class="callout-legend">
+  <li><span class="name">ツールバー</span>上下 2 段のツールバーがあります。1 段目に接続の管理・構成の編集・設定の保管、2 段目に表示フォントとサイズの設定が並びます。入力先 (KBD ON/OFF) や表示切替のボタンもこの領域に含まれます。ファンクションキーや AUTOTYP 操作ボタンも画面の周囲に配置されます。</li>
+  <li><span class="name">5250 画面</span>IBM&nbsp;i から送られてくる画面を表示します。文字を入力するための「入力フィールド」もここに表示されます。</li>
+  <li><span class="name">状況表示行 (OIA)</span>キーボードの入力状態、カーソル位置、通信状態などを表示します。詳しくは 2.3 節をご覧ください。</li>
+</ol>
+
+<h2 class="section">2.2&nbsp;ツールバーの説明</h2>
+
+<figure class="wide">
+  <img src="screenshots/07-toolbar.png" alt="ツールバー">
+  <figcaption>図 2.2-1 &nbsp;上部ツールバー</figcaption>
+</figure>
+
+<p>各ボタンの説明は次のとおりです (下表の左列は実際のボタンの外観です)。</p>
+
+<table class="compact">
+  <tr><th style="width:40mm">ボタン</th><th>説明</th></tr>
+  <tr><td colspan="2"><strong>1 段目 — 接続・構成</strong></td></tr>
+  <tr><td><img src="screenshots/btn/connectToggle.png" alt="切断 / 接続" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>切断 / 接続</strong>。現在のセッションを切断します。切断中は接続ボタンに変わります。接続時はそのまま現在のウィンドウで接続が始まり、新しいウィンドウは開きません。</td></tr>
+  <tr><td><img src="screenshots/btn/newWindowBtn.png" alt="新規" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>新規</strong>。新しい未接続のウィンドウを開きます。複数の 5250 セッションを同時利用したい場合にお使いください。</td></tr>
+  <tr><td><img src="screenshots/btn/duplicateBtn.png" alt="複製" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>複製</strong>。現在のセッションと同じ接続構成で新しいウィンドウを開きます (接続もすぐに行われます)。未接続のときは「新規」と同じ動作で、未接続のウィンドウが開きます。</td></tr>
+  <tr><td><img src="screenshots/btn/openSettings.png" alt="管理" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>管理</strong>。接続先構成の追加・編集・削除を行うダイアログを表示します。表示フォントやサイズの初期値も構成ごとに指定できます。</td></tr>
+  <tr><td><img src="screenshots/btn/fontSaveBtn.png" alt="保管" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>保管</strong>。現在の表示フォント・サイズ・太字・斜体などの設定を、接続中の構成に保存します。次回同じ構成で接続したときに、その設定が復元されます。</td></tr>
+  <tr><td><img src="screenshots/btn/kbdToggle.png" alt="キーボード入力先" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>キーボード入力先</strong>。キーボード入力先を 5250 画面 (オン) とツールバー操作 (オフ) で切り替えます。<span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span> でも切替できます。</td></tr>
+  <tr><td><img src="screenshots/btn/langToggle.png" alt="言語切替" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>言語切替</strong>。ビューアー UI の表示言語 (日本語 / 英語) を切り替えます。切り替えると、新規接続構成を作成するときの既定フォントと既定ホスト・コード・ページも変わります (日本語: ＭＳゴシック / cp1399、英語: Consolas / cp037)。保存済みの構成は影響を受けません。</td></tr>
+  <tr><td><img src="screenshots/btn/openWheelSettings.png" alt="ホイール設定" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>ホイール設定</strong>。マウス・ホイールでの画面スクロールに関する設定ダイアログを開きます。</td></tr>
+  <tr><td><img src="screenshots/btn/toggleInputHighlight.png" alt="入力強調" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>入力強調</strong>。入力フィールドの黄色強調表示を切り替えます (オン / オフ)。</td></tr>
+  <tr><td><img src="screenshots/btn/csToggle.png" alt="桁区切り" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>桁区切り</strong>。桁区切りの表示を「線」と「点」で切り替えます。</td></tr>
+  <tr><td><img src="screenshots/btn/sbcsToggle.png" alt="SBCS コードページ" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>A / ｱ</strong>。SBCS のコードページを切り替えます (DBCS セッション限定)。A&nbsp;=&nbsp;英小文字 (cp1027)、ｱ&nbsp;=&nbsp;カタカナ (cp290)</td></tr>
+  <tr><td><img src="screenshots/btn/shiftToggle.png" alt="シフト文字表示" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>{ } / · ·</strong>。シフト文字 (SO/SI) の表示・非表示を切り替えます (DBCS セッション限定)。</td></tr>
+  <tr><td colspan="2"><strong>2 段目 — 表示フォント</strong></td></tr>
+  <tr><td><strong>フォント選択</strong></td><td>5250 画面の表示フォントを選びます。一覧の上部に等幅フォント (推奨)、その下に OS にインストール済みの全フォントが並びます。日本語 (DBCS) セッションでは、漢字を正しく表示できる日本語フォントが初期選択されています。</td></tr>
+  <tr><td><strong>−</strong> / <strong>サイズ</strong> / <strong>+</strong></td><td>フォントサイズを変更します。自動モードでは現在使用中のサイズが表示され (変更不可)、固定モードでは数値を直接入力できます。<strong>−</strong> / <strong>+</strong> で 1 px ずつ増減します。</td></tr>
+  <tr><td><img src="screenshots/btn/fontSizeFixedToggle.png" alt="自動 / 固定" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>自動 / 固定</strong>。サイズの調整方式を切り替えます。<strong>自動</strong>はウィンドウの大きさに合わせて、5250 画面が収まるようサイズを自動調整します。<strong>固定</strong>は指定したサイズに固定し、5250 画面がちょうど収まるようウィンドウの大きさを合わせます。</td></tr>
+  <tr><td><img src="screenshots/btn/fontBoldToggle.png" alt="太字" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>太字 (B)</strong>。太字表示の オン / オフ を切り替えます。</td></tr>
+  <tr><td><img src="screenshots/btn/fontItalicToggle.png" alt="斜体" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>斜体 (I)</strong>。斜体表示の オン / オフ を切り替えます。</td></tr>
+  <tr><td><img src="screenshots/btn/windowModeToggle.png" alt="ウィンドウモード切替" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>ウィンドウモード切替</strong>。ビューアーのウィンドウを「アプリウィンドウ (アドレスバーのない専用ウィンドウ)」と「通常のブラウザーウィンドウ」の間で切り替えます。ボタンには切替先のアイコンが表示されます (🌐&nbsp;=&nbsp;通常ウィンドウへ / 🖥&nbsp;=&nbsp;アプリウィンドウへ)。クリックすると現在のウィンドウが閉じて反対のモードで開き直され、次回起動時の既定も同時に変更されます。</td></tr>
+  <tr><td><img src="screenshots/btn/micToggle.png" alt="マイク (音声入力)" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>マイク</strong>。クリックすると音声入力を開始します。発話を終えると自動的に停止します (録音中にもう一度クリックすると途中で停止できます)。詳細は 5.5 節をご参照ください。</td></tr>
+  <tr><td><img src="screenshots/btn/exclusiveToggle.png" alt="専有 / 共有" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>専有 / 共有</strong>。入力モードを切り替えます。<strong>専有</strong> (起動時の既定) は、同じ接続を別のブラウザーや PC で開いても、入力できるのは専有している 1 人だけです。<strong>共有</strong>にすると全員が入力でき、複数人で同時に操作できます。誰かが専有しているときは、他のブラウザーは専有に切り替えられません (ボタンが無効表示になります)。詳しくは 2.4 節をご参照ください。</td></tr>
+  <tr><td><img src="screenshots/btn/toolbarToggle.png" alt="全ツールバー非表示" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>全ツールバー非表示</strong>。すべてのツールバー (上の 2 段のツールバー・通知領域・ファンクションキーのツールバー) を非表示にして、5250 画面だけを表示します (OIA は残ります)。これは<strong>非表示専用</strong>のボタンです。再表示するには、5250 画面の外側のグレイの領域をクリックします (非表示中はこのボタン自身も消えるため)。非表示にするとキーボード入力先が 5250 画面に切り替わり (キーボード入力先 オン)、空いた領域に合わせて 5250 画面のフォントサイズが再調整されます。接続構成ごとに初期状態を指定でき (「管理」ダイアログの「ツールバー初期非表示」)、接続時に適用されます。</td></tr>
+  <tr><td><img src="screenshots/btn/helpBtn.png" alt="ヘルプ" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>ヘルプ (ℹ)</strong>。通常のブラウザーウィンドウでヘルプを開きます。本製品のバージョンとビルド日時、使用許諾契約 (EULA)、サードパーティ表記、ユーザー・ガイド (本書)、管理ガイドを参照できます。詳しくは 5.6 節をご参照ください。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">表示切替ボタンの初期値について</div>
+  「入力強調」「桁区切り」「A / ｱ」「{ } / · ·」の 4 つの表示切替について、初期値はビューアー全体で 1 セット保存されます (= 接続構成ごとではありません)。一度設定するとブラウザーを再読み込みしても保持されます。
+</div>
+
+<h2 class="section">2.3&nbsp;状況表示行 (OIA)</h2>
+
+<p>5250 画面の下端にある状況表示行 (Operator Information Area、略して <strong>OIA</strong>) には、現在のキーボード状態や通信状態が表示されます。</p>
+
+<figure class="small">
+  <img src="screenshots/09-oia.png" alt="OIA 拡大">
+  <figcaption>図 2.3-1 &nbsp;状況表示行 (OIA) の拡大</figcaption>
+</figure>
+
+<table class="compact">
+  <tr><th style="width:36mm">表示</th><th>意味</th></tr>
+  <tr><td><strong>MA*</strong> (1 桁目)</td><td>IBM&nbsp;i に接続中であることを示します。</td></tr>
+  <tr><td><strong>X&nbsp;II</strong> (9 桁目)</td><td>キーボードが一時的にロックされています。直前の操作 (印刷など) を本製品が処理中です。<span class="key">RESET</span>&nbsp;キーで解除できます。</td></tr>
+  <tr><td><strong>X&nbsp;SYSTEM</strong> (9 桁目)</td><td>サーバーからの応答待ちです。しばらくお待ちください。</td></tr>
+  <tr><td><strong>COMM659</strong> (19 桁目)</td><td>通信が切断されています。再接続してください。通信が回復すると自動的に消えます。</td></tr>
+  <tr><td><strong>英数 半角</strong> / <strong>かな 全角</strong> (26 桁目)</td><td>現在の入力モードを示します (DBCS セッション限定)。</td></tr>
+  <tr><td><strong>A</strong> (43 桁目)</td><td>Caps Lock がオンであることを示します。</td></tr>
+  <tr><td><strong>^</strong> (52 桁目)</td><td>挿入モードであることを示します。挿入モード中に表示されます。</td></tr>
+  <tr><td><strong>18/007</strong> (75 桁目)</td><td>現在のカーソル位置 (行 18 / 列 7) を示します。行 2 桁、列 3 桁の組み合わせで表示します。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">挿入モードのカーソル表示</div>
+  挿入モード中はカーソルが「縦長ブロック (上書きモード)」から「下半分ブロック (挿入モード)」へ変化します。<span class="key">Insert</span> キーを押すと切り替わり (オン / オフのトグル)、<span class="key">RESET</span> キーでも上書きモードに戻ります (こちらはトグルではなく解除のみ)。<br>
+  挿入モード中は OIA 52 桁目に「<strong>^</strong>」も表示されます。
+</div>
+
+<h2 class="section">2.4&nbsp;入力の専有と共有</h2>
+
+<p>同じ接続を複数のブラウザーや PC で同時に開くことができます。このとき「入力モード」で、誰が入力できるかを制御します。ツールバーの 👤 / 👥 ボタンで切り替えます (画面は、どちらのモードでも開いている全員が見られます)。</p>
+
+<table class="compact">
+  <tr><th style="width:34mm">モード</th><th>説明</th></tr>
+  <tr><td><strong>👤 専有</strong><br>(起動時の既定)</td><td>専有している 1 人だけが入力できます。同じ接続を別のブラウザーや PC で開いても、他の人は文字入力・キー送信・カーソル移動ができません。</td></tr>
+  <tr><td><strong>👥 共有</strong></td><td>接続を開いている全員が入力できます。複数人で同時に操作したい場合にお使いください。入力は届いた順に処理されます。</td></tr>
+</table>
+
+<div class="box note">
+  <p>誰かが専有しているあいだ、ほかのブラウザーの 👤 ボタンは無効表示になり、専有に切り替えられません。専有していた人が 👥 共有に切り替えるか、接続を閉じると、ほかのブラウザーが専有できるようになります。</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 3 章 ご使用の前に                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;3&nbsp;章</div>
+  <div class="cc-title">ご使用の前に</div>
+  <div class="cc-sub">接続を開始し、サインオンする手順を説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">3</span>ご使用の前に</h1>
+
+<h2 class="section">3.1&nbsp;接続の開始</h2>
+
+<p>接続を始める手順は次のとおりです。</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">ブラウザーで本製品の画面を開きます</div>
+    <p>あらかじめ管理者から指示されているアドレス (例: <code>http://localhost:5250/</code>) を Web ブラウザーで開きます。本製品を直接起動した場合は、未接続の画面が自動的に開きます。</p>
+    <div class="box note">
+      <div class="box-title">AI エージェント (MCP) からご利用の場合</div>
+      Claude 等の AI エージェントに接続を指示した場合は、この手順は不要です。接続が完了した時点で、その接続の画面を表示するウィンドウが自動的に開きます (1 接続 = 1 ウィンドウ)。
+    </div>
+  </li>
+  <li>
+    <div class="step-title">接続構成を選択します</div>
+    <p>ツールバー上部の「-- 構成を選択 --」のドロップダウンから、ご利用になる接続先を選択します。選択するとすぐに接続が開始されます。</p>
+    <div class="box note">
+      <div class="box-title">接続構成が一覧にない場合</div>
+      お使いの接続先が一覧にないときは、管理者へお問い合わせください。または「⚙&nbsp;構成の管理」ボタンから新規追加することもできます (詳しくは「管理ガイド」をご参照ください)。
+    </div>
+  </li>
+  <li>
+    <div class="step-title">サインオン画面が表示されます</div>
+    <p>接続に成功すると、IBM&nbsp;i のサインオン画面が表示されます。</p>
+    <figure>
+      <img src="screenshots/01-signon.png" alt="サインオン画面">
+      <figcaption>図 3.1-1 &nbsp;サインオン画面</figcaption>
+    </figure>
+  </li>
+</ol>
+
+<h2 class="section">3.2&nbsp;サインオン</h2>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">ユーザー名を入力します</div>
+    <p>「ユーザー」の欄にユーザー名 (管理者から指示された値) を入力します。</p>
+  </li>
+  <li>
+    <div class="step-title">パスワード欄へ移動します</div>
+    <p><span class="key">Tab</span>&nbsp;キーを押すと、カーソルが「パスワード」の欄へ移動します。</p>
+  </li>
+  <li>
+    <div class="step-title">パスワードを入力し、Enter キーを押します</div>
+    <p>パスワードを入力したあと、<span class="key">Enter</span>&nbsp;キーを押します。サインオンに成功すると、IBM&nbsp;i のメニュー画面 (またはコマンド入力画面) が表示されます。</p>
+    <figure>
+      <img src="screenshots/03-main-menu.png" alt="サインオン後の画面">
+      <figcaption>図 3.2-1 &nbsp;サインオン後のコマンド入力画面</figcaption>
+    </figure>
+  </li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">サインオンに失敗するときは</div>
+  ユーザー名・パスワードが正しいことを確認してください。IBM&nbsp;i 側でアカウントが無効化されている場合もあります。何度か試してもサインオンできないときは、管理者へお問い合わせください。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 4 章 基本操作                                              -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;4&nbsp;章</div>
+  <div class="cc-title">基本操作</div>
+  <div class="cc-sub">文字入力、ファンクションキー、コピーと貼り付けなどを説明します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">4</span>基本操作</h1>
+
+<h2 class="section">4.1&nbsp;文字入力</h2>
+
+<p>カーソルが点滅している位置 (= 入力フィールド) に、キーボードから文字を入力できます。</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">入力フィールドを選びます</div>
+    <p>マウスで入力したい位置をクリックするか、<span class="key">Tab</span>&nbsp;キーで次のフィールドへ移動します。逆方向へは <span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">Tab</span> を押します。</p>
+  </li>
+  <li>
+    <div class="step-title">文字を入力します</div>
+    <p>キーボードから文字を入力します。日本語入力 (IME) も使用できます。</p>
+  </li>
+  <li>
+    <div class="step-title">確定キーを押します</div>
+    <p><span class="key">Enter</span>&nbsp;キー、または該当する <span class="key">F1</span>〜<span class="key">F24</span> キーを押すと、入力内容が IBM&nbsp;i へ送信されます。</p>
+  </li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">編集に役立つキー</div>
+  <ul class="compact-list" style="margin:0">
+    <li><strong>BackSpace</strong>: カーソルを 1 文字左に移動します (文字は削除されません)。</li>
+    <li><strong>Delete</strong>: カーソル位置の文字を削除し、右側を左へ詰めます。</li>
+    <li><strong>Insert</strong>: 挿入モード (= 文字を割り込ませる) と上書きモードを切り替えます。挿入モード中は OIA の 52 桁目に「<strong>^</strong>」が表示されます。</li>
+    <li><strong>End</strong>: カーソル位置から行末までを消去します (Erase EOF)。</li>
+  </ul>
+</div>
+
+<div class="box note">
+  <div class="box-title">日本語 (DBCS) 入力フィールドについて</div>
+  <p style="margin:0 0 1.5mm 0">2 バイト文字 (漢字・かな) を入力するフィールドでは、カーソルが入ると自動的に「かな&nbsp;全角」モードに切り替わります (OIA に表示)。フィールドの種類によって入力できる文字が決まっており、種類に合わない文字を入力すると画面下部にメッセージが表示されて拒否されます。</p>
+  <ul class="compact-list" style="margin:0">
+    <li><strong>2 バイト文字専用フィールド</strong>: 英数字を入力すると「入力として DBCS が必要である。」と表示されます。</li>
+    <li><strong>どちらか一方のフィールド</strong>: 最初に入力した文字が英数字ならそのフィールドは英数字専用、2 バイト文字なら 2 バイト文字専用になります (混在不可)。</li>
+  </ul>
+</div>
+
+<h2 class="section">4.2&nbsp;ファンクションキー (F1〜F24)</h2>
+
+<p>5250 アプリケーションでは、F1〜F24 のファンクションキーが多用されます。一般的な割り当ては次のとおりです。</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">キー</th><th>はたらき (一般的な例)</th></tr>
+  <tr><td><span class="key">F1</span></td><td>ヘルプを表示します。</td></tr>
+  <tr><td><span class="key">F3</span></td><td>現在の処理を終了します。</td></tr>
+  <tr><td><span class="key">F4</span></td><td>選択肢の一覧 (プロンプト) を表示します。</td></tr>
+  <tr><td><span class="key">F5</span></td><td>画面を最新に更新します。</td></tr>
+  <tr><td><span class="key">F12</span></td><td>処理を取り消して 1 つ前の画面へ戻ります。</td></tr>
+</table>
+
+<figure>
+  <img src="screenshots/04-wrkactjob.png" alt="WRKACTJOB 画面">
+  <figcaption>図 4.2-1 &nbsp;ファンクションキーの説明が画面下部に表示されている例</figcaption>
+</figure>
+
+<div class="box note">
+  <div class="box-title">F13〜F24 の入力方法</div>
+  <span class="key">F13</span>〜<span class="key">F24</span> は <span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">F1</span>〜<span class="key">F12</span> でも入力できます。下部の <strong>▼ More</strong> ボタンからは画面上のボタンとしても操作できます。
+</div>
+
+<h2 class="section">4.3&nbsp;コピーと貼り付け</h2>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">範囲を選択します</div>
+    <p>マウスをドラッグすると、コピーしたい範囲が黄色く強調されます (ドラッグするだけで選択でき、<span class="key">Ctrl</span> や <span class="key">Shift</span> を押す必要はありません)。</p>
+    <p>キーボードでも選択できます。<span class="key">Shift</span> を押しながら矢印キー (<span class="key">↑</span>&nbsp;<span class="key">↓</span>&nbsp;<span class="key">←</span>&nbsp;<span class="key">→</span>) でカーソルを移動すると、通過した範囲が黄色く強調されます。</p>
+  </li>
+  <li>
+    <div class="step-title">コピーします</div>
+    <p><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">C</span> を押すと、選択範囲がクリップボードへコピーされます。</p>
+  </li>
+  <li>
+    <div class="step-title">貼り付けます</div>
+    <p>入力フィールドにカーソルを置き、<span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">V</span> を押します。改行入りの複数行テキストも、フィールドの並びに従って自動的に貼り付けられます。</p>
+  </li>
+  <li>
+    <div class="step-title">貼り付けを取り消します (任意)</div>
+    <p>貼り付けた直後に <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">Z</span> を押すと、貼り付け前の状態に戻せます。取り消せるのは貼り付け直後のみで、ほかのキーを押した後は取り消せません。</p>
+  </li>
+</ol>
+
+<div class="box note">
+  <div class="box-title">貼り付け先がフィールドに収まらないとき</div>
+  貼り付けるテキストがフィールドの桁数を超える場合は、カーソル位置の桁に揃えて下の入力行へ続けて流し込まれます (矩形貼り付け)。
+</div>
+
+<div class="box caution">
+  <div class="box-title">貼り付けの注意</div>
+  パスワード欄にクリップボード上のパスワードを貼り付ける際は、貼り付け後にクリップボードを必ず消去してください。
+</div>
+
+<h2 class="section">4.4&nbsp;マウス操作</h2>
+
+<p>5250 画面上をマウスでクリックすると、その位置にカーソルが移動します。次の操作にも対応しています。</p>
+
+<table class="ref-table">
+  <tr><th>操作</th><th>動作</th></tr>
+  <tr><td>通常の位置をクリック</td><td>その位置へカーソルが移動します (サーバーへの送信は行いません)。</td></tr>
+  <tr><td>選択肢・プッシュボタンをクリック</td><td>画面上の選択肢ボタンやプッシュボタン (DDS MOUBTN キーワード対応) を直接クリックして選択・実行できます。</td></tr>
+  <tr><td>ドラッグ</td><td>範囲を選択します (コピー用、4.3 節参照)。</td></tr>
+  <tr><td>スクロールバーの矢印 (▲ / ▼) をクリック</td><td>1 行ずつスクロールします。</td></tr>
+  <tr><td>スクロールバーの軸 (矢印以外) をクリック</td><td>1 ページずつスクロールします。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 5 章 便利な機能                                            -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;5&nbsp;章</div>
+  <div class="cc-title">便利な機能</div>
+  <div class="cc-sub">日々の業務を効率化する各種機能をご紹介します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">5</span>便利な機能</h1>
+
+<h2 class="section">5.1&nbsp;AUTOTYP (自動入力)</h2>
+
+<p>AUTOTYP (オートタイプ) は、よく行う一連の入力をまとめて自動実行する仕組みです。例えば「サインオンしてからメニューを開く」までを 1 クリックで再現できます。</p>
+
+<p>AUTOTYP の操作ボタンは、画面下部ツールバー右端の <strong>▼&nbsp;More</strong> ボタンをクリックすると現れる下段パネルにあります (表示中はボタンが <strong>▲&nbsp;Less</strong> に変わり、もう一度クリックすると格納されます)。</p>
+
+<figure class="wide">
+  <img src="screenshots/10-autotyp-toolbar.png" alt="▼ More で表示される AUTOTYP ツールバー">
+  <figcaption>図 5.1-1 &nbsp;▼ More で表示される下段パネル (右側のグループが AUTOTYP 操作ボタン)</figcaption>
+</figure>
+
+<p>AUTOTYP 操作ボタンの説明は次のとおりです (下表の左列は実際のボタンの外観です)。</p>
+
+<table class="compact">
+  <tr><th style="width:40mm">ボタン</th><th>説明</th></tr>
+  <tr><td><img src="screenshots/btn/autotypSelect.png" alt="スクリプト選択" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>スクリプト選択</strong>。scripts フォルダーにある AUTOTYP スクリプトの一覧から、実行・編集の対象を選びます。</td></tr>
+  <tr><td><img src="screenshots/btn/recBtn.png" alt="Rec" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Rec (記録)</strong>。画面操作の記録を開始します。記録中はボタンが赤色に変わり、もう一度クリックすると停止して編集ダイアログが開きます (5.3 節)。</td></tr>
+  <tr><td><img src="screenshots/btn/runAutotyp.png" alt="Run" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Run (実行)</strong>。選択したスクリプトを現在の画面で実行します。</td></tr>
+  <tr><td><img src="screenshots/btn/pauseAutotyp.png" alt="Pause" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Pause (一時停止)</strong>。実行中のスクリプトを一時停止します。もう一度クリックすると同じ位置から再開します (実行中のみ押せます)。</td></tr>
+  <tr><td><img src="screenshots/btn/stopAutotyp.png" alt="Stop" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Stop (終了)</strong>。実行中のスクリプトを中止します。再開はできません (実行中のみ押せます)。</td></tr>
+  <tr><td><img src="screenshots/btn/editAutotyp.png" alt="Edit" style="height:26px;vertical-align:middle;border:1px solid #bbb;border-radius:3px"></td><td><strong>Edit (編集)</strong>。選択したスクリプトを編集ダイアログで開き、内容の確認・修正・保存ができます。</td></tr>
+</table>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">スクリプトを選びます</div>
+    <p>▼&nbsp;More で表示される下段パネルの「-- autotyp --」のドロップダウンから、実行したいスクリプトを選択します。</p>
+  </li>
+  <li>
+    <div class="step-title">実行します</div>
+    <p>▶&nbsp;<strong>Run</strong> ボタンをクリックすると、選択したスクリプトが現在の画面で実行されます。</p>
+  </li>
+  <li>
+    <div class="step-title">必要に応じて操作します</div>
+    <p>実行中の操作は次の 3 通りから選んでください。
+    <ul class="compact-list" style="margin:1mm 0 0 0">
+      <li><strong>そのまま待つ</strong>: スクリプトの完了をお待ちください。</li>
+      <li><strong>一時停止</strong>: ⏸&nbsp;<strong>Pause</strong> をクリックします。もう一度クリックすると同じ位置から再開できます。</li>
+      <li><strong>終了</strong>: ⏹&nbsp;<strong>Stop</strong> をクリックします。実行を中止します。再開はできません。</li>
+    </ul>
+    </p>
+  </li>
+</ol>
+
+<div class="box caution">
+  <div class="box-title">AUTOTYP 実行中の入力について</div>
+  AUTOTYP の実行中は、キーボード・マウスからの 5250 画面への入力が一時的に無効化されます。入力する場合は、上記の「一時停止」または「終了」を行ってから操作してください。
+</div>
+
+<h2 class="section">5.2&nbsp;接続後の自動実行</h2>
+
+<p>接続構成ごとに「接続後の自動実行 AUTOTYP」を設定しておくと、接続するだけで自動的にサインオン → メニュー表示までを行うことができます。設定方法は「管理ガイド」をご参照ください。</p>
+
+<h2 class="section">5.3&nbsp;操作の記録</h2>
+
+<p>キーボードやマウスでの操作を AUTOTYP スクリプトとして自動記録できます。</p>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">記録を開始します</div>
+    <p>●&nbsp;<strong>Rec</strong> ボタンをクリックします。ボタンが赤色に変わり、記録中であることを示します。</p>
+  </li>
+  <li>
+    <div class="step-title">記録する操作を行います</div>
+    <p>キー入力、ファンクションキー、貼り付けなど、AUTOTYP として保存したい操作を行います。</p>
+  </li>
+  <li>
+    <div class="step-title">記録を停止します</div>
+    <p>もう一度 ●&nbsp;<strong>Rec</strong> ボタンをクリックすると、記録が止まり編集ダイアログが開きます。内容を確認し、必要に応じて修正してから保存します。</p>
+  </li>
+</ol>
+
+<h2 class="section">5.4&nbsp;表示の切替</h2>
+
+<p>ツールバーのアイコンで、画面表示を好みに合わせて変更できます。</p>
+
+<table class="compact">
+  <tr><th style="width:32mm">アイコン</th><th>はたらき</th></tr>
+  <tr><td><strong>✦</strong></td><td>入力フィールドを黄色く強調します。入力できる場所が一目でわかります (オン / オフ)。</td></tr>
+  <tr><td><strong>⦀ / ┅</strong></td><td>桁の区切りを縦線で表示するか、点線で表示するかを切り替えます。</td></tr>
+  <tr><td><strong>A / ｱ</strong></td><td>SBCS の表示文字を、英小文字寄りかカタカナ寄りかで切り替えます (DBCS セッション限定)。</td></tr>
+  <tr><td><strong>{&nbsp;} / ·&nbsp;·</strong></td><td>シフト文字 (SO/SI) の表示・非表示を切り替えます (DBCS セッション限定)。</td></tr>
+</table>
+
+<p>上記 4 つの表示切替は、ビューアー全体で 1 セットの初期値として保存されます (= 接続構成ごとではありません)。設定値はブラウザーを再読み込みしても保持されます。</p>
+
+<h2 class="section">5.5&nbsp;音声入力</h2>
+
+<p>ツールバーの<strong>マイク</strong>ボタンを使うと、マイクから話した内容を文字に変換し、Claude への入力として送ることができます。キーボードを使わずに、画面の操作や指示を音声で伝えられます。</p>
+
+<p>音声認識の言語は、ビューアーの表示言語に連動します。表示言語を日本語にすると日本語 (ja-JP)、英語にすると英語 (en-US) で認識します (言語切替ボタンで切り替わります)。</p>
+
+<div class="box note">
+  <div class="box-title">音声入力をお使いになる前に</div>
+  音声入力は、本ビューアーを <strong>Visual Studio Code</strong> 上の <strong>Claude 拡張機能</strong>と組み合わせてお使いになる場合にのみ利用できます。あわせて、音声を Claude に渡すための <strong>hook (フック) の追加</strong>が必要です。設定の手順は別冊「管理ガイド」をご参照ください。
+</div>
+
+<ol class="steps">
+  <li>
+    <div class="step-title">音声入力を開始します</div>
+    <p>マイク ボタンをクリックします。ボタンの状態が変わり、マイクが有効になります (初回は、ブラウザーがマイクの使用許可を確認します)。</p>
+  </li>
+  <li>
+    <div class="step-title">話します</div>
+    <p>入力したい内容を話します。話した内容が文字に変換されます。</p>
+  </li>
+  <li>
+    <div class="step-title">Claude に送ります</div>
+    <p>変換された文字が Claude への入力として送られます。発話を終えると音声入力は自動的に終了します (途中で止めたいときは、もう一度マイク ボタンをクリックします)。</p>
+  </li>
+</ol>
+
+<h2 class="section">5.6&nbsp;オンラインヘルプ</h2>
+
+<p>ツールバー 2 段目の<strong>ヘルプ (ℹ)</strong> ボタンをクリックすると、通常のブラウザーウィンドウでヘルプが開きます。最初のページには次の情報が表示されます。</p>
+
+<table class="compact">
+  <tr><th style="width:40mm">項目</th><th>内容</th></tr>
+  <tr><td><strong>バージョン</strong></td><td>本製品のバージョンとビルド日時です。お問い合わせの際にお知らせください。</td></tr>
+  <tr><td><strong>ライセンス</strong></td><td>使用許諾契約 (EULA) と、本製品に含まれる第三者ソフトウェアの帰属表示 (サードパーティ表記) を表示します。</td></tr>
+  <tr><td><strong>ヘルプ情報</strong></td><td>ユーザー・ガイド (本書) と管理ガイドを表示します。</td></tr>
+</table>
+
+<p>ガイドを開くと、画面が左右 2 つの領域に分かれます。</p>
+
+<table class="compact">
+  <tr><th style="width:34mm">領域</th><th>説明</th></tr>
+  <tr><td><strong>左側 — 目次と検索</strong></td><td>文書の切替、目次、検索ボックスがあります。目次の項目をクリックすると、右側の表示がその見出しへ移動します。検索ボックスに 2 文字以上入力すると、本文中の該当箇所が一覧表示され、クリックするとその位置へ移動して該当語が強調表示されます。</td></tr>
+  <tr><td><strong>右側 — 本文</strong></td><td>選択中の文書の本文です。画像を含む全文を表示します。</td></tr>
+</table>
+
+<div class="box note">
+  <div class="box-title">ヘルプの表示言語</div>
+  ヘルプは、ビューアーの表示言語 (言語切替ボタン) に合わせて開きます。日本語 (JA) のときは日本語のガイド、英語 (US) のときは英語のガイドが表示されます。
+</div>
+
+<!-- ============================================================ -->
+<!-- 第 6 章 困ったときは                                          -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;6&nbsp;章</div>
+  <div class="cc-title">困ったときは</div>
+  <div class="cc-sub">よくあるご質問と、その確認手順をご案内します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">6</span>困ったときは</h1>
+
+<h2 class="section">6.1&nbsp;接続できない</h2>
+
+<table>
+  <tr><th style="width:55mm">症状</th><th>ご確認ください</th></tr>
+  <tr>
+    <td>接続を選んでも画面が表示されない</td>
+    <td>
+      <ul class="compact-list" style="margin:0">
+        <li>IBM&nbsp;i が起動しているか、管理者へご確認ください。</li>
+        <li>ネットワーク (LAN ケーブル、Wi-Fi、VPN) の状態を確認してください。</li>
+        <li>ブラウザーを再読み込み (<span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">R</span>) してから、もう一度試してみてください。</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>OIA に <strong>COMM659</strong> が表示される</td>
+    <td>通信が切断されました。ツールバーの「🔌&nbsp;接続」をクリックして再接続してください。通信が回復すると表示は自動的に消えます。</td>
+  </tr>
+</table>
+
+<figure class="small">
+  <img src="screenshots/08-disconnected-comm659.png" alt="切断時の COMM659 表示">
+  <figcaption>図 6.1-1 &nbsp;切断時の COMM659 表示</figcaption>
+</figure>
+
+<h2 class="section">6.2&nbsp;画面が応答しない</h2>
+
+<table>
+  <tr><th style="width:55mm">症状</th><th>ご確認ください</th></tr>
+  <tr>
+    <td>キーを押しても反応しない / OIA に <strong>X&nbsp;II</strong> が表示されている</td>
+    <td>本製品が直前の操作 (印刷など) を処理中です。<span class="key">RESET</span>&nbsp;キーを押すと解除されます。</td>
+  </tr>
+  <tr>
+    <td>OIA に <strong>X&nbsp;SYSTEM</strong> が表示されたまま</td>
+    <td>サーバーからの応答待ちです。通常はしばらくお待ちください。応答が長時間返らない場合は、<span class="key">SysReq</span> (システム要求) を押し、表示された入力行に <strong>2</strong> を入力して <span class="key">Enter</span> を押すと、IBM&nbsp;i 側で実行中のプログラムやコマンドを強制終了できます。それでも解消しない場合は管理者へご相談ください。</td>
+  </tr>
+</table>
+
+<figure class="small">
+  <img src="screenshots/05-print-xii.png" alt="X II 表示">
+  <figcaption>図 6.2-1 &nbsp;印刷キー直後に X II が表示されている例 (印刷処理中)</figcaption>
+</figure>
+
+<h2 class="section">6.3&nbsp;その他</h2>
+
+<table>
+  <tr><th style="width:55mm">症状</th><th>ご確認ください</th></tr>
+  <tr><td>文字が小さくて見えにくい</td><td>2 段目ツールバーの <strong>+</strong> ボタンでフォントサイズを大きくしてください。「<strong>A<span style="font-size:0.72em">A</span>&nbsp;自動</strong>」にすると、ウィンドウの大きさに合わせてサイズが自動調整されます。</td></tr>
+  <tr><td>キーボードからの入力が 5250 画面に反映されない</td><td>KBD&nbsp;OFF になっています。<strong>KBD&nbsp;OFF</strong> ボタンをクリックするか <span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span> で ON に戻してください。</td></tr>
+  <tr><td>日本語が入力できない</td><td>IME を有効にしているか確認してください。OIA の表示が「英数 半角」のままになっていないか確認します。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 第 7 章 用語集                                                -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;7&nbsp;章</div>
+  <div class="cc-title">用語集</div>
+  <div class="cc-sub">本ガイドで使用する専門用語を解説します。</div>
+</section>
+
+<h1 class="chapter"><span class="num">7</span>用語集</h1>
+
+<dl class="glossary">
+  <dt>IBM&nbsp;i</dt>
+  <dd>IBM が提供する基幹システム向けのオペレーティング・システムです。旧称 AS/400、iSeries とも呼ばれていました。</dd>
+
+  <dt>5250</dt>
+  <dd>IBM&nbsp;i との通信に用いられる端末プロトコルの名称です。本製品は TN5250E (Telnet 上の 5250) を実装しています。</dd>
+
+  <dt>サインオン</dt>
+  <dd>ユーザー名とパスワードを入力して IBM&nbsp;i にログインすることを指します。</dd>
+
+  <dt>ファンクションキー</dt>
+  <dd>キーボードの最上段にある <span class="key">F1</span>〜<span class="key">F12</span> 等のキーです。5250 アプリケーションでは <span class="key">F1</span>〜<span class="key">F24</span> までが使用されます。</dd>
+
+  <dt>OIA (状況表示行)</dt>
+  <dd>Operator Information Area の略です。画面下端に表示される、キーボード状態などの表示行を指します。</dd>
+
+  <dt>X&nbsp;II / X&nbsp;SYSTEM</dt>
+  <dd>キーボードがロックされていることを示す OIA 表示です。X&nbsp;II は本製品が処理を行っている状態、X&nbsp;SYSTEM はサーバーからの応答を待っている状態を示します。</dd>
+
+  <dt>COMM659</dt>
+  <dd>通信が切断されたことを示す OIA 表示です。通信が回復すると自動的に消えます。</dd>
+
+  <dt>挿入モード</dt>
+  <dd>入力した文字を、カーソル位置に割り込ませて挿入するモードです。<span class="key">Insert</span> キーで切り替えます。挿入モード中は OIA の 52 桁目に「<strong>^</strong>」が表示されます。</dd>
+
+  <dt>AUTOTYP</dt>
+  <dd>あらかじめ記録した一連の入力操作を自動的に実行する、本製品独自の仕組みです。</dd>
+
+  <dt>MCP (Model Context Protocol)</dt>
+  <dd>Claude 等の生成 AI エージェントから外部ツールを呼出すための通信規約です。本製品は MCP サーバーとして動作し、AI エージェントから 5250 画面を自動操作させることができます。</dd>
+
+  <dt>接続構成</dt>
+  <dd>接続先のホスト名・ポート番号・コードページなどをひとまとめにした設定のことです。複数の接続先を切り替えてご利用いただけます。</dd>
+
+  <dt>DBCS / SBCS</dt>
+  <dd>DBCS は 2 バイト文字 (漢字、ひらがな、カタカナ等)、SBCS は 1 バイト文字 (英数字、半角カタカナ等) のことです。</dd>
+</dl>
+
+<!-- ============================================================ -->
+<!-- 第 8 章 キーボード一覧                                        -->
+<!-- ============================================================ -->
+<section class="chapter-cover">
+  <div class="cc-num">第&nbsp;8&nbsp;章</div>
+  <div class="cc-title">キーボード一覧</div>
+  <div class="cc-sub">本製品で使用できるキーボードショートカットの一覧です。</div>
+</section>
+
+<h1 class="chapter"><span class="num">8</span>キーボード一覧</h1>
+
+<h2 class="section">8.1&nbsp;基本操作キー</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">キー</th><th>はたらき</th></tr>
+  <tr><td><span class="key">Enter</span></td><td>入力内容を送信します。</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>次の入力フィールドへ移動します。</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">Tab</span></td><td>前の入力フィールドへ移動します。</td></tr>
+  <tr><td><span class="key">Home</span></td><td>最初の入力フィールドへ移動します。</td></tr>
+  <tr><td><span class="key">←</span> <span class="key">→</span> <span class="key">↑</span> <span class="key">↓</span></td><td>カーソルを上下左右に移動します。</td></tr>
+  <tr><td><span class="key">BackSpace</span></td><td>カーソルを 1 文字左に移動します (文字は削除しません)。</td></tr>
+  <tr><td><span class="key">Delete</span></td><td>カーソル位置の文字を削除して右側を詰めます。</td></tr>
+  <tr><td><span class="key">Insert</span></td><td>挿入モードと上書きモードを切り替えます (オン / オフ)。</td></tr>
+  <tr><td><span class="key">End</span></td><td>カーソル位置から行末までを消去します (Erase EOF)。</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>ダイアログを閉じる、ATTN キーを送信する等の用途があります。</td></tr>
+</table>
+
+<h2 class="section">8.2&nbsp;ファンクションキー</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">キー</th><th>はたらき</th></tr>
+  <tr><td><span class="key">F1</span>〜<span class="key">F12</span></td><td>そのまま F1〜F12 として送信されます。</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;<span class="key">F1</span>〜<span class="key">F12</span></td><td>F13〜F24 として送信されます。</td></tr>
+</table>
+
+<h2 class="section">8.3&nbsp;クリップボード操作</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">キー</th><th>はたらき</th></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">C</span></td><td>選択範囲をクリップボードへコピーします。</td></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">V</span></td><td>クリップボードの内容を貼り付けます。</td></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">Z</span></td><td>貼り付けた直後に押すと、貼り付けを取り消します。</td></tr>
+  <tr><td>マウスドラッグ</td><td>範囲を選択します (修飾キー不要)。</td></tr>
+  <tr><td><span class="key">Shift</span>&nbsp;+&nbsp;矢印キー</td><td>カーソルを移動して範囲を選択します (マウスを使わない選択方法)。</td></tr>
+</table>
+
+<h2 class="section">8.4&nbsp;特殊操作</h2>
+
+<table class="compact">
+  <tr><th style="width:55mm">キー</th><th>はたらき</th></tr>
+  <tr><td><span class="key">Ctrl</span>&nbsp;+&nbsp;<span class="key">K</span></td><td>キーボード入力先 (KBD&nbsp;ON / OFF) を切り替えます。</td></tr>
+  <tr><td>左 <span class="key">Ctrl</span>&nbsp;(単独)</td><td>RESET キーを送信します。</td></tr>
+  <tr><td>右 <span class="key">Ctrl</span>&nbsp;(単独)</td><td>Field Exit を送信します。</td></tr>
+</table>
+
+</div><!-- /.manual-body -->
+
+<!-- ============================================================ -->
+<!-- 裏表紙                                                        -->
+<!-- ============================================================ -->
+<section class="back-cover">
+  <div class="bc-inner">
+    <div class="bc-title">IBM&nbsp;5250&nbsp;MCP ユーザー・ガイド</div>
+    <div class="bc-vendor">IBM&nbsp;5250&nbsp;MCP&nbsp;プロジェクト</div>
+    <div class="bc-meta">
+      第&nbsp;1&nbsp;版 &nbsp;2026&nbsp;年&nbsp;5&nbsp;月発行<br>
+      お問い合わせは社内システム担当者まで
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
