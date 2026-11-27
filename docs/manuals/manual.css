@@ -1,0 +1,842 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+ * IBM 5250 MCP マニュアル共通スタイル
+ * - 用紙: A4 縦 (= 210 mm × 297 mm)
+ * - 体裁: 10 年前の日本語家電取扱説明書イメージ
+ * - 表記: 正式日本語 (= docs/manual-style-guide.md 順守)
+ * ========================================================================== */
+
+@page {
+  size: 210mm 297mm;
+  /* 本文ページのデフォルト余白。表紙 page1 のみ generate-manual.mjs が cover pass で
+     addStyleTag('@page{margin:0}') を一時上書きし、pass 後に削除して本値へ復帰させる
+     (= 表紙 full-bleed と本文余白の両立、2026-06-05)。 */
+  margin: 18mm 18mm 20mm 18mm;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", "MS PGothic", sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.7;
+  color: #1f1f1f;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  /* カラー絵文字 (🚫 等) もモノクロ text presentation で描き Type3 + pattern 化を防ぐ。 */
+  font-variant-emoji: text;
+}
+
+/* ==========================================================================
+ * 表紙
+ * ========================================================================== */
+
+.cover {
+  width: 210mm;
+  height: 297mm;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  color: #fff;
+  /* overflow: visible にして ::before の bleed (= ICB はみ出し) を clip させない。
+     中身 (cover-badge/inner/footer) は absolute で box 基準のため位置は不変。 */
+  overflow: visible;
+  page-break-after: always;
+  background: transparent;
+}
+
+.cover::before {
+  /* 背景 gradient を bleed box (= 全方向 12mm はみ出し) で描く。@page margin 0 でも chromium が
+     残す不可避マージン (= 右 3.7mm / 下 5.5mm、2026-06-05 実測の 98% 問題) を、ICB を超えて
+     紙端まで塗ることで消す (= full-bleed の定番手法)。はみ出し分は紙端で clip される。
+     gradient は ShadingType 2 axial で旧 pdf.js v2.10 / pdfium も描画可 (radial / 背景 PNG は回避)。 */
+  content: "";
+  position: absolute;
+  top: -12mm;
+  left: -12mm;
+  right: -12mm;
+  bottom: -12mm;
+  background: linear-gradient(135deg, #0d3a66 0%, #1c5d96 55%, #0d3a66 100%);
+  z-index: 0;
+}
+
+/* 表紙の中身を背景 (::before z-index:0) の上に重ねる */
+.cover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cover-grid {
+  /* グリッド装飾は廃止 (= 表紙背景は .cover::before の linear-gradient のみ)。 */
+  display: none;
+}
+
+.cover-badge {
+  position: absolute;
+  top: 20mm;
+  left: 22mm;
+  font-size: 10pt;
+  letter-spacing: 0.32em;
+  border: 1pt solid rgba(255, 255, 255, 0.65);
+  padding: 1.6mm 5mm;
+  border-radius: 1mm;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.cover-inner {
+  position: absolute;
+  top: 90mm;
+  left: 22mm;
+  right: 22mm;
+}
+
+.cover-product {
+  font-size: 17pt;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  margin-bottom: 6mm;
+  opacity: 0.95;
+  line-height: 1.45;
+}
+
+.cover-title {
+  font-size: 50pt;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0 0 5mm 0;
+  line-height: 1.05;
+  text-shadow: 0 1pt 3pt rgba(0, 0, 0, 0.25);
+}
+
+.cover-sub {
+  font-size: 16pt;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.92;
+  margin-top: 5mm;
+}
+
+.cover-divider {
+  width: 80mm;
+  height: 1.5pt;
+  background: #ffd060;
+  margin: 6mm 0 6mm 0;
+  border-radius: 1pt;
+}
+
+.cover-footer {
+  position: absolute;
+  bottom: 18mm;
+  left: 22mm;
+  right: 22mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 10pt;
+  opacity: 0.95;
+}
+
+.cover-vendor {
+  font-size: 10.5pt;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.cover-meta {
+  text-align: right;
+  font-size: 9pt;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+ * 安全表示ページ
+ * ========================================================================== */
+
+.safety {
+  padding: 6mm 4mm 4mm 4mm;
+  page-break-after: always;
+}
+
+.safety h1 {
+  font-size: 18pt;
+  color: #b81818;
+  text-align: center;
+  margin: 0 0 5mm 0;
+  border-bottom: 2pt solid #b81818;
+  padding-bottom: 2mm;
+  letter-spacing: 0.1em;
+}
+
+.safety .safety-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+}
+
+.safety .safety-table th,
+.safety .safety-table td {
+  border: 0.5pt solid #888;
+  padding: 2mm 3mm;
+  vertical-align: top;
+}
+
+.safety .safety-table th {
+  background: #ffe8e8;
+  color: #8a0000;
+  font-weight: 700;
+  width: 28mm;
+  text-align: center;
+}
+
+/* ==========================================================================
+ * 目次
+ * ========================================================================== */
+
+.toc {
+  padding: 4mm 2mm 2mm 2mm;
+  page-break-after: always;
+}
+
+.toc h1 {
+  font-size: 22pt;
+  color: #0d3a66;
+  border-bottom: 2pt solid #0d3a66;
+  padding-bottom: 2mm;
+  margin: 0 0 6mm 0;
+  text-align: center;
+  letter-spacing: 0.18em;
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  column-count: 2;
+  column-gap: 8mm;
+}
+
+.toc li {
+  break-inside: avoid;
+  padding: 0.4mm 0;
+  font-size: 10pt;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2mm;
+}
+
+/* 目次のページ番号 (generate-manual.mjs が本文 PDF を実測して各 li に追記) */
+.toc-page {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  color: #0d3a66;
+}
+.toc li.l2 .toc-page { color: #555; font-weight: 400; }
+
+.toc li.l1 {
+  margin-top: 2.5mm;
+  font-weight: 700;
+  font-size: 11pt;
+  color: #0d3a66;
+  border-bottom: 1pt dotted #aaa;
+  padding-bottom: 1mm;
+}
+
+.toc li.l2 {
+  padding-left: 6mm;
+  color: #333;
+}
+
+.toc li.l1:first-child { margin-top: 0; }
+
+/* ==========================================================================
+ * 章 / 節 / 項
+ * ========================================================================== */
+
+h1.chapter {
+  page-break-before: always;
+  page-break-after: avoid;
+  margin: 0 0 6mm 0;
+  padding: 0 0 3mm 0;
+  font-size: 22pt;
+  font-weight: 700;
+  color: #0d3a66;
+  border-bottom: 3pt solid #0d3a66;
+  display: flex;
+  align-items: baseline;
+  gap: 6mm;
+  line-height: 1.2;
+}
+
+h1.chapter .num {
+  display: inline-block;
+  background: #0d3a66;
+  color: white;
+  padding: 2mm 4.5mm;
+  border-radius: 1.5mm;
+  font-size: 13pt;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+h2.section {
+  page-break-after: avoid;
+  margin: 7mm 0 3mm 0;
+  font-size: 14pt;
+  font-weight: 700;
+  color: #0d3a66;
+  border-left: 4.5pt solid #1c5d96;
+  padding: 0.5mm 0 0.5mm 3.5mm;
+  line-height: 1.3;
+  /* 終端は transparent でなく不透明 #ffffff (= 白ページと同色)。transparent はアルファ勾配となり
+     chromium PDF 化で ShadingType 1 (関数ベース) + SMask になり旧 pdf.js/pdfium が描画不可。
+     白との 2 色 axial (ShadingType 2) なら全エンジン描画可で、白ページ上は見た目同一。 */
+  background: linear-gradient(to right, #e8f0f8 0%, #ffffff 80%);
+}
+
+h3.subsection {
+  page-break-after: avoid;
+  margin: 5mm 0 2mm 0;
+  font-size: 11.5pt;
+  font-weight: 700;
+  color: #1c4a76;
+}
+
+h4 {
+  page-break-after: avoid;
+  margin: 3mm 0 1.5mm 0;
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: #333;
+}
+
+p { margin: 0 0 2mm 0; }
+
+/* ==========================================================================
+ * 操作手順 (= ①②③ 番号付き)
+ * ========================================================================== */
+
+ol.steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 3mm 0;
+  padding: 0;
+}
+
+ol.steps > li {
+  counter-increment: step;
+  padding: 0 0 4mm 13mm;
+  position: relative;
+  page-break-inside: avoid;
+  min-height: 9mm;
+}
+
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 9mm;
+  height: 9mm;
+  border-radius: 50%;
+  background: #0d3a66;
+  color: white;
+  font-weight: 700;
+  font-size: 12pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 0.5pt 1.5pt rgba(0,0,0,0.25);
+}
+
+ol.steps > li .step-title {
+  font-weight: 700;
+  margin-bottom: 1mm;
+  font-size: 11pt;
+  color: #1c4a76;
+}
+
+ol.steps > li figure { margin-top: 2mm; margin-bottom: 0; }
+
+/* ==========================================================================
+ * 囲み記事
+ * ========================================================================== */
+
+.box {
+  margin: 3mm 0;
+  padding: 2.5mm 3.5mm 2.5mm 11mm;
+  border-radius: 1.5mm;
+  position: relative;
+  page-break-inside: avoid;
+  font-size: 10pt;
+}
+
+.box::before {
+  position: absolute;
+  left: 2.5mm;
+  top: 2mm;
+  font-size: 14pt;
+  width: 7mm;
+  text-align: center;
+  line-height: 1;
+}
+
+.box .box-title {
+  font-weight: 700;
+  margin-bottom: 1mm;
+  font-size: 10.5pt;
+  letter-spacing: 0.06em;
+}
+
+.box.note {
+  background: #e8f2ff;
+  border-left: 4pt solid #1c5d96;
+}
+.box.note::before { content: 'i'; color: #1c5d96; font-weight: 700; font-style: italic; font-family: Georgia, serif; font-size: 16pt; }
+.box.note .box-title { color: #0d3a66; }
+
+.box.caution {
+  background: #fff5dc;
+  border-left: 4pt solid #d99a00;
+}
+.box.caution::before { content: '\26A0'; color: #d99a00; }
+.box.caution .box-title { color: #8a6500; }
+
+.box.forbid {
+  background: #ffe8e8;
+  border-left: 4pt solid #c01010;
+}
+.box.forbid::before { content: '\1F6AB'; color: #c01010; }
+.box.forbid .box-title { color: #8a0000; }
+
+/* ==========================================================================
+ * 図 / 写真
+ * ========================================================================== */
+
+figure {
+  margin: 3mm 0;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  max-height: 130mm;
+  border: 0.75pt solid #888;
+  border-radius: 1mm;
+  box-shadow: 0 0.5pt 2pt rgba(0,0,0,0.12);
+}
+
+figure.small img { max-height: 90mm; }
+figure.large img { max-height: 170mm; }
+/* 横長画像 (ツールバー等) を本文幅いっぱいまで拡大。max-width:100% は実ピクセル以上に拡大しないため
+   width:100% で引き伸ばし、max-height 制限も解除する (横長なので高さは過大にならない)。 */
+figure.wide img { width: 100%; height: auto; max-height: none; }
+
+figcaption {
+  margin-top: 1.5mm;
+  font-size: 9pt;
+  color: #555;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* 図に番号付き吹き出し */
+.callout-wrap {
+  position: relative;
+  display: block;
+  margin: 3mm auto;
+  text-align: center;
+  page-break-inside: avoid;
+}
+.callout-wrap .callout-img {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.callout-wrap img {
+  display: block;
+  max-width: 100%;
+  max-height: 130mm;
+  border: 0.75pt solid #888;
+  border-radius: 1mm;
+  box-shadow: 0 0.5pt 2pt rgba(0,0,0,0.12);
+}
+.callout-wrap .callout {
+  position: absolute;
+  width: 8mm;
+  height: 8mm;
+  border-radius: 50%;
+  background: #c01010;
+  color: white;
+  font-weight: 700;
+  font-size: 12pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 1.5pt solid white;
+  box-shadow: 0 0.5pt 1.5pt rgba(0,0,0,0.5);
+  z-index: 2;
+}
+.callout-wrap .callout-line {
+  position: absolute;
+  background: #c01010;
+  z-index: 1;
+}
+.callout-legend {
+  margin: 3mm 0 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: cl;
+}
+.callout-legend li {
+  counter-increment: cl;
+  padding: 1.5mm 0 1.5mm 11mm;
+  position: relative;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  page-break-inside: avoid;
+}
+.callout-legend li::before {
+  content: counter(cl);
+  position: absolute;
+  left: 0;
+  top: 1mm;
+  width: 7mm;
+  height: 7mm;
+  border-radius: 50%;
+  background: #c01010;
+  color: white;
+  font-weight: 700;
+  font-size: 11pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.callout-legend li .name {
+  font-weight: 700;
+  color: #0d3a66;
+  display: inline-block;
+  margin-right: 2mm;
+}
+
+/* ==========================================================================
+ * 各部の名称 (= 全体図 + 一覧)
+ * ========================================================================== */
+
+.parts-overview {
+  margin: 4mm 0;
+}
+
+.parts-overview ol {
+  list-style: none;
+  counter-reset: part;
+  padding: 0;
+  margin: 4mm 0 0 0;
+  column-count: 2;
+  column-gap: 6mm;
+}
+
+.parts-overview ol li {
+  counter-increment: part;
+  padding: 1mm 0 1mm 9mm;
+  position: relative;
+  font-size: 9.5pt;
+  break-inside: avoid;
+  line-height: 1.5;
+}
+
+.parts-overview ol li::before {
+  content: counter(part);
+  position: absolute;
+  left: 0;
+  top: 1mm;
+  width: 6mm;
+  height: 6mm;
+  border-radius: 50%;
+  background: #c01010;
+  color: white;
+  font-weight: 700;
+  font-size: 9pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.parts-overview ol li .name {
+  font-weight: 700;
+  color: #0d3a66;
+  display: inline-block;
+  margin-right: 1mm;
+}
+
+/* ==========================================================================
+ * 表
+ * ========================================================================== */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+  page-break-inside: avoid;
+}
+
+table th, table td {
+  border: 0.5pt solid #888;
+  padding: 1.2mm 2.5mm;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+table th {
+  background: #e8f0f8;
+  font-weight: 700;
+  color: #0d3a66;
+}
+
+table tr:nth-child(even) td {
+  background: #f7fafc;
+}
+
+table.compact th, table.compact td { padding: 0.8mm 2mm; font-size: 9pt; }
+
+/* 3 者比較表: 第 1 列を固定幅 → 右 3 列を自動等幅。第 1 列は太字 + 網掛け。 */
+table.role-compare { table-layout: fixed; }
+table.role-compare th:first-child,
+table.role-compare td:first-child { font-weight: 700; background: #e9eef3; }
+
+/* ==========================================================================
+ * インラインコード / コードブロック
+ * ========================================================================== */
+
+code {
+  font-family: "Consolas", "Cascadia Mono", "MS Gothic", monospace;
+  background: #f0f0f0;
+  padding: 0.2mm 1mm;
+  border-radius: 0.5mm;
+  font-size: 0.92em;
+  border: 0.3pt solid #ccc;
+}
+
+pre {
+  background: #f5f5f5;
+  border-left: 3pt solid #888;
+  padding: 2mm 3mm;
+  margin: 3mm 0;
+  font-family: "Consolas", "Cascadia Mono", "MS Gothic", monospace;
+  font-size: 9pt;
+  line-height: 1.5;
+  page-break-inside: avoid;
+  white-space: pre-wrap;
+  border-radius: 0 1mm 1mm 0;
+}
+
+pre code { background: transparent; border: none; padding: 0; }
+
+/* ディレクトリー・ツリー等の図用 pre: 罫線がつながるよう行間を詰め、折返しを抑止 */
+pre.diagram {
+  background: #fafbfc;
+  border: 1pt solid #d4dae0;
+  border-left: 1pt solid #d4dae0;
+  border-radius: 1.5mm;
+  line-height: 1.35;
+  white-space: pre;
+  overflow-x: auto;
+  display: inline-block;
+  text-align: left;
+}
+
+/* ==========================================================================
+ * キーボード表示
+ * ========================================================================== */
+
+.key {
+  display: inline-block;
+  border: 1pt solid #888;
+  background: linear-gradient(to bottom, #fafafa, #e8e8e8);
+  border-bottom-width: 2pt;
+  padding: 0.3mm 1.8mm;
+  margin: 0 0.3mm;
+  border-radius: 1mm;
+  font-family: "Consolas", "MS Gothic", monospace;
+  font-size: 0.88em;
+  line-height: 1.3;
+  color: #222;
+}
+
+/* ==========================================================================
+ * 用語集
+ * ========================================================================== */
+
+dl.glossary { margin: 4mm 0; }
+
+dl.glossary dt {
+  font-weight: 700;
+  color: #0d3a66;
+  font-size: 11pt;
+  margin-top: 3mm;
+  border-left: 3pt solid #1c5d96;
+  padding-left: 2.5mm;
+  page-break-after: avoid;
+}
+
+dl.glossary dd {
+  margin: 1mm 0 0 4mm;
+  font-size: 10pt;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+ * その他
+ * ========================================================================== */
+
+strong, b { font-weight: 700; color: #0d3a66; }
+
+em {
+  font-style: normal;
+  color: #c01010;
+  font-weight: 700;
+}
+
+.note-inline { color: #555; font-size: 0.9em; }
+
+.chapter-end { page-break-after: always; height: 0; }
+
+/* リード文 */
+.lead {
+  font-size: 10.5pt;
+  margin-bottom: 4mm;
+  color: #333;
+  border-bottom: 0.5pt dotted #aaa;
+  padding-bottom: 2mm;
+}
+
+/* 章表紙 (= 章扉) */
+.chapter-cover {
+  page-break-before: always;
+  page-break-after: always;
+  width: 100%;
+  height: 220mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #e8f0f8 0%, #c8def0 100%);
+  border-radius: 2mm;
+  text-align: center;
+}
+
+.chapter-cover .cc-num {
+  font-size: 48pt;
+  color: #0d3a66;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  line-height: 1;
+}
+
+.chapter-cover .cc-title {
+  font-size: 32pt;
+  color: #0d3a66;
+  font-weight: 700;
+  margin-top: 6mm;
+  letter-spacing: 0.1em;
+}
+
+.chapter-cover .cc-sub {
+  font-size: 13pt;
+  color: #2a5a8a;
+  margin-top: 8mm;
+  letter-spacing: 0.08em;
+}
+
+/* バックカバー */
+.back-cover {
+  page-break-before: always;
+  width: 210mm;
+  height: 297mm;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  color: #fff;
+  /* 表紙と同じ full-bleed 化 (= 裏表紙も紙端まで青、generate-manual.mjs の back pass で
+     margin 0 レンダリング + pypdf 最背面に青矩形)。背景は ::before に移し全方向 bleed。 */
+  overflow: visible;
+  background: transparent;
+}
+
+.back-cover::before {
+  content: "";
+  position: absolute;
+  top: -12mm;
+  left: -12mm;
+  right: -12mm;
+  bottom: -12mm;
+  background: linear-gradient(135deg, #0d3a66 0%, #0a2a4a 100%);
+  z-index: 0;
+}
+
+.back-cover > * {
+  position: relative;
+  z-index: 1;
+}
+
+.back-cover .bc-inner {
+  position: absolute;
+  top: 50%;
+  left: 22mm;
+  right: 22mm;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+.back-cover .bc-title {
+  font-size: 24pt;
+  letter-spacing: 0.18em;
+  margin-bottom: 10mm;
+  font-weight: 300;
+}
+
+.back-cover .bc-vendor {
+  font-size: 16pt;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  margin-bottom: 4mm;
+}
+
+.back-cover .bc-meta {
+  font-size: 11pt;
+  opacity: 0.85;
+  line-height: 1.9;
+  letter-spacing: 0.05em;
+}
+
+/* 余白の節約 */
+.compact-list ul, .compact-list ol {
+  margin: 1mm 0;
+  padding-left: 5mm;
+}
+.compact-list li { margin: 0.5mm 0; font-size: 10pt; }
+
+/* スクリーンショット欠如時のプレースホルダ */
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 60mm;
+  border: 1.5pt dashed #999;
+  background: #f5f5f5;
+  color: #999;
+  font-size: 10pt;
+  border-radius: 1mm;
+}
